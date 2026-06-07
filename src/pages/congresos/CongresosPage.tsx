@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import TopBar from '../../components/layout/TopBar'
 import BottomNav from '../../components/layout/BottomNav'
 import Spinner from '../../components/common/Spinner'
 import EventCard from '../../components/events/EventCard'
 import FeaturedEventHero from '../../components/events/FeaturedEventHero'
 import { useEvents } from '../../hooks/api/useEvents'
-import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import type { Event, EventCategory } from '../../types'
 
 const CATEGORIES: EventCategory[] = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
@@ -13,7 +13,6 @@ const CATEGORIES: EventCategory[] = ['Todos', 'Congreso', 'Capacitación', 'Curs
 export default function CongresosPage() {
   const navigate = useNavigate()
   const { featuredEvent, listEvents, isLoading } = useEvents()
-  const collapsed = useScrollCollapse(140)
 
   const [category, setCategory] = useState<EventCategory>('Todos')
   const [search, setSearch] = useState('')
@@ -33,37 +32,9 @@ export default function CongresosPage() {
 
   return (
     <div className="min-h-screen bg-background pb-28">
-      {/* ===== Header colapsable (efecto SliverAppBar) ===== */}
-      <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
-          collapsed
-            ? 'bg-surface/90 backdrop-blur-md border-b border-surface-variant shadow-card'
-            : 'bg-transparent border-b border-transparent'
-        }`}
-      >
-        <div className="px-5 max-w-2xl mx-auto flex items-center justify-between h-16">
-          <div className="flex flex-col">
-            <span
-              className={`font-bold text-primary tracking-tight transition-all duration-300 ${
-                collapsed ? 'text-[17px]' : 'text-[15px]'
-              }`}
-            >
-              {collapsed ? 'Congresos' : 'Grupo FÉNIX'}
-            </span>
-            {!collapsed && (
-              <span className="text-[11px] text-on-surface-variant -mt-0.5">Cartelera de eventos</span>
-            )}
-          </div>
-          <button
-            onClick={() => navigate('/perfil')}
-            className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors"
-          >
-            <span className="material-symbols-outlined text-[20px]">person</span>
-          </button>
-        </div>
-      </header>
+      <TopBar title="Congresos" />
 
-      <main className="px-5 max-w-2xl mx-auto flex flex-col gap-7 -mt-2">
+      <main className="px-5 max-w-2xl mx-auto flex flex-col gap-7 pt-2">
         {/* ===== Título de sección ===== */}
         <div className="pt-1">
           <h1 className="text-[28px] font-bold text-primary leading-tight tracking-tight">

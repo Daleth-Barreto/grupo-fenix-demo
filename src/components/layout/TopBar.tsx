@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 interface TopBarProps {
+  /** Nombre de la sección actual (Inicio, Congresos, Perfil…). Se muestra bajo la marca. */
   title?: string
   showBack?: boolean
   showSettings?: boolean
@@ -9,13 +10,15 @@ interface TopBarProps {
 }
 
 export default function TopBar({
-  title = 'Grupo FÉNIX',
+  title,
   showBack = false,
   showSettings = false,
   showMore = false,
   onMore,
 }: TopBarProps) {
   const navigate = useNavigate()
+  // Evita subtítulo redundante si alguien pasa la marca como título.
+  const section = title && title !== 'Grupo FÉNIX' ? title : null
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-[#dce2f3] flex items-center justify-between px-5 h-16 shadow-sm">
@@ -30,15 +33,17 @@ export default function TopBar({
         )}
       </div>
 
-      {title === 'Grupo FÉNIX' ? (
-        <img
-          src="/brand/logo-fenix-navy.png"
-          alt="Grupo Fénix"
-          className="h-9 w-auto object-contain"
-        />
-      ) : (
-        <span className="font-bold text-[#0a192f] text-[18px] tracking-tight">{title}</span>
-      )}
+      {/* Marca (solo letras) + sección actual */}
+      <div className="flex flex-col items-center leading-tight">
+        <span className="font-bold text-[#0a192f] text-[16px] tracking-tight">
+          Grupo <span className="text-[#fd761a]">FÉNIX</span>
+        </span>
+        {section && (
+          <span className="text-[11px] font-medium text-[#75777e] -mt-0.5 max-w-[60vw] truncate">
+            {section}
+          </span>
+        )}
+      </div>
 
       <div className="w-10 flex justify-end">
         {showSettings && (

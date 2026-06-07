@@ -96,7 +96,7 @@ export default function InicioPage() {
 
   return (
     <div className="min-h-screen bg-surface pb-28">
-      <TopBar title="Grupo FÉNIX" />
+      <TopBar title="Inicio" />
 
       <main className="px-5 pt-6 pb-10 flex flex-col gap-9 max-w-2xl mx-auto">
         {/* Bienvenida */}
