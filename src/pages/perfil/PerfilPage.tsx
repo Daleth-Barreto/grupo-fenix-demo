@@ -53,7 +53,7 @@ export default function PerfilPage() {
 
   return (
     <div className="min-h-screen bg-background pb-28">
-      <TopBar title="Grupo FÉNIX" showSettings />
+      <TopBar title="Perfil" showSettings />
 
       <main className="px-5 pt-6 pb-10 flex flex-col gap-7 max-w-xl mx-auto">
         {/* Avatar */}

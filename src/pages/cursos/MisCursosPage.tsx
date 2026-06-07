@@ -45,7 +45,7 @@ export default function MisCursosPage() {
 
   return (
     <div className="min-h-screen bg-background pb-28">
-      <TopBar title="Grupo FÉNIX" />
+      <TopBar title="Mis Cursos" />
 
       <main className="px-5 pt-6 pb-10 flex flex-col gap-6 max-w-2xl mx-auto">
         <div>
