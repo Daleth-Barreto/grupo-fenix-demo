@@ -32,7 +32,7 @@ export default function TopBar({
 
       {title === 'Grupo FÉNIX' ? (
         <img
-          src="/brand/logo-fenix.png"
+          src="/brand/logo-fenix-navy.png"
           alt="Grupo Fénix"
           className="h-9 w-auto object-contain"
         />
