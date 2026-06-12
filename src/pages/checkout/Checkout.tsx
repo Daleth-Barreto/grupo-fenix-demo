@@ -26,13 +26,16 @@
  * =============================================================================
  */
 
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEventDetail } from '../../hooks/api/useEventDetail'
 import { useCheckout } from '../../hooks/api/useCheckout'
 import { isStripeConfigured } from '../../lib/stripe'
 import Button from '../../components/common/Button'
+import Input from '../../components/common/Input'
 import Spinner from '../../components/common/Spinner'
 import { formatPrice, formatDateRange } from '../../utils/format'
+import type { InvoiceDetails } from '../../types'
 
 const TAX_RATE = 0.16
 
@@ -41,6 +44,10 @@ export default function Checkout() {
   const navigate = useNavigate()
   const { event, isLoading, notFound } = useEventDetail(id)
   const { status, error, pay } = useCheckout()
+
+  // IVA opcional por transacción: no todos requieren factura.
+  const [requiresInvoice, setRequiresInvoice] = useState(false)
+  const [invoice, setInvoice] = useState<InvoiceDetails>({ rfc: '', business_name: '', fiscal_email: '' })
 
   if (isLoading) {
     return (
@@ -86,8 +93,9 @@ export default function Checkout() {
   }
 
   // ----- Cálculo de totales (presentación) -----
+  // El IVA solo se aplica si el usuario solicita factura.
   const subtotal = event.price
-  const tax = Math.round(subtotal * TAX_RATE)
+  const tax = requiresInvoice ? Math.round(subtotal * TAX_RATE) : 0
   const total = subtotal + tax
   const isProcessing = status === 'processing'
 
@@ -159,6 +167,63 @@ export default function Checkout() {
           )}
         </section>
 
+        {/* Factura / IVA opcional */}
+        <section className="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+          <button
+            onClick={() => setRequiresInvoice((v) => !v)}
+            className="w-full flex items-center justify-between px-5 py-4 text-left active:scale-[0.99] transition-transform"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-surface-container flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-primary">¿Requieres factura?</p>
+                <p className="text-xs text-on-surface-variant">Se agregará el IVA (16%) a tu total</p>
+              </div>
+            </div>
+            {/* Toggle */}
+            <span
+              className={`relative w-12 h-6 rounded-full transition-colors duration-300 flex-shrink-0 ${
+                requiresInvoice ? 'bg-secondary' : 'bg-surface-variant'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${
+                  requiresInvoice ? 'translate-x-6' : 'translate-x-0'
+                }`}
+              />
+            </span>
+          </button>
+
+          {requiresInvoice && (
+            <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-surface-variant/70 animate-fade-in-up">
+              <Input
+                label="RFC"
+                icon="badge"
+                placeholder="XAXX010101000"
+                value={invoice.rfc}
+                onChange={(e) => setInvoice((v) => ({ ...v, rfc: e.target.value.toUpperCase() }))}
+              />
+              <Input
+                label="Razón social"
+                icon="business"
+                placeholder="Nombre o empresa"
+                value={invoice.business_name}
+                onChange={(e) => setInvoice((v) => ({ ...v, business_name: e.target.value }))}
+              />
+              <Input
+                label="Correo para factura"
+                icon="mail"
+                type="email"
+                placeholder="facturacion@ejemplo.com"
+                value={invoice.fiscal_email}
+                onChange={(e) => setInvoice((v) => ({ ...v, fiscal_email: e.target.value }))}
+              />
+            </div>
+          )}
+        </section>
+
         {/* Desglose */}
         <section className="bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-5 flex flex-col gap-3">
           <div className="flex justify-between text-sm">
@@ -167,7 +232,9 @@ export default function Checkout() {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-on-surface-variant">IVA (16%)</span>
-            <span className="text-primary font-medium">{formatPrice(tax)}</span>
+            <span className="text-primary font-medium">
+              {requiresInvoice ? formatPrice(tax) : 'No aplica'}
+            </span>
           </div>
           <div className="h-px bg-surface-variant/70 my-1" />
           <div className="flex justify-between items-center">
@@ -194,7 +261,7 @@ export default function Checkout() {
             size="lg"
             leftIcon={isProcessing ? undefined : 'lock'}
             isLoading={isProcessing}
-            onClick={() => pay(event.id)}
+            onClick={() => pay(event.id, { requiresInvoice, invoice: requiresInvoice ? invoice : undefined })}
           >
             {isProcessing ? 'Procesando pago…' : `Pagar ${formatPrice(total)}`}
           </Button>

@@ -26,7 +26,7 @@ export default function TopBar({
         {showBack && (
           <button
             onClick={() => navigate(-1)}
-            className="text-[#0a192f] hover:opacity-70 p-2 -ml-2 rounded-full transition-opacity active:scale-95 duration-150"
+            className="text-[#0f2a44] hover:opacity-70 p-2 -ml-2 rounded-full transition-opacity active:scale-95 duration-150"
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
@@ -35,8 +35,8 @@ export default function TopBar({
 
       {/* Marca (solo letras) + sección actual */}
       <div className="flex flex-col items-center leading-tight">
-        <span className="font-bold text-[#0a192f] text-[16px] tracking-tight">
-          Grupo <span className="text-[#fd761a]">FÉNIX</span>
+        <span className="font-bold text-[#0f2a44] text-[16px] tracking-tight">
+          Grupo <span className="text-[#fe9511]">FÉNIX</span>
         </span>
         {section && (
           <span className="text-[11px] font-medium text-[#75777e] -mt-0.5 max-w-[60vw] truncate">
@@ -49,7 +49,7 @@ export default function TopBar({
         {showSettings && (
           <button
             onClick={() => navigate('/configuracion')}
-            className="text-[#0a192f] hover:opacity-70 p-2 -mr-2 rounded-full transition-opacity active:scale-95 duration-150"
+            className="text-[#0f2a44] hover:opacity-70 p-2 -mr-2 rounded-full transition-opacity active:scale-95 duration-150"
           >
             <span className="material-symbols-outlined">settings</span>
           </button>
@@ -57,7 +57,7 @@ export default function TopBar({
         {showMore && (
           <button
             onClick={onMore}
-            className="text-[#75777e] hover:text-[#fd761a] p-2 -mr-2 rounded-full transition-colors active:scale-95 duration-150"
+            className="text-[#75777e] hover:text-[#fe9511] p-2 -mr-2 rounded-full transition-colors active:scale-95 duration-150"
           >
             <span className="material-symbols-outlined">more_vert</span>
           </button>

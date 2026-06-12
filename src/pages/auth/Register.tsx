@@ -148,7 +148,7 @@ export default function Register() {
               type="checkbox"
               checked={acceptTerms}
               onChange={(e) => setAcceptTerms(e.target.checked)}
-              className="mt-0.5 w-5 h-5 rounded-md accent-[#fd761a] cursor-pointer"
+              className="mt-0.5 w-5 h-5 rounded-md accent-[#fe9511] cursor-pointer"
             />
             <span className="text-xs text-on-surface-variant leading-relaxed">
               Acepto los{' '}

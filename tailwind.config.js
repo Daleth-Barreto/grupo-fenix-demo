@@ -16,8 +16,8 @@ export default {
       colors: {
         // Primary — Deep Navy Blue
         primary: {
-          DEFAULT: '#0a192f',
-          container: '#0d1c32',
+          DEFAULT: '#0f2a44',
+          container: '#0f2a44',
           soft: '#1e3a5f',
           on: '#ffffff',
           'on-container': '#76849f',
@@ -26,14 +26,14 @@ export default {
         },
         // Secondary — Vibrant Orange
         secondary: {
-          DEFAULT: '#fd761a',
+          DEFAULT: '#fe9511',
           deep: '#9d4300',
           on: '#ffffff',
           'fixed-dim': '#ffb690',
         },
         // Acento dorado premium
         gold: {
-          DEFAULT: '#c9a227',
+          DEFAULT: '#fec627',
           soft: '#e7c873',
         },
         // Superficies

@@ -50,6 +50,20 @@ const MOCK_COURSES: Course[] = [
           { id: 'l1', title: '1.1 Estilos de liderazgo', duration: '20 mins', is_completed: true, order: 1 },
           { id: 'l2', title: '1.2 Gestión de equipos', duration: '28 mins', is_completed: false, order: 2 },
         ],
+        activities: [
+          { id: 'a1', title: 'Lectura: Modelos de liderazgo hospitalario', type: 'lectura', due_date: '2026-07-10', is_done: true },
+          { id: 'a2', title: 'Cuestionario de autoevaluación — Unidad 1', type: 'cuestionario', due_date: '2026-07-12', is_done: false },
+          { id: 'a3', title: 'Entregable: Plan de gestión de tu equipo (PDF)', description: 'Sube un documento de 1–2 cuartillas con tu plan.', type: 'entregable', due_date: '2026-07-18', is_done: false },
+        ],
+      },
+      {
+        id: 'm2', title: 'Administración de Recursos', order: 2, is_locked: false,
+        lessons: [
+          { id: 'l3', title: '2.1 Presupuesto y costos', duration: '32 mins', is_completed: false, order: 1 },
+        ],
+        activities: [
+          { id: 'a4', title: 'Tarea: Caso práctico de optimización de recursos', type: 'tarea', due_date: '2026-07-25', is_done: false },
+        ],
       },
     ],
   },

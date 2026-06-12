@@ -69,6 +69,17 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
 
+          {/* ===========================================================
+              TODO (FUTURO) — módulos preparados, pendientes de implementar:
+              - Transmisiones en vivo (clases online): src/services/live.service.ts
+                <Route path="/en-vivo" element={<EnVivoPage />} />
+                <Route path="/en-vivo/:id" element={<TransmisionPage />} />
+              - Tienda online / e-commerce: src/services/shop.service.ts
+                <Route path="/tienda" element={<TiendaPage />} />
+                <Route path="/tienda/:id" element={<ProductoPage />} />
+                <Route path="/carrito" element={<CarritoPage />} />
+              =========================================================== */}
+
           {/* App (modo demo: públicas). Para exigir sesión, mover dentro de:
               <Route element={<ProtectedRoute />}> ... </Route> */}
           <Route path="/" element={<Navigate to="/inicio" replace />} />

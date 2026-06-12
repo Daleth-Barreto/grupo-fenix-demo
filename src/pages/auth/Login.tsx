@@ -62,6 +62,12 @@ export default function Login() {
       {/* Hero superior Deep Navy */}
       <div className="bg-navy-gradient pt-14 pb-10 px-6 rounded-b-[2.5rem] shadow-hero relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 accent-line" />
+        <img
+          src="/brand/phoenix/phoenix_5_white.png"
+          alt=""
+          aria-hidden
+          className="absolute -right-10 -top-6 w-52 opacity-[0.06] pointer-events-none select-none"
+        />
         <div className="relative z-10 flex flex-col items-center text-center animate-fade-in-up">
           <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center mb-4 shadow-card p-2.5">
             <img src="/brand/logo-fenix-navy.png" alt="Grupo Fénix" className="w-full h-full object-contain" />

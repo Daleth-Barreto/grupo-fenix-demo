@@ -17,6 +17,7 @@
  */
 
 import api from './api'
+import type { InvoiceDetails } from '../types'
 
 /** Respuesta del backend al crear una sesión de pago de Stripe. */
 export interface CheckoutSessionResponse {
@@ -31,6 +32,12 @@ export interface CheckoutSessionResponse {
 export interface CreateCheckoutPayload {
   eventId: string
   quantity?: number
+  /** Si el usuario solicita factura → el backend aplica el IVA. */
+  requiresInvoice?: boolean
+  /** Tasa de IVA aplicada (ej. 0.16). El backend valida/recalcula. */
+  taxRate?: number
+  /** Datos fiscales (solo si requiresInvoice). */
+  invoice?: InvoiceDetails
 }
 
 export const paymentsService = {

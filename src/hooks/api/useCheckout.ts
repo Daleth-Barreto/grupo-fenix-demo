@@ -29,14 +29,23 @@
 import { useState, useCallback } from 'react'
 import { paymentsService } from '../../services/payments.service'
 import { isStripeConfigured } from '../../lib/stripe'
+import type { InvoiceDetails } from '../../types'
 
 export type CheckoutStatus = 'idle' | 'processing' | 'success' | 'error'
+
+/** Opciones de pago: factura/IVA por transacción. */
+export interface PayOptions {
+  requiresInvoice?: boolean
+  invoice?: InvoiceDetails
+}
+
+const TAX_RATE = 0.16
 
 export interface UseCheckoutResult {
   status: CheckoutStatus
   error: string | null
   clientSecret: string | null
-  pay: (eventId: string) => Promise<void>
+  pay: (eventId: string, options?: PayOptions) => Promise<void>
   reset: () => void
 }
 
@@ -45,7 +54,7 @@ export function useCheckout(): UseCheckoutResult {
   const [error, setError] = useState<string | null>(null)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
 
-  const pay = useCallback(async (eventId: string) => {
+  const pay = useCallback(async (eventId: string, options?: PayOptions) => {
     setStatus('processing')
     setError(null)
 
@@ -57,7 +66,13 @@ export function useCheckout(): UseCheckoutResult {
     }
 
     try {
-      const { data } = await paymentsService.createCheckoutSession({ eventId, quantity: 1 })
+      const { data } = await paymentsService.createCheckoutSession({
+        eventId,
+        quantity: 1,
+        requiresInvoice: options?.requiresInvoice ?? false,
+        taxRate: options?.requiresInvoice ? TAX_RATE : 0,
+        invoice: options?.invoice,
+      })
 
       if (data.url) {
         window.location.href = data.url // Stripe Checkout hosted
