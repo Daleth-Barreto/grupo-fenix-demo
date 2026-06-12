@@ -34,7 +34,7 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Descarga tus certificados', path: '/constancias' },
   { icon: 'event_available', label: 'Reservaciones y cotización', sub: 'Solicita un evento a tu medida', path: '/reservaciones' },
-  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/configuracion' },
+  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/comprobantes' },
   { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/configuracion' },
 ]
 
