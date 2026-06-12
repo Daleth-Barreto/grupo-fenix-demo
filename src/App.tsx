@@ -46,6 +46,7 @@ const MisCursosPage = lazy(() => import('./pages/cursos/MisCursosPage'))
 const CourseDashboardPage = lazy(() => import('./pages/cursos/CourseDashboardPage'))
 const VideoPlayerPage = lazy(() => import('./pages/cursos/VideoPlayerPage'))
 const ConstanciasPage = lazy(() => import('./pages/constancias/ConstanciasPage'))
+const ComprobantesPage = lazy(() => import('./pages/comprobantes/ComprobantesPage'))
 const PerfilPage = lazy(() => import('./pages/perfil/PerfilPage'))
 const ConfiguracionPage = lazy(() => import('./pages/perfil/ConfiguracionPage'))
 
@@ -93,6 +94,7 @@ export default function App() {
           <Route path="/cursos/:id" element={<CourseDashboardPage />} />
           <Route path="/cursos/:id/video/:lessonId" element={<VideoPlayerPage />} />
           <Route path="/constancias" element={<ConstanciasPage />} />
+          <Route path="/comprobantes" element={<ComprobantesPage />} />
           <Route path="/perfil" element={<PerfilPage />} />
           <Route path="/configuracion" element={<ConfiguracionPage />} />
 

@@ -125,6 +125,20 @@ export interface InvoiceDetails {
   fiscal_email: string
 }
 
+/** Comprobante de pago / recibo del historial del usuario. */
+export interface Receipt {
+  id: string
+  concept: string
+  /** Fecha del pago (ISO). */
+  date: string
+  amount: number
+  method: string
+  status: 'pagado' | 'pendiente' | 'reembolsado'
+  /** Si se emitió factura (IVA) para este pago. */
+  has_invoice: boolean
+  pdf_url?: string
+}
+
 /**
  * TODO (futuro) — Transmisiones en vivo (clases online).
  * Modelo preparado para la implementación de streaming en vivo.

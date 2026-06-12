@@ -93,9 +93,16 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="bg-navy-gradient pt-12 pb-8 px-6 rounded-b-[2.5rem] shadow-hero relative overflow-hidden">
+      <div className="bg-navy-gradient pt-12 pb-9 px-6 rounded-b-[2.75rem] shadow-hero relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 accent-line" />
+        <img
+          src="/brand/phoenix/phoenix_5_white.png"
+          alt=""
+          aria-hidden
+          className="absolute left-1/2 -translate-x-1/2 -top-4 w-80 max-w-none opacity-[0.09] pointer-events-none select-none"
+        />
         <div className="relative z-10 flex flex-col items-center text-center animate-fade-in-up">
+          <img src="/brand/logo-fenix.png" alt="Grupo Fénix" className="w-32 max-w-[50%] object-contain drop-shadow-lg mb-3" />
           <h1 className="text-2xl font-bold text-white tracking-tight">Crea tu cuenta</h1>
           <p className="text-sm text-primary-fixed-dim mt-1">Únete a la comunidad Grupo Fénix</p>
         </div>

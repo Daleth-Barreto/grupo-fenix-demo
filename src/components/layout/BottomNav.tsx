@@ -34,7 +34,7 @@ const TABS: Tab[] = [
   { path: '/inicio', icon: 'home', label: 'Inicio' },
   { path: '/congresos', icon: 'local_activity', label: 'Congresos', match: ['/congresos', '/checkout', '/galeria', '/reservaciones'] },
   { path: '/cursos', icon: 'play_circle', label: 'Mis Cursos' },
-  { path: '/perfil', icon: 'person', label: 'Perfil', match: ['/perfil', '/configuracion', '/constancias'] },
+  { path: '/perfil', icon: 'person', label: 'Perfil', match: ['/perfil', '/configuracion', '/constancias', '/comprobantes'] },
 ]
 
 export default function BottomNav() {
