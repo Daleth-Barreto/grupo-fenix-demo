@@ -1,0 +1,69 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import ProgressBar from '../../../components/ui/ProgressBar.astro'
+import { MOCK_COURSES } from '../../../data/mock'
+
+const TABS = ['En Curso', 'Finalizados']
+---
+<AppLayout title="Mis Cursos" section="Mis Cursos" active="/app/cursos">
+  <div class="flex flex-col gap-6 pt-5 pb-10">
+    <section class="text-center">
+      <h1 class="text-[28px] font-bold text-primary">Mis Cursos</h1>
+      <p class="text-sm text-on-surface-variant mt-1.5">Tu formación continua</p>
+    </section>
+
+    <div class="flex gap-2" id="course-tabs">
+      {TABS.map((tab, i) => (
+        <button data-tab={tab} class:list={['flex-1 py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95 course-tab', i === 0 ? 'bg-primary text-on-primary shadow-card' : 'bg-surface border border-surface-variant text-on-surface-variant']}>
+          {tab}
+        </button>
+      ))}
+    </div>
+
+    <div class="flex flex-col gap-4" id="courses-list">
+      {MOCK_COURSES.map((course) => (
+        <a href={`/app/cursos/${course.id}`} data-status={course.progress >= 100 ? 'Finalizados' : 'En Curso'}
+          class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated transition-all active:scale-[0.98] duration-150 block course-card">
+          <div class="flex gap-4 p-4 items-center">
+            <div class="w-20 h-20 rounded-2xl overflow-hidden bg-primary flex-shrink-0">
+              {course.thumbnail_url ? (
+                <img src={course.thumbnail_url} alt={course.title} class="w-full h-full object-cover" />
+              ) : (
+                <div class="w-full h-full bg-navy-gradient flex items-center justify-center">
+                  <span class="material-symbols-outlined text-white/40 text-[28px]">school</span>
+                </div>
+              )}
+            </div>
+            <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+              <h3 class="text-sm font-semibold text-primary line-clamp-2 leading-snug">{course.title}</h3>
+              <p class="text-xs text-on-surface-variant">{course.instructor}</p>
+              <ProgressBar value={course.progress} showLabel />
+            </div>
+          </div>
+          {course.current_lesson && (
+            <div class="border-t border-surface-variant/70 px-4 py-2.5 flex items-center gap-2 bg-surface-container-low">
+              <span class="material-symbols-outlined text-secondary text-[16px] filled">play_circle</span>
+              <span class="text-xs text-on-surface-variant font-medium truncate">{course.current_lesson}</span>
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  const tabs = document.querySelectorAll('.course-tab')
+  const cards = document.querySelectorAll('.course-card')
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => { t.classList.remove('bg-primary', 'text-on-primary', 'shadow-card'); t.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant') })
+      tab.classList.add('bg-primary', 'text-on-primary', 'shadow-card')
+      tab.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+      const selected = (tab as HTMLElement).dataset.tab
+      cards.forEach((card) => {
+        (card as HTMLElement).style.display = (card as HTMLElement).dataset.status === selected ? '' : 'none'
+      })
+    })
+  })
+</script>

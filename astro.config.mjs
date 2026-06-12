@@ -1,15 +1,16 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro/config'
+import cloudflare from '@astrojs/cloudflare'
+import react from '@astrojs/react'
+import tailwindcss from '@tailwindcss/vite'
 
-import cloudflare from '@astrojs/cloudflare';
-
-// https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({
-    platformProxy: {
-      enabled: true
-    },
-
-    imageService: "cloudflare"
-  })
-});
+  // Descomentar la configuración de cloudflare cuando se despliegue y se requiera (ej. para SSR o imageService)
+  // adapter: cloudflare({
+  //   imageService: 'cloudflare',
+  // }),
+  integrations: [react()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
+})

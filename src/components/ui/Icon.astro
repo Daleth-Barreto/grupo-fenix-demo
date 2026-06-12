@@ -1,0 +1,8 @@
+---
+interface Props { name: string; filled?: boolean; size?: string; class?: string }
+const { name, filled = false, size = '24px', class: cls = '' } = Astro.props
+---
+<span
+  class:list={['material-symbols-outlined', filled && 'filled', cls]}
+  style={`font-size:${size}`}
+>{name}</span>

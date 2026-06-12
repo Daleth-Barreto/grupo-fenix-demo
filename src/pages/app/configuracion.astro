@@ -1,0 +1,128 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+---
+<AppLayout title="Configuración" section="Configuración" showBack>
+  <div class="py-6 flex flex-col gap-5 max-w-xl mx-auto pb-12">
+    <!-- Cuenta -->
+    <section class="flex flex-col gap-2">
+      <h2 class="text-[11px] font-bold text-primary uppercase tracking-widest ml-1">Cuenta</h2>
+      <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+        <a href="#" class="w-full flex items-center justify-between px-4 py-4 hover:bg-surface-container-low transition-colors border-b border-surface-variant/70 text-left active:scale-[0.98]">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">person</span>
+            <p class="text-sm font-medium text-primary">Información personal</p>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant text-[20px]">chevron_right</span>
+        </a>
+        <a href="#" class="w-full flex items-center justify-between px-4 py-4 hover:bg-surface-container-low transition-colors border-b border-surface-variant/70 text-left active:scale-[0.98]">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">lock</span>
+            <p class="text-sm font-medium text-primary">Cambiar contraseña</p>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant text-[20px]">chevron_right</span>
+        </a>
+        <a href="#" class="w-full flex items-center justify-between px-4 py-4 hover:bg-surface-container-low transition-colors text-left active:scale-[0.98]">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">credit_card</span>
+            <p class="text-sm font-medium text-primary">Métodos de pago</p>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant text-[20px]">chevron_right</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Preferencias -->
+    <section class="flex flex-col gap-2">
+      <h2 class="text-[11px] font-bold text-primary uppercase tracking-widest ml-1">Preferencias</h2>
+      <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-4 border-b border-surface-variant/70">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">notifications</span>
+            <p class="text-sm font-medium text-primary">Notificaciones de eventos</p>
+          </div>
+          <button role="switch" aria-checked="true" class="toggle-btn relative w-12 h-6 rounded-full transition-colors duration-300 bg-secondary" data-active="true">
+            <span class="toggle-knob absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 translate-x-6"></span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between px-4 py-4 border-b border-surface-variant/70">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">mail</span>
+            <p class="text-sm font-medium text-primary">Correos promocionales</p>
+          </div>
+          <button role="switch" aria-checked="false" class="toggle-btn relative w-12 h-6 rounded-full transition-colors duration-300 bg-surface-variant" data-active="false">
+            <span class="toggle-knob absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 translate-x-0"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acerca de -->
+    <section class="flex flex-col gap-2">
+      <h2 class="text-[11px] font-bold text-primary uppercase tracking-widest ml-1">Acerca de</h2>
+      <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+        <a href="#" class="w-full flex items-center justify-between px-4 py-4 hover:bg-surface-container-low transition-colors border-b border-surface-variant/70 text-left active:scale-[0.98]">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">description</span>
+            <p class="text-sm font-medium text-primary">Términos y condiciones</p>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant text-[20px]">chevron_right</span>
+        </a>
+        <a href="#" class="w-full flex items-center justify-between px-4 py-4 hover:bg-surface-container-low transition-colors text-left active:scale-[0.98]">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">policy</span>
+            <p class="text-sm font-medium text-primary">Aviso de privacidad</p>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant text-[20px]">chevron_right</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Zona de Peligro -->
+    <section class="flex flex-col gap-2">
+      <h2 class="text-[11px] font-bold text-error uppercase tracking-widest ml-1">Zona de Peligro</h2>
+      <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+        <button id="btn-delete-account" class="w-full flex items-center gap-4 px-4 py-4 hover:bg-error-container transition-colors text-left">
+          <span class="material-symbols-outlined text-error text-[22px]">delete</span>
+          <span class="text-sm font-bold text-error">Eliminar mi cuenta</span>
+        </button>
+      </div>
+    </section>
+
+    <p class="text-center text-xs text-outline mt-4">Grupo FÉNIX App v1.0.0</p>
+  </div>
+
+  <!-- Dialogo de eliminación -->
+  <div id="delete-dialog" class="fixed inset-0 z-50 flex items-end justify-center bg-primary/50 backdrop-blur-sm hidden">
+    <div class="bg-surface rounded-t-3xl w-full max-w-md p-6 flex flex-col gap-4 animate-slide-up">
+      <div class="w-12 h-1 bg-surface-variant rounded-full mx-auto mb-2"></div>
+      <h3 class="text-[18px] font-bold text-primary">¿Eliminar tu cuenta?</h3>
+      <p class="text-sm text-on-surface-variant leading-relaxed">
+        Esta acción es permanente. Perderás acceso a todos tus cursos, constancias y datos. No se puede deshacer.
+      </p>
+      <button class="bg-error text-white font-semibold text-[15px] py-4 rounded-2xl w-full">Sí, eliminar mi cuenta</button>
+      <button id="btn-cancel-delete" class="bg-transparent text-primary border border-primary hover:bg-surface-container-low font-semibold text-[15px] py-4 rounded-2xl w-full">Cancelar</button>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  document.querySelectorAll('.toggle-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const isActive = btn.getAttribute('data-active') === 'true'
+      const knob = btn.querySelector('.toggle-knob')
+      btn.setAttribute('data-active', String(!isActive))
+      btn.setAttribute('aria-checked', String(!isActive))
+      if (!isActive) {
+        btn.classList.replace('bg-surface-variant', 'bg-secondary')
+        knob?.classList.replace('translate-x-0', 'translate-x-6')
+      } else {
+        btn.classList.replace('bg-secondary', 'bg-surface-variant')
+        knob?.classList.replace('translate-x-6', 'translate-x-0')
+      }
+    })
+  })
+
+  const dialog = document.getElementById('delete-dialog')
+  document.getElementById('btn-delete-account')?.addEventListener('click', () => dialog?.classList.remove('hidden'))
+  document.getElementById('btn-cancel-delete')?.addEventListener('click', () => dialog?.classList.add('hidden'))
+</script>

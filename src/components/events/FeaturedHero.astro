@@ -1,0 +1,65 @@
+---
+import Badge from '../ui/Badge.astro'
+import Countdown from './Countdown'
+import { formatDateRange, daysUntil } from '../../utils/format'
+import type { Event } from '../../types'
+
+interface Props { event: Event }
+const { event } = Astro.props
+const days = daysUntil(event.date_start)
+---
+<section class="relative rounded-3xl overflow-hidden shadow-hero bg-navy-gradient animate-fade-in-up">
+  {event.image_url && (
+    <img src={event.image_url} alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity" />
+  )}
+  <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+
+  <div class="relative z-10 p-6 flex flex-col gap-5">
+    <div class="flex items-center gap-2">
+      <Badge label="Próximo congreso" variant="orange" />
+      {event.has_certification && <Badge label="Valor curricular" variant="gold" icon="verified" />}
+    </div>
+
+    <div>
+      <h2 class="text-[26px] font-bold text-white leading-tight tracking-tight">{event.title}</h2>
+      <p class="text-[13px] text-primary-fixed-dim leading-relaxed mt-2 max-w-md">{event.description}</p>
+    </div>
+
+    <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+      <div class="flex items-center gap-2 text-white">
+        <span class="material-symbols-outlined text-secondary-fixed-dim text-[18px]">calendar_month</span>
+        <span class="font-medium">{formatDateRange(event.date_start, event.date_end)}</span>
+      </div>
+      <div class="flex items-center gap-2 text-white">
+        <span class="material-symbols-outlined text-secondary-fixed-dim text-[18px]">location_on</span>
+        <span class="font-medium">{event.location}</span>
+      </div>
+    </div>
+
+    <!-- Datos premium -->
+    <div class="glass-on-navy rounded-2xl px-5 py-4 flex items-center justify-around">
+      <div class="text-center">
+        <p class="text-[22px] font-bold text-white leading-none">{days}</p>
+        <p class="text-[9px] text-primary-fixed-dim tracking-widest mt-1">DÍAS</p>
+      </div>
+      <div class="w-px h-8 bg-white/15"></div>
+      <div class="text-center">
+        <p class="text-[22px] font-bold text-white leading-none">{event.speakers_count ?? '—'}</p>
+        <p class="text-[9px] text-primary-fixed-dim tracking-widest mt-1">PONENTES</p>
+      </div>
+      <div class="w-px h-8 bg-white/15"></div>
+      <div class="text-center">
+        <p class="text-[22px] font-bold text-white leading-none">{event.curricular_hours ?? '—'}</p>
+        <p class="text-[9px] text-primary-fixed-dim tracking-widest mt-1">HORAS</p>
+      </div>
+    </div>
+
+    <a
+      href={`/app/checkout/${event.id}`}
+      class="w-full bg-secondary hover:bg-secondary-deep text-on-secondary font-semibold text-sm py-4 rounded-2xl shadow-card transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+    >
+      Reservar mi lugar
+      <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+    </a>
+  </div>
+</section>

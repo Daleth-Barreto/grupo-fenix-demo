@@ -1,0 +1,58 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+import { MOCK_GALLERY } from '../../data/mock'
+
+const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
+---
+<AppLayout title="Galería" section="Eventos realizados" showBack active="/app/congresos">
+  <div class="flex flex-col gap-6 pt-5 pb-10">
+    <section class="text-center">
+      <h1 class="text-[28px] font-bold text-primary">Galería</h1>
+      <p class="text-sm text-on-surface-variant mt-1.5">Revive nuestros eventos</p>
+    </section>
+
+    <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1" id="gallery-chips">
+      {CATEGORIES.map((cat, i) => (
+        <button data-category={cat} class:list={['px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all active:scale-95 gallery-chip', i === 0 ? 'bg-secondary text-on-secondary shadow-card' : 'bg-surface border border-surface-variant text-on-surface-variant hover:border-secondary']}>
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <div class="grid grid-cols-2 gap-4" id="gallery-grid">
+      {MOCK_GALLERY.map((item) => (
+        <div data-category={item.category} class="gallery-item">
+          <a href={`/app/congresos/${item.id}`} class="block group">
+            <div class="relative rounded-2xl overflow-hidden shadow-card aspect-[4/3] bg-primary">
+              <img src={item.cover_url} alt={item.title} loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-3">
+                <p class="text-xs font-semibold text-white line-clamp-2 leading-snug">{item.title}</p>
+                <div class="flex items-center gap-1 text-white/80 text-[10px] mt-1">
+                  <span class="material-symbols-outlined text-[12px]">groups</span>
+                  <span>{item.attendees}+ asistentes</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  const chips = document.querySelectorAll('.gallery-chip')
+  const items = document.querySelectorAll('.gallery-item')
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chips.forEach((c) => { c.classList.remove('bg-secondary', 'text-on-secondary', 'shadow-card'); c.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant') })
+      chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card')
+      chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+      const cat = (chip as HTMLElement).dataset.category
+      items.forEach((item) => {
+        (item as HTMLElement).style.display = cat === 'Todos' || (item as HTMLElement).dataset.category === cat ? '' : 'none'
+      })
+    })
+  })
+</script>

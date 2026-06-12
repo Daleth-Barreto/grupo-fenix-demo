@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import Badge from '../../../components/ui/Badge.astro'
+import Button from '../../../components/ui/Button.astro'
+import { getEventById, MOCK_EVENTS } from '../../../data/mock'
+import { formatPrice, formatDateRange, daysUntil } from '../../../utils/format'
+
+export function getStaticPaths() {
+  return MOCK_EVENTS.map((e) => ({ params: { id: e.id } }))
+}
+
+const { id } = Astro.params
+const event = getEventById(id!)
+
+if (!event) return Astro.redirect('/app/congresos')
+
+const days = daysUntil(event.date_start)
+const BENEFITS = [
+  { icon: 'verified', label: 'Constancia con valor curricular' },
+  { icon: 'group', label: 'Acceso a todas las ponencias' },
+  { icon: 'description', label: 'Material y recursos digitales' },
+  { icon: 'coffee', label: 'Coffee breaks y networking' },
+]
+---
+<BaseLayout title={event.title}>
+  <div class="min-h-screen bg-background pb-28">
+    <!-- Header fijo -->
+    <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
+      <div class="px-5 max-w-2xl mx-auto flex items-center gap-3 h-16">
+        <a href="/app/congresos" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <span class="font-semibold text-primary text-[15px] truncate">{event.title}</span>
+      </div>
+    </header>
+
+    <!-- Hero imagen -->
+    <div class="relative h-72 bg-primary overflow-hidden">
+      {event.image_url ? (
+        <img src={event.image_url} alt={event.title} class="w-full h-full object-cover" />
+      ) : (
+        <div class="w-full h-full bg-navy-gradient"></div>
+      )}
+      <div class="absolute inset-0" style="background: linear-gradient(to top, #0f2a44 0%, rgba(10,25,47,0.2) 55%, rgba(10,25,47,0.35) 100%)"></div>
+      <div class="absolute bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto">
+        <div class="flex items-center gap-2 mb-3">
+          <Badge label={event.category} variant="orange" />
+          <Badge label={event.modality} variant="glass" />
+        </div>
+        <h1 class="text-[24px] font-bold text-white leading-tight tracking-tight">{event.title}</h1>
+      </div>
+    </div>
+
+    <main class="px-5 max-w-2xl mx-auto -mt-2 flex flex-col gap-6 pt-6">
+      <!-- Datos clave -->
+      <section class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-5 grid grid-cols-3 gap-3 text-center">
+        <div class="flex flex-col items-center gap-1">
+          <span class="material-symbols-outlined text-secondary text-[22px]">event</span>
+          <p class="text-[11px] text-outline">Faltan</p>
+          <p class="text-sm font-bold text-primary">{days} días</p>
+        </div>
+        <div class="flex flex-col items-center gap-1 border-x border-surface-variant/70">
+          <span class="material-symbols-outlined text-secondary text-[22px]">groups</span>
+          <p class="text-[11px] text-outline">Ponentes</p>
+          <p class="text-sm font-bold text-primary">{event.speakers_count ?? '—'}</p>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <span class="material-symbols-outlined text-secondary text-[22px]">schedule</span>
+          <p class="text-[11px] text-outline">Duración</p>
+          <p class="text-sm font-bold text-primary">{event.curricular_hours ?? '—'} hrs</p>
+        </div>
+      </section>
+
+      <!-- Fecha y ubicación -->
+      <section class="flex flex-col gap-3">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-surface-container flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-[20px]">calendar_month</span>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-primary">{formatDateRange(event.date_start, event.date_end)}</p>
+            <p class="text-xs text-on-surface-variant">Agenda completa disponible al inscribirte</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-surface-container flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-primary">{event.location}</p>
+            <p class="text-xs text-on-surface-variant">{event.modality}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Descripción -->
+      <section>
+        <h2 class="text-[17px] font-bold text-primary mb-2">Acerca del evento</h2>
+        <p class="text-sm text-on-surface-variant leading-relaxed">{event.description}</p>
+      </section>
+
+      <!-- Beneficios -->
+      <section>
+        <h2 class="text-[17px] font-bold text-primary mb-3">¿Qué incluye?</h2>
+        <div class="grid grid-cols-1 gap-2">
+          {BENEFITS.map((b) => (
+            <div class="flex items-center gap-3 bg-surface rounded-2xl border border-surface-variant/70 px-4 py-3">
+              <span class="material-symbols-outlined text-secondary text-[20px] filled">{b.icon}</span>
+              <span class="text-sm text-primary font-medium">{b.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Certificación -->
+      {event.has_certification && (
+        <section class="bg-navy-gradient rounded-3xl p-5 relative overflow-hidden shadow-card">
+          <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+          <div class="flex items-center gap-4 relative z-10">
+            <span class="material-symbols-outlined text-gold text-[36px] filled">workspace_premium</span>
+            <div>
+              <p class="text-sm font-bold text-white">Constancia con valor curricular</p>
+              <p class="text-xs text-primary-fixed-dim mt-0.5 leading-relaxed">
+                Avalada por Grupo Fénix. {event.curricular_hours} horas reconocidas para tu desarrollo profesional.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+
+    <!-- Barra de acción fija -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md border-t border-surface-variant px-5 py-3" style="padding-bottom: calc(12px + env(safe-area-inset-bottom))">
+      <div class="max-w-2xl mx-auto flex items-center gap-4">
+        <div class="flex-shrink-0">
+          <p class="text-[10px] text-outline uppercase tracking-wider font-medium">Inversión</p>
+          <p class="text-[20px] font-bold text-primary leading-tight">{formatPrice(event.price)}</p>
+        </div>
+        <Button href={`/app/checkout/${event.id}`} variant="primary" fullWidth rightIcon="arrow_forward">Inscribirme</Button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

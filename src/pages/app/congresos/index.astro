@@ -1,0 +1,89 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import EventCard from '../../../components/events/EventCard.astro'
+import FeaturedHero from '../../../components/events/FeaturedHero.astro'
+import { MOCK_EVENTS, getFeaturedEvent } from '../../../data/mock'
+
+const featured = getFeaturedEvent()
+const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
+---
+<AppLayout title="Congresos" section="Congresos" active="/app/congresos">
+  <div class="flex flex-col gap-7 pt-2 pb-10">
+    <!-- Título -->
+    <div class="pt-1">
+      <h1 class="text-[28px] font-bold text-primary leading-tight tracking-tight">
+        Vive la experiencia<br /><span class="text-secondary">Grupo Fénix</span>
+      </h1>
+      <p class="text-sm text-on-surface-variant leading-relaxed mt-2">
+        Congresos, capacitaciones y talleres con valor curricular impartidos por especialistas.
+      </p>
+
+      <a href="/app/galeria" class="mt-4 w-full flex items-center justify-between bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-4 py-3 hover:shadow-elevated transition-all active:scale-[0.98] group">
+        <span class="flex items-center gap-3">
+          <span class="w-9 h-9 rounded-xl bg-surface-container-low flex items-center justify-center text-primary group-hover:text-secondary transition-colors">
+            <span class="material-symbols-outlined text-[20px]">photo_library</span>
+          </span>
+          <span class="text-sm font-semibold text-primary">Ver eventos realizados</span>
+        </span>
+        <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+      </a>
+    </div>
+
+    {featured && <FeaturedHero event={featured} />}
+
+    <!-- Chips de filtro -->
+    <div class="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1" id="filter-chips">
+      {CATEGORIES.map((cat, i) => (
+        <button
+          data-category={cat}
+          class:list={[
+            'px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-200 active:scale-95 filter-chip',
+            i === 0 ? 'bg-secondary text-on-secondary shadow-card active-chip' : 'bg-surface border border-surface-variant text-on-surface-variant hover:border-secondary hover:text-secondary',
+          ]}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <!-- Resultados -->
+    <div class="flex items-center justify-between -mt-2">
+      <p class="text-xs text-outline font-medium" id="results-count">{MOCK_EVENTS.length} eventos</p>
+    </div>
+
+    <!-- Grid de tarjetas -->
+    <div class="grid grid-cols-1 gap-5" id="events-grid">
+      {MOCK_EVENTS.map((event, i) => (
+        <div data-category={event.category}>
+          <EventCard event={event} index={i} />
+        </div>
+      ))}
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  const chips = document.querySelectorAll('.filter-chip')
+  const cards = document.querySelectorAll('#events-grid > div')
+  const count = document.getElementById('results-count')
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chips.forEach((c) => {
+        c.classList.remove('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
+        c.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+      })
+      chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
+      chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+
+      const cat = (chip as HTMLElement).dataset.category
+      let visible = 0
+      cards.forEach((card) => {
+        const show = cat === 'Todos' || (card as HTMLElement).dataset.category === cat
+        ;(card as HTMLElement).style.display = show ? '' : 'none'
+        if (show) visible++
+      })
+      if (count) count.textContent = `${visible} evento${visible !== 1 ? 's' : ''}${cat !== 'Todos' ? ` · ${cat}` : ''}`
+    })
+  })
+</script>

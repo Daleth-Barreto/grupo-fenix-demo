@@ -1,0 +1,42 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  size?: 'md' | 'lg'
+  fullWidth?: boolean
+  href?: string
+  leftIcon?: string
+  rightIcon?: string
+  class?: string
+  type?: 'button' | 'submit'
+}
+
+const { variant = 'primary', size = 'lg', fullWidth = false, href, leftIcon, rightIcon, class: cls = '', type = 'button' } = Astro.props
+
+const VARIANTS: Record<string, string> = {
+  primary: 'bg-secondary text-on-secondary hover:bg-secondary-deep shadow-card hover:shadow-elevated',
+  secondary: 'bg-transparent text-primary border border-primary hover:bg-surface-container-low',
+  ghost: 'bg-transparent text-secondary hover:bg-surface-container-low',
+  danger: 'bg-error text-white hover:brightness-90 shadow-card',
+}
+
+const SIZES: Record<string, string> = {
+  md: 'text-sm py-3 px-5',
+  lg: 'text-[15px] py-4 px-6',
+}
+
+const classes = `inline-flex items-center justify-center gap-2 font-semibold rounded-2xl transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none ${VARIANTS[variant]} ${SIZES[size]} ${fullWidth ? 'w-full' : ''} ${cls}`
+const Tag = href ? 'a' : 'button'
+---
+{href ? (
+  <a href={href} class={classes}>
+    {leftIcon && <span class="material-symbols-outlined text-[20px]">{leftIcon}</span>}
+    <slot />
+    {rightIcon && <span class="material-symbols-outlined text-[20px]">{rightIcon}</span>}
+  </a>
+) : (
+  <button type={type} class={classes}>
+    {leftIcon && <span class="material-symbols-outlined text-[20px]">{leftIcon}</span>}
+    <slot />
+    {rightIcon && <span class="material-symbols-outlined text-[20px]">{rightIcon}</span>}
+  </button>
+)}

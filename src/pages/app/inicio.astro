@@ -1,0 +1,112 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+import Badge from '../../components/ui/Badge.astro'
+import Countdown from '../../components/events/Countdown'
+import UpcomingEvents from '../../components/sections/UpcomingEvents.astro'
+import { MOCK_EVENTS, getFeaturedEvent } from '../../data/mock'
+import { formatDateRange } from '../../utils/format'
+
+const featured = getFeaturedEvent()
+const upcoming = MOCK_EVENTS.slice(0, 2)
+
+const QUICK_ACCESS = [
+  { icon: 'local_activity', label: 'Congresos', path: '/app/congresos' },
+  { icon: 'play_circle', label: 'Cursos', path: '/app/cursos' },
+  { icon: 'workspace_premium', label: 'Constancias', path: '/app/constancias' },
+  { icon: 'person', label: 'Perfil', path: '/app/perfil' },
+]
+---
+<AppLayout title="Inicio" section="Inicio" active="/app/inicio">
+  <div class="pt-6 pb-10 flex flex-col gap-9">
+    <!-- Bienvenida -->
+    <section class="animate-fade-in-up">
+      <h1 class="text-[22px] font-bold text-primary leading-tight">¡Hola, María! <span>👋</span></h1>
+      <p class="text-sm text-on-surface-variant mt-1">¿Qué quieres aprender hoy?</p>
+    </section>
+
+    <!-- Resumen rápido -->
+    <section class="grid grid-cols-3 gap-3 -mt-4 animate-fade-in-up">
+      {[
+        { icon: 'local_activity', value: '3', label: 'Inscritos', path: '/app/congresos' },
+        { icon: 'play_circle', value: '2', label: 'Cursos', path: '/app/cursos' },
+        { icon: 'workspace_premium', value: '3', label: 'Constancias', path: '/app/constancias' },
+      ].map((stat) => (
+        <a href={stat.path} class="bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-3 py-4 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-elevated">
+          <span class="material-symbols-outlined text-secondary text-[24px]" style="font-variation-settings: 'FILL' 1">{stat.icon}</span>
+          <span class="text-[18px] font-bold text-primary leading-none">{stat.value}</span>
+          <span class="text-[10px] text-on-surface-variant font-medium">{stat.label}</span>
+        </a>
+      ))}
+    </section>
+
+    <!-- Hero — Próximo Congreso -->
+    {featured && (
+      <section class="animate-fade-in-up">
+        <div class="rounded-3xl overflow-hidden relative shadow-hero bg-navy-gradient">
+          <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+          <img src="/brand/phoenix/phoenix_5_white.png" alt="" aria-hidden="true" class="absolute -right-8 -bottom-8 w-48 opacity-[0.07] pointer-events-none select-none" />
+          <div class="relative z-10 p-6 flex flex-col gap-5">
+            <div>
+              <Badge label="Próximo congreso" variant="orange" />
+              <h2 class="text-[24px] font-bold text-white leading-snug tracking-tight mt-3">{featured.title}</h2>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-secondary-fixed-dim text-[18px] mt-0.5">calendar_month</span>
+                <p class="font-semibold text-white text-xs">{formatDateRange(featured.date_start, featured.date_end)}</p>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-secondary-fixed-dim text-[18px] mt-0.5">location_on</span>
+                <p class="font-semibold text-white text-xs">{featured.location}</p>
+              </div>
+            </div>
+
+            <Countdown client:load targetDate={featured.date_start} />
+
+            <a href={`/app/congresos/${featured.id}`}
+              class="w-full bg-secondary hover:bg-secondary-deep text-on-secondary font-semibold text-sm py-4 rounded-2xl transition-colors flex items-center justify-center gap-2 active:scale-[0.98] shadow-card">
+              Inscribirme ahora
+              <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-2 mt-3">
+          <div class="w-2 h-2 rounded-full bg-secondary"></div>
+          <div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+          <div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+        </div>
+      </section>
+    )}
+
+    <!-- Acceso rápido -->
+    <section>
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-[18px] font-semibold text-primary">Acceso rápido</h3>
+        <a href="/app/congresos" class="text-xs font-semibold text-secondary hover:underline">Ver todo</a>
+      </div>
+      <div class="grid grid-cols-4 gap-3">
+        {QUICK_ACCESS.map((item) => (
+          <a href={item.path} class="flex flex-col items-center gap-2.5 group active:scale-95 transition-transform duration-150">
+            <div class="w-16 h-16 rounded-3xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors shadow-card">
+              <span class="material-symbols-outlined text-[26px]">{item.icon}</span>
+            </div>
+            <span class="text-[11px] font-semibold text-center text-primary group-hover:text-secondary transition-colors leading-tight">{item.label}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Próximos eventos -->
+    <section>
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-[18px] font-semibold text-primary">Próximos eventos</h3>
+        <a href="/app/congresos" class="text-xs font-semibold text-secondary hover:underline">Ver calendario</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        {upcoming.map((event) => <UpcomingEvents event={event} />)}
+      </div>
+    </section>
+  </div>
+</AppLayout>

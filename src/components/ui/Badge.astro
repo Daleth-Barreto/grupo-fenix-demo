@@ -1,0 +1,28 @@
+---
+interface Props {
+  label: string
+  variant?: 'orange' | 'navy' | 'outline' | 'gold' | 'glass'
+  icon?: string
+  size?: 'sm' | 'md'
+}
+
+const { label, variant = 'orange', icon, size = 'sm' } = Astro.props
+
+const VARIANTS: Record<string, string> = {
+  orange: 'bg-secondary text-on-secondary',
+  navy: 'bg-primary text-on-primary',
+  outline: 'border border-outline-variant text-on-surface-variant bg-surface',
+  gold: 'text-primary',
+  glass: 'glass-on-navy text-white',
+}
+
+const sizing = size === 'sm' ? 'text-[10px] px-2.5 py-1' : 'text-[11px] px-3 py-1.5'
+const goldStyle = variant === 'gold' ? 'background: linear-gradient(90deg, #e7c873 0%, #fec627 100%)' : undefined
+---
+<span
+  class:list={['inline-flex items-center gap-1 font-semibold rounded-full uppercase tracking-wider', sizing, VARIANTS[variant]]}
+  style={goldStyle}
+>
+  {icon && <span class="material-symbols-outlined text-[12px] filled">{icon}</span>}
+  {label}
+</span>

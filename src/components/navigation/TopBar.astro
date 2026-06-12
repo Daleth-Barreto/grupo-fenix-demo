@@ -1,0 +1,37 @@
+---
+interface Props {
+  title?: string
+  showBack?: boolean
+  showSettings?: boolean
+}
+const { title, showBack = false, showSettings = false } = Astro.props
+const section = title && title !== 'Grupo FÉNIX' ? title : null
+---
+<header class="sticky top-0 z-40 bg-white border-b border-[#dce2f3] flex items-center justify-between px-5 h-16 shadow-sm">
+  <div class="w-10 flex items-center">
+    {showBack && (
+      <a href="javascript:history.back()" class="text-[#0f2a44] hover:opacity-70 p-2 -ml-2 rounded-full transition-opacity active:scale-95 duration-150">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+    )}
+  </div>
+
+  <div class="flex flex-col items-center leading-tight">
+    <span class="font-bold text-[#0f2a44] text-[16px] tracking-tight">
+      Grupo <span class="text-[#fe9511]">FÉNIX</span>
+    </span>
+    {section && (
+      <span class="text-[11px] font-medium text-[#75777e] -mt-0.5 max-w-[60vw] truncate">
+        {section}
+      </span>
+    )}
+  </div>
+
+  <div class="w-10 flex justify-end">
+    {showSettings && (
+      <a href="/app/configuracion" class="text-[#0f2a44] hover:opacity-70 p-2 -mr-2 rounded-full transition-opacity active:scale-95 duration-150">
+        <span class="material-symbols-outlined">settings</span>
+      </a>
+    )}
+  </div>
+</header>

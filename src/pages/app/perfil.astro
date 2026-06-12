@@ -1,0 +1,88 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+
+const MENU_ITEMS = [
+  { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Descarga tus certificados', path: '/app/constancias' },
+  { icon: 'event_available', label: 'Reservaciones y cotización', sub: 'Solicita un evento a tu medida', path: '/app/reservaciones' },
+  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/configuracion' },
+  { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion' },
+]
+---
+<AppLayout title="Perfil" section="Perfil" showSettings active="/app/perfil">
+  <div class="pt-6 pb-10 flex flex-col gap-7 max-w-xl mx-auto">
+    <!-- Avatar -->
+    <section class="flex flex-col items-center text-center animate-fade-in-up">
+      <div class="relative mb-3.5">
+        <div class="w-24 h-24 rounded-3xl overflow-hidden border-4 border-surface shadow-card flex items-center justify-center bg-navy-gradient">
+          <span class="text-white text-[32px] font-bold">M</span>
+        </div>
+        <button class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary rounded-full p-1.5 shadow-card border-2 border-surface hover:bg-secondary-deep transition-colors active:scale-95">
+          <span class="material-symbols-outlined text-[14px] filled">edit</span>
+        </button>
+      </div>
+      <h1 class="text-[20px] font-bold text-primary" id="profile-name">María Fernanda</h1>
+      <p class="text-sm text-outline mt-0.5" id="profile-email">mfernanda@grupofenix.com</p>
+    </section>
+
+    <!-- Eventos inscritos -->
+    <a href="/app/congresos" class="relative overflow-hidden rounded-3xl shadow-card bg-navy-gradient hover:shadow-elevated transition-shadow active:scale-[0.98] duration-150 block group">
+      <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+      <div class="relative z-10 flex items-center justify-between p-6">
+        <div>
+          <p class="text-white/80 text-sm font-medium mb-2">Mis eventos inscritos</p>
+          <div class="flex items-center gap-2.5">
+            <span class="text-[32px] font-bold text-white leading-none">3</span>
+            <span class="material-symbols-outlined text-secondary text-[28px] filled">local_activity</span>
+          </div>
+        </div>
+        <div class="bg-white/10 rounded-full p-2.5 group-hover:bg-white/20 transition-colors">
+          <span class="material-symbols-outlined text-white">chevron_right</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Menú -->
+    <nav class="flex flex-col gap-1.5">
+      {MENU_ITEMS.map((item) => (
+        <a href={item.path} class="flex items-center justify-between py-4 px-4 bg-surface rounded-3xl shadow-card border border-surface-variant/70 hover:shadow-elevated hover:border-surface-variant transition-all duration-200 text-left active:scale-[0.98] w-full group">
+          <div class="flex items-center gap-4">
+            <div class="bg-surface-container-low group-hover:bg-primary p-2.5 rounded-full text-primary group-hover:text-white transition-colors">
+              <span class="material-symbols-outlined text-[20px] filled">{item.icon}</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-primary">{item.label}</p>
+              <p class="text-xs text-outline mt-0.5">{item.sub}</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+        </a>
+      ))}
+    </nav>
+
+    <!-- Logout -->
+    <button id="btn-logout" class="flex items-center justify-center gap-2.5 text-error text-sm font-bold hover:opacity-75 transition-opacity active:scale-95 px-4 mt-2">
+      <span class="material-symbols-outlined">logout</span>
+      Cerrar sesión
+    </button>
+  </div>
+</AppLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase'
+
+  // Update profile data from supabase session if available
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session?.user) {
+      const { email, user_metadata } = data.session.user
+      const nameEl = document.getElementById('profile-name')
+      const emailEl = document.getElementById('profile-email')
+      if (nameEl && user_metadata?.full_name) nameEl.textContent = user_metadata.full_name
+      if (emailEl && email) emailEl.textContent = email
+    }
+  })
+
+  document.getElementById('btn-logout')?.addEventListener('click', async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/app/login'
+  })
+</script>

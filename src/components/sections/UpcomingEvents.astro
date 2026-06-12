@@ -1,0 +1,31 @@
+---
+interface Props { event: { id: string; title: string; image_url?: string; date_start: string; date_end: string; location: string } }
+const { event } = Astro.props
+import { formatDateRange } from '../../utils/format'
+---
+<a
+  href={`/app/congresos/${event.id}`}
+  class="bg-surface rounded-3xl p-4 shadow-card border border-surface-variant/70 flex gap-4 items-center hover:shadow-elevated transition-all w-full text-left active:scale-[0.98] duration-150 group"
+>
+  <div class="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-primary">
+    {event.image_url ? (
+      <img src={event.image_url} alt={event.title} class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300" />
+    ) : (
+      <div class="w-full h-full flex items-center justify-center bg-navy-gradient">
+        <span class="material-symbols-outlined text-white/40 text-[32px]">event</span>
+      </div>
+    )}
+  </div>
+  <div class="flex flex-col flex-grow gap-1 min-w-0">
+    <h4 class="text-sm font-semibold text-primary line-clamp-2 leading-snug">{event.title}</h4>
+    <div class="flex items-center gap-1 text-on-surface-variant text-xs">
+      <span class="material-symbols-outlined text-[13px]">calendar_today</span>
+      <span>{formatDateRange(event.date_start, event.date_end)}</span>
+    </div>
+    <div class="flex items-center gap-1 text-on-surface-variant text-xs">
+      <span class="material-symbols-outlined text-[13px]">location_on</span>
+      <span class="truncate">{event.location}</span>
+    </div>
+  </div>
+  <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors flex-shrink-0">chevron_right</span>
+</a>

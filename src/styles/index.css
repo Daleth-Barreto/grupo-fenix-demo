@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+/* ============================================================
+   GRUPO FÉNIX — Design System (Tailwind v4 @theme)
+   ============================================================ */
+@theme {
+  /* Primary: Deep Navy */
+  --color-primary: #0f2a44;
+  --color-primary-container: #0f2a44;
+  --color-primary-soft: #1e3a5f;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #76849f;
+  --color-primary-fixed: #d6e3ff;
+  --color-primary-fixed-dim: #b9c7e4;
+
+  /* Secondary: Vibrant Orange */
+  --color-secondary: #fe9511;
+  --color-secondary-deep: #9d4300;
+  --color-secondary-container: #fe9511;
+  --color-on-secondary: #ffffff;
+  --color-secondary-fixed-dim: #ffb690;
+
+  /* Acento dorado premium */
+  --color-gold: #fec627;
+  --color-gold-soft: #e7c873;
+
+  /* Superficies */
+  --color-background: #f9f9ff;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f8f9fa;
+  --color-surface-variant: #dce2f3;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f0f3ff;
+  --color-surface-container: #e7eefe;
+  --color-surface-container-high: #e2e8f8;
+  --color-surface-container-highest: #dce2f3;
+
+  /* Texto */
+  --color-on-surface: #151c27;
+  --color-on-surface-variant: #44474d;
+  --color-outline: #75777e;
+  --color-outline-variant: #c5c6cd;
+
+  /* Estados */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-success: #1b7d3f;
+
+  /* Inversos */
+  --color-inverse-surface: #2a313d;
+  --color-inverse-on-surface: #ebf1ff;
+  --color-inverse-primary: #b9c7e4;
+
+  /* Tipografía */
+  --font-sans: 'Poppins', system-ui, sans-serif;
+
+  /* Radios */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 1.75rem;
+  --radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-card: 0 1px 3px rgba(10, 25, 47, 0.04), 0 1px 2px rgba(10, 25, 47, 0.03);
+  --shadow-elevated: 0 8px 24px -6px rgba(10, 25, 47, 0.12), 0 2px 6px -2px rgba(10, 25, 47, 0.06);
+  --shadow-hero: 0 20px 40px -12px rgba(10, 25, 47, 0.35);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+* { box-sizing: border-box; }
+html { -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9f9ff;
+  color: #151c27;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============================================================
+   Utilidades premium
+   ============================================================ */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.bg-navy-gradient {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(253, 118, 26, 0.22) 0%, transparent 55%),
+    linear-gradient(155deg, #0f2a44 0%, #0f2a44 55%, #061121 100%);
+}
+
+.glass-on-navy {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.accent-line {
+  background: linear-gradient(90deg, #fe9511 0%, #fec627 100%);
+}
+
+/* ============================================================
+   Animaciones
+   ============================================================ */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+.animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
+.animate-slide-up { animation: slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.delay-1 { animation-delay: 0.06s; opacity: 0; }
+.delay-2 { animation-delay: 0.12s; opacity: 0; }
+.delay-3 { animation-delay: 0.18s; opacity: 0; }
+.delay-4 { animation-delay: 0.24s; opacity: 0; }

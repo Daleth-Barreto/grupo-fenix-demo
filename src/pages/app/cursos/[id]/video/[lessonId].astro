@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro'
+import VideoPlayer from '../../../../../components/courses/VideoPlayer'
+import { getCourseById, MOCK_COURSES } from '../../../../../data/mock'
+
+export function getStaticPaths() {
+  return MOCK_COURSES.flatMap((c) =>
+    c.modules.flatMap((m) =>
+      m.lessons.map((l) => ({
+        params: { id: c.id, lessonId: l.id }
+      }))
+    )
+  )
+}
+
+const { id, lessonId } = Astro.params
+const course = getCourseById(id!)
+if (!course) return Astro.redirect('/app/cursos')
+
+const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId)
+if (!lesson) return Astro.redirect(`/app/cursos/${course.id}`)
+---
+<BaseLayout title={lesson.title}>
+  <div class="min-h-screen flex flex-col">
+    <VideoPlayer
+      client:load
+      title={lesson.title}
+      instructor={course.instructor}
+      courseTitle={course.title}
+      lessonTitle={lesson.title}
+      duration={lesson.duration}
+    />
+  </div>
+</BaseLayout>

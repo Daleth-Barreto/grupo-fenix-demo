@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import CheckoutForm from '../../../components/checkout/CheckoutForm'
+import { getEventById, MOCK_EVENTS } from '../../../data/mock'
+import { formatPrice } from '../../../utils/format'
+
+export function getStaticPaths() {
+  return MOCK_EVENTS.map((e) => ({ params: { id: e.id } }))
+}
+
+const { id } = Astro.params
+const event = getEventById(id!)
+if (!event) return Astro.redirect('/app/congresos')
+---
+<BaseLayout title={`Checkout: ${event.title}`}>
+  <div class="min-h-screen bg-background flex flex-col">
+    <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-sm h-16 flex items-center px-5">
+      <a href={`/app/congresos/${event.id}`} class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+        <span class="material-symbols-outlined">close</span>
+      </a>
+      <span class="font-bold text-primary ml-2">Checkout Segura</span>
+    </header>
+
+    <main class="flex-1 max-w-md w-full mx-auto px-5 py-6">
+      <!-- Resumen del evento -->
+      <section class="bg-surface rounded-3xl p-4 shadow-sm border border-surface-variant/70 flex gap-4 mb-6">
+        <div class="w-20 h-20 rounded-2xl overflow-hidden bg-primary flex-shrink-0">
+          {event.image_url && <img src={event.image_url} alt="" class="w-full h-full object-cover" />}
+        </div>
+        <div class="flex flex-col justify-between py-1">
+          <h2 class="text-sm font-semibold text-primary line-clamp-2 leading-snug">{event.title}</h2>
+          <p class="text-[18px] font-bold text-secondary leading-none">{formatPrice(event.price)}</p>
+        </div>
+      </section>
+
+      <CheckoutForm client:load event={event} />
+    </main>
+  </div>
+</BaseLayout>
