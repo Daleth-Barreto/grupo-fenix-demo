@@ -107,7 +107,7 @@ export default function EventDetails() {
         )}
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, #0a192f 0%, rgba(10,25,47,0.2) 55%, rgba(10,25,47,0.35) 100%)' }}
+          style={{ background: 'linear-gradient(to top, #0f2a44 0%, rgba(10,25,47,0.2) 55%, rgba(10,25,47,0.35) 100%)' }}
         />
         <div className="absolute bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto">
           <div className="flex items-center gap-2 mb-3">

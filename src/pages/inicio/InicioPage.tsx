@@ -107,11 +107,39 @@ export default function InicioPage() {
           <p className="text-sm text-on-surface-variant mt-1">¿Qué quieres aprender hoy?</p>
         </section>
 
+        {/* Resumen rápido con iconografía */}
+        <section className="grid grid-cols-3 gap-3 -mt-4 animate-fade-in-up">
+          {[
+            { icon: 'local_activity', value: '3', label: 'Inscritos', path: '/congresos' },
+            { icon: 'play_circle', value: '2', label: 'Cursos', path: '/cursos' },
+            { icon: 'workspace_premium', value: '3', label: 'Constancias', path: '/constancias' },
+          ].map((stat) => (
+            <button
+              key={stat.label}
+              onClick={() => navigate(stat.path)}
+              className="bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-3 py-4 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-elevated"
+            >
+              <span className="material-symbols-outlined text-secondary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {stat.icon}
+              </span>
+              <span className="text-[18px] font-bold text-primary leading-none">{stat.value}</span>
+              <span className="text-[10px] text-on-surface-variant font-medium">{stat.label}</span>
+            </button>
+          ))}
+        </section>
+
         {/* Hero — Próximo Congreso */}
         {featuredEvent && (
           <section className="animate-fade-in-up">
             <div className="rounded-3xl overflow-hidden relative shadow-hero bg-navy-gradient">
               <div className="absolute top-0 left-0 right-0 h-1 accent-line" />
+              {/* Iconografía de marca (fénix) como marca de agua */}
+              <img
+                src="/brand/phoenix/phoenix_5_white.png"
+                alt=""
+                aria-hidden
+                className="absolute -right-8 -bottom-8 w-48 opacity-[0.07] pointer-events-none select-none"
+              />
               <div className="relative z-10 p-6 flex flex-col gap-5">
                 <div>
                   <Badge label="Próximo congreso" variant="orange" />

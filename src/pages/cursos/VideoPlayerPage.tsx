@@ -71,8 +71,8 @@ export default function VideoPlayerPage() {
                 setProgress(Math.round(((e.clientX - rect.left) / rect.width) * 100))
               }}
             >
-              <div className="h-full bg-[#fd761a] rounded-full relative" style={{ width: `${progress}%` }}>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#fd761a] rounded-full border-2 border-white shadow" />
+              <div className="h-full bg-[#fe9511] rounded-full relative" style={{ width: `${progress}%` }}>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#fe9511] rounded-full border-2 border-white shadow" />
               </div>
             </div>
             <span className="text-white text-xs font-medium">{lesson?.duration ?? '24:15'}</span>
@@ -102,12 +102,12 @@ export default function VideoPlayerPage() {
       <div className="flex-1 flex flex-col">
         {/* Info de la lección */}
         <div className="px-5 py-4 bg-white border-b border-[#dce2f3]">
-          <h1 className="text-[16px] font-bold text-[#0a192f] leading-snug">
+          <h1 className="text-[16px] font-bold text-[#0f2a44] leading-snug">
             {lesson?.title ?? 'Fundamentos teóricos'}
           </h1>
           <div className="flex items-center gap-2 mt-2">
             <div className="w-7 h-7 rounded-full bg-[#f0f3ff] flex items-center justify-center">
-              <span className="material-symbols-outlined text-[14px] text-[#0a192f]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+              <span className="material-symbols-outlined text-[14px] text-[#0f2a44]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
             </div>
             <span className="text-xs text-[#44474d] font-medium">{course?.instructor ?? 'Dr. Roberto Sánchez'}</span>
             <span className="mx-1 text-[#c5c6cd]">·</span>
@@ -123,8 +123,8 @@ export default function VideoPlayerPage() {
               onClick={() => setActiveTab(tab)}
               className={`py-3 mr-6 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === tab
-                  ? 'text-[#fd761a] border-[#fd761a]'
-                  : 'text-[#44474d] border-transparent hover:text-[#0a192f]'
+                  ? 'text-[#fe9511] border-[#fe9511]'
+                  : 'text-[#44474d] border-transparent hover:text-[#0f2a44]'
               }`}
             >
               {tab}
@@ -143,11 +143,11 @@ export default function VideoPlayerPage() {
                 Se enfatizará la importancia del razonamiento clínico estructurado y la toma de decisiones basada en evidencias recientes, estableciendo la base para los módulos avanzados que componen esta certificación profesional.
               </p>
               <div className="bg-[#f0f3ff] rounded-xl p-4 mt-2">
-                <p className="text-xs font-semibold text-[#0a192f] mb-1">Lo que aprenderás</p>
+                <p className="text-xs font-semibold text-[#0f2a44] mb-1">Lo que aprenderás</p>
                 <ul className="text-xs text-[#44474d] flex flex-col gap-1.5 mt-2">
                   {['Principios del diagnóstico clínico moderno', 'Protocolos de atención basados en evidencia', 'Integración tecnológica en la práctica'].map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[#fd761a] text-[14px] mt-0.5">check_circle</span>
+                      <span className="material-symbols-outlined text-[#fe9511] text-[14px] mt-0.5">check_circle</span>
                       {item}
                     </li>
                   ))}
@@ -164,10 +164,10 @@ export default function VideoPlayerPage() {
                   className="bg-white rounded-2xl p-4 shadow-sm border border-[#dce2f3] flex items-center gap-4"
                 >
                   <div className="w-10 h-10 rounded-xl bg-[#f0f3ff] flex items-center justify-center flex-shrink-0">
-                    <span className="material-symbols-outlined text-[#0a192f] text-[22px]">picture_as_pdf</span>
+                    <span className="material-symbols-outlined text-[#0f2a44] text-[22px]">picture_as_pdf</span>
                   </div>
-                  <span className="flex-1 text-sm text-[#0a192f] font-medium truncate">{r}</span>
-                  <button className="text-[#fd761a] hover:text-orange-600 transition-colors active:scale-95">
+                  <span className="flex-1 text-sm text-[#0f2a44] font-medium truncate">{r}</span>
+                  <button className="text-[#fe9511] hover:text-orange-600 transition-colors active:scale-95">
                     <span className="material-symbols-outlined text-[22px]">download</span>
                   </button>
                 </div>

@@ -4,7 +4,49 @@ import TopBar from '../../components/layout/TopBar'
 import BottomNav from '../../components/layout/BottomNav'
 import Spinner from '../../components/common/Spinner'
 import { useCourseById } from '../../hooks/api/useCourses'
-import type { Module } from '../../types'
+import type { Module, Activity } from '../../types'
+
+/** Ícono y etiqueta por tipo de actividad. */
+const ACTIVITY_META: Record<Activity['type'], { icon: string; label: string }> = {
+  tarea: { icon: 'assignment', label: 'Tarea' },
+  entregable: { icon: 'upload_file', label: 'Entregable' },
+  lectura: { icon: 'menu_book', label: 'Lectura' },
+  cuestionario: { icon: 'quiz', label: 'Cuestionario' },
+}
+
+function ActivityItem({ act }: { act: Activity }) {
+  const meta = ACTIVITY_META[act.type]
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-[#dce2f3] flex items-center gap-3 px-4 py-3.5">
+      <div
+        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+          act.is_done ? 'bg-[#fe9511] text-white' : 'bg-[#f0f3ff] text-[#0f2a44]'
+        }`}
+      >
+        <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+          {act.is_done ? 'task_alt' : meta.icon}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm font-medium text-[#0f2a44] ${act.is_done ? 'line-through opacity-60' : ''}`}>
+          {act.title}
+        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#fe9511]">{meta.label}</span>
+          {act.due_date && (
+            <span className="text-[11px] text-[#75777e] flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">event</span>
+              {new Date(act.due_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}
+            </span>
+          )}
+        </div>
+      </div>
+      <span className={`material-symbols-outlined text-[20px] ${act.is_done ? 'text-[#fe9511]' : 'text-[#c5c6cd]'}`}>
+        {act.is_done ? 'check_circle' : 'radio_button_unchecked'}
+      </span>
+    </div>
+  )
+}
 
 function AccordionModule({
   mod,
@@ -28,10 +70,10 @@ function AccordionModule({
           <span className="text-[10px] font-bold text-[#75777e] uppercase tracking-wider">
             Módulo {mod.order}
           </span>
-          <span className="text-[15px] font-semibold text-[#0a192f]">{mod.title}</span>
+          <span className="text-[15px] font-semibold text-[#0f2a44]">{mod.title}</span>
         </div>
         <span
-          className="material-symbols-outlined text-[#0a192f] ml-4 transition-transform duration-300 flex-shrink-0"
+          className="material-symbols-outlined text-[#0f2a44] ml-4 transition-transform duration-300 flex-shrink-0"
           style={open ? { transform: 'rotate(180deg)' } : undefined}
         >
           expand_more
@@ -60,15 +102,15 @@ function AccordionModule({
                     <span
                       className={`material-symbols-outlined text-[20px] flex-shrink-0 transition-colors ${
                         lesson.is_completed
-                          ? 'text-[#0a192f]'
-                          : 'text-[#0a192f] group-hover:text-[#fd761a]'
+                          ? 'text-[#0f2a44]'
+                          : 'text-[#0f2a44] group-hover:text-[#fe9511]'
                       }`}
                       style={{ fontVariationSettings: "'FILL' 1" }}
                     >
                       {lesson.is_completed ? 'check_circle' : 'play_circle'}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium text-[#0a192f] group-hover:text-[#fd761a] transition-colors ${lesson.is_completed ? 'line-through' : ''}`}>
+                      <p className={`text-sm font-medium text-[#0f2a44] group-hover:text-[#fe9511] transition-colors ${lesson.is_completed ? 'line-through' : ''}`}>
                         {lesson.title}
                       </p>
                     </div>
@@ -96,12 +138,16 @@ export default function CourseDashboardPage() {
     .flatMap((m) => m.lessons)
     .find((l) => !l.is_completed)
 
+  // Actividades a realizar (tareas/entregables) de todo el curso.
+  const activities = course.modules.flatMap((m) => m.activities ?? [])
+  const pendingActivities = activities.filter((a) => !a.is_done).length
+
   return (
     <div className="min-h-screen bg-[#f9f9ff] pb-24">
       <TopBar title={course.title} showBack showMore />
 
       {/* Hero */}
-      <div className="relative overflow-hidden px-5 pt-5 pb-7 mx-5 mt-4 rounded-2xl shadow-sm" style={{ background: '#0a192f' }}>
+      <div className="relative overflow-hidden px-5 pt-5 pb-7 mx-5 mt-4 rounded-2xl shadow-sm" style={{ background: '#0f2a44' }}>
         <div
           className="absolute top-0 right-0 w-64 h-64 pointer-events-none opacity-10 rounded-full"
           style={{ background: 'radial-gradient(circle, white 0%, transparent 70%)', transform: 'translate(30%, -40%)' }}
@@ -116,7 +162,7 @@ export default function CourseDashboardPage() {
           </div>
           <div className="w-full h-2.5 bg-[#39475f] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#fd761a] rounded-full transition-all duration-1000 ease-out"
+              className="h-full bg-[#fe9511] rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${course.progress}%` }}
             />
           </div>
@@ -128,7 +174,7 @@ export default function CourseDashboardPage() {
         {firstUnfinished && (
           <button
             onClick={() => navigate(`/cursos/${id}/video/${firstUnfinished.id}`)}
-            className="w-full bg-[#fd761a] hover:bg-orange-500 text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-sm transition-colors active:scale-[0.98]"
+            className="w-full bg-[#fe9511] hover:bg-orange-500 text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-sm transition-colors active:scale-[0.98]"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
             Continuar donde lo dejé
@@ -136,7 +182,7 @@ export default function CourseDashboardPage() {
         )}
 
         {/* Módulos */}
-        <h3 className="text-[17px] font-semibold text-[#0a192f] mt-2">Módulos del Curso</h3>
+        <h3 className="text-[17px] font-semibold text-[#0f2a44] mt-2">Módulos del Curso</h3>
 
         <div className="flex flex-col gap-2">
           {course.modules.map((mod, i) => (
@@ -148,6 +194,25 @@ export default function CourseDashboardPage() {
             />
           ))}
         </div>
+
+        {/* Actividades a realizar */}
+        {activities.length > 0 && (
+          <section className="mt-3">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[17px] font-semibold text-[#0f2a44]">Actividades a realizar</h3>
+              {pendingActivities > 0 && (
+                <span className="text-[11px] font-semibold text-[#fe9511] bg-[#fff0e0] px-2.5 py-1 rounded-full">
+                  {pendingActivities} pendiente{pendingActivities !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              {activities.map((act) => (
+                <ActivityItem key={act.id} act={act} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <BottomNav />

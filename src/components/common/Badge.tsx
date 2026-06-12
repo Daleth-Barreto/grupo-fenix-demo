@@ -17,7 +17,7 @@ export default function Badge({ label, variant = 'orange', icon, size = 'sm' }: 
   const sizing = size === 'sm' ? 'text-[10px] px-2.5 py-1' : 'text-[11px] px-3 py-1.5'
   const goldStyle =
     variant === 'gold'
-      ? { background: 'linear-gradient(90deg, #e7c873 0%, #c9a227 100%)' }
+      ? { background: 'linear-gradient(90deg, #e7c873 0%, #fec627 100%)' }
       : undefined
 
   return (
