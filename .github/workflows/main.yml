@@ -6,6 +6,11 @@ on:
       - test
       - dev
 
+# AQUÍ VAN LOS PERMISOS QUE TE PIDIERON
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   manage-prs:
     runs-on: ubuntu-latest
