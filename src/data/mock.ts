@@ -99,6 +99,7 @@ export const MOCK_COURSES: Course[] = [
     title: 'Fundamentos de Neuroeducación',
     description: 'Curso completo sobre los principios neurocientíficos aplicados al aprendizaje y la enseñanza.',
     instructor: 'Dra. Ana García',
+    thumbnail_url: '/events/neurodesarrollo.jpeg',
     total_lessons: 12,
     progress: 65,
     current_lesson: 'Módulo 2: Plasticidad neuronal',
@@ -138,6 +139,7 @@ export const MOCK_COURSES: Course[] = [
     title: 'Psicoterapia de Pareja Avanzada',
     description: 'Técnicas avanzadas de intervención y acompañamiento terapéutico en parejas.',
     instructor: 'Dr. Roberto Sánchez',
+    thumbnail_url: '/events/sexualidad.jpg',
     total_lessons: 8,
     progress: 100,
     current_lesson: 'Completado',
@@ -147,6 +149,44 @@ export const MOCK_COURSES: Course[] = [
         lessons: [
           { id: 'l7', title: 'Terapia Sistémica', duration: '30:00', is_completed: true, order: 1 },
           { id: 'l8', title: 'Terapia Cognitivo-Conductual', duration: '28:15', is_completed: true, order: 2 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'c3',
+    title: 'Intervención en Crisis y Primeros Auxilios Psicológicos',
+    description: 'Protocolo de intervención en crisis emocional y técnicas de primeros auxilios psicológicos.',
+    instructor: 'Mtra. Laura Mendoza',
+    thumbnail_url: '/events/tanatologia.png',
+    total_lessons: 10,
+    progress: 30,
+    current_lesson: 'Módulo 1: Evaluación de riesgo',
+    modules: [
+      {
+        id: 'm5', title: 'Evaluación de Riesgo', order: 1, is_locked: false,
+        lessons: [
+          { id: 'l9', title: 'Indicadores de riesgo', duration: '22:00', is_completed: true, order: 1 },
+          { id: 'l10', title: 'Protocolos de actuación', duration: '25:30', is_completed: false, order: 2 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'c4',
+    title: 'Psicooncología: Acompañamiento Integral',
+    description: 'Abordaje psicológico integral del paciente oncológico y su familia.',
+    instructor: 'Dr. Carlos Vega',
+    thumbnail_url: '/events/psicooncologia.png',
+    total_lessons: 15,
+    progress: 100,
+    current_lesson: 'Completado',
+    modules: [
+      {
+        id: 'm6', title: 'Impacto Emocional del Diagnóstico', order: 1, is_locked: false,
+        lessons: [
+          { id: 'l11', title: 'Reacciones emocionales', duration: '20:00', is_completed: true, order: 1 },
+          { id: 'l12', title: 'Estrategias de afrontamiento', duration: '24:45', is_completed: true, order: 2 },
         ],
       },
     ],
