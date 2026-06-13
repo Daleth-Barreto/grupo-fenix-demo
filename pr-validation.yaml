@@ -1,0 +1,29 @@
+name: Validar Origen de PR
+
+on:
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  verify-origin-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar si el PR va a Main
+        if: github.base_ref == 'main'
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "ERROR: Los PRs a 'main' SOLO pueden venir de 'dev'. Origen actual: ${{ github.head_ref }}"
+            exit 1
+          else
+            echo "Origen válido: dev -> main."
+          fi
+
+      - name: Validar si el PR va a Dev
+        if: github.base_ref == 'dev'
+        run: |
+          if [ "${{ github.head_ref }}" != "test" ]; then
+            echo "ERROR: Los PRs a 'dev' SOLO pueden venir de 'test'. Origen actual: ${{ github.head_ref }}"
+            exit 1
+          else
+            echo "Origen válido: test -> dev."
+          fi

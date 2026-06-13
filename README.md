@@ -1,46 +1,93 @@
-# Astro Starter Kit: Basics
+# Grupo Fénix — App
 
-```sh
-npm create astro@latest -- --template basics
-```
+Progressive Web App (PWA) de **Grupo Fénix**: plataforma de formación y congresos (congresos, capacitaciones, cursos, constancias y comprobantes). Construida con **Astro** + **React (islas)** + **Tailwind CSS**, desplegable en **Cloudflare Pages**.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+🌐 Sitio oficial: [eventosgrupofenix.com](https://www.eventosgrupofenix.com/)
 
-## 🚀 Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🧱 Stack
+
+| Capa | Tecnología |
+| :--- | :--- |
+| Framework | Astro |
+| Islas interactivas | React 19 |
+| Estilos | Tailwind CSS v4 |
+| Autenticación | Supabase Auth |
+| Pagos | Stripe |
+| Deploy | Cloudflare Pages (`@astrojs/cloudflare` + Wrangler) |
+
+## 🎨 Identidad (Phoenix Professional)
+
+- **Navy** `#0f2a44` · **Naranja** `#fe9511` · **Amarillo** `#fec627`
+- Tipografía **Poppins** · radios amables (`rounded-2xl` / `rounded-3xl`)
+- Iconografía de marca: el **fénix** (`public/brand/phoenix/`) como acento decorativo
+
+## 📁 Estructura
 
 ```text
 /
 ├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+│   ├── brand/            # Logo y vectores del fénix
+│   └── events/           # Imágenes de congresos
+├── src/
+│   ├── components/       # Islas React + componentes .astro (ui, navigation, auth…)
+│   ├── data/             # mock.ts (datos de demo)
+│   ├── layouts/          # AppLayout, AuthLayout, BaseLayout
+│   ├── lib/              # supabase, stripe
+│   ├── pages/app/        # Rutas de la app (ver abajo)
+│   ├── store/            # Estado (nanostores)
+│   ├── types/            # Modelos TypeScript
+│   └── utils/            # format (fechas, moneda)
+├── astro.config.mjs
+└── wrangler.jsonc
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 🗺️ Rutas principales
 
-## 🧞 Commands
+> La app vive bajo `/app/...`
 
-All commands are run from the root of the project, from a terminal:
+| Ruta | Pantalla |
+| :--- | :--- |
+| `/app/login` · `/app/registro` | Autenticación (Supabase) |
+| `/app/inicio` | Dashboard con próximo congreso |
+| `/app/congresos` · `/app/congresos/[id]` | Catálogo y detalle |
+| `/app/checkout/[id]` | Pago (Stripe, IVA opcional) |
+| `/app/cursos` · `/app/cursos/[id]` | Cursos y temario (videos + actividades) |
+| `/app/constancias` | Certificados con valor curricular |
+| `/app/comprobantes` | Historial de pagos y facturas |
+| `/app/galeria` | Eventos realizados |
+| `/app/reservaciones` | Cotización y contacto |
+| `/app/perfil` · `/app/configuracion` | Perfil y ajustes |
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## 🧞 Comandos
 
-## 👀 Want to learn more?
+| Comando | Acción |
+| :--- | :--- |
+| `npm install` | Instala dependencias |
+| `npm run dev` | Servidor local en `localhost:4321` (abre `/app/inicio`) |
+| `npm run build` | Compila el sitio a `./dist/` |
+| `npm run preview` | Previsualiza el build con Wrangler |
+| `npm run deploy` | Build + deploy a Cloudflare Pages |
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## 🔐 Variables de entorno
+
+Crea un archivo `.env` (no se sube a Git):
+
+```env
+PUBLIC_SUPABASE_URL="https://[PROYECTO].supabase.co"
+PUBLIC_SUPABASE_ANON_KEY="eyJhb..."
+PUBLIC_STRIPE_PUBLIC_KEY="pk_live_..."
+```
+
+> En **modo demo** (sin variables) la app corre con datos mock y el pago se simula.
+
+## 🌿 Ramas
+
+- `main` — producción
+- `dev` — integración / pruebas
+- `test` — pruebas puntuales
+
+---
+
+© Grupo Fénix — Sistema de diseño *Phoenix Professional*.

@@ -3,67 +3,147 @@ import AppLayout from '../../../layouts/AppLayout.astro'
 import ProgressBar from '../../../components/ui/ProgressBar.astro'
 import { MOCK_COURSES } from '../../../data/mock'
 
-const TABS = ['En Curso', 'Finalizados']
+const TABS = [
+  { key: 'Todos', icon: 'apps' },
+  { key: 'En Curso', icon: 'play_circle' },
+  { key: 'Finalizado', icon: 'check_circle' },
+]
 ---
 <AppLayout title="Mis Cursos" section="Mis Cursos" active="/app/cursos">
-  <div class="flex flex-col gap-6 pt-5 pb-10">
+  <div class="flex flex-col gap-5 pt-5 pb-10">
     <section class="text-center">
       <h1 class="text-[28px] font-bold text-primary">Mis Cursos</h1>
       <p class="text-sm text-on-surface-variant mt-1.5">Tu formación continua</p>
     </section>
 
+    <!-- Tabs -->
     <div class="flex gap-2" id="course-tabs">
       {TABS.map((tab, i) => (
-        <button data-tab={tab} class:list={['flex-1 py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95 course-tab', i === 0 ? 'bg-primary text-on-primary shadow-card' : 'bg-surface border border-surface-variant text-on-surface-variant']}>
-          {tab}
+        <button
+          data-tab={tab.key}
+          class:list={[
+            'flex-1 py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95 course-tab flex items-center justify-center gap-1.5',
+            i === 0
+              ? 'tab-active'
+              : 'tab-inactive',
+          ]}
+        >
+          <span class="material-symbols-outlined text-[18px]" style={i === 0 ? "font-variation-settings: 'FILL' 1" : undefined}>{tab.icon}</span>
+          {tab.key}
         </button>
       ))}
     </div>
 
+    <!-- Course List -->
     <div class="flex flex-col gap-4" id="courses-list">
-      {MOCK_COURSES.map((course) => (
-        <a href={`/app/cursos/${course.id}`} data-status={course.progress >= 100 ? 'Finalizados' : 'En Curso'}
-          class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated transition-all active:scale-[0.98] duration-150 block course-card">
-          <div class="flex gap-4 p-4 items-center">
-            <div class="w-20 h-20 rounded-2xl overflow-hidden bg-primary flex-shrink-0">
+      {MOCK_COURSES.map((course) => {
+        const status = course.progress >= 100 ? 'Finalizado' : 'En Curso'
+        return (
+          <a href={`/app/cursos/${course.id}`} data-status={status}
+            class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated transition-all active:scale-[0.98] duration-150 block course-card animate-fade-in-up">
+            
+            <!-- Thumbnail -->
+            <div class="relative w-full h-36 overflow-hidden bg-primary">
               {course.thumbnail_url ? (
                 <img src={course.thumbnail_url} alt={course.title} class="w-full h-full object-cover" />
               ) : (
                 <div class="w-full h-full bg-navy-gradient flex items-center justify-center">
-                  <span class="material-symbols-outlined text-white/40 text-[28px]">school</span>
+                  <span class="material-symbols-outlined text-white/30 text-[48px]">school</span>
                 </div>
               )}
+              <!-- Status badge -->
+              <div class:list={[
+                'absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md',
+                status === 'Finalizado'
+                  ? 'bg-success/90 text-white'
+                  : 'bg-secondary/90 text-white',
+              ]}>
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] filled">{status === 'Finalizado' ? 'check_circle' : 'play_circle'}</span>
+                  {status}
+                </span>
+              </div>
             </div>
-            <div class="flex-1 min-w-0 flex flex-col gap-1.5">
-              <h3 class="text-sm font-semibold text-primary line-clamp-2 leading-snug">{course.title}</h3>
-              <p class="text-xs text-on-surface-variant">{course.instructor}</p>
+
+            <!-- Content -->
+            <div class="p-4 flex flex-col gap-2">
+              <h3 class="text-[15px] font-semibold text-primary line-clamp-2 leading-snug">{course.title}</h3>
+              <p class="text-xs text-on-surface-variant flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px]">person</span>
+                {course.instructor}
+              </p>
               <ProgressBar value={course.progress} showLabel />
             </div>
-          </div>
-          {course.current_lesson && (
-            <div class="border-t border-surface-variant/70 px-4 py-2.5 flex items-center gap-2 bg-surface-container-low">
-              <span class="material-symbols-outlined text-secondary text-[16px] filled">play_circle</span>
-              <span class="text-xs text-on-surface-variant font-medium truncate">{course.current_lesson}</span>
-            </div>
-          )}
-        </a>
-      ))}
+
+            {course.current_lesson && course.progress < 100 && (
+              <div class="border-t border-surface-variant/70 px-4 py-2.5 flex items-center gap-2 bg-surface-container-low">
+                <span class="material-symbols-outlined text-secondary text-[16px] filled">play_circle</span>
+                <span class="text-xs text-on-surface-variant font-medium truncate">{course.current_lesson}</span>
+              </div>
+            )}
+          </a>
+        )
+      })}
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden flex-col items-center justify-center gap-3 py-16">
+      <span class="material-symbols-outlined text-[48px] text-outline">school</span>
+      <p class="text-sm text-on-surface-variant font-medium">No hay cursos en esta categoría</p>
     </div>
   </div>
 </AppLayout>
 
+<style>
+  .tab-active {
+    background-color: var(--color-secondary);
+    color: #ffffff;
+    box-shadow: 0 4px 14px -3px rgba(254, 149, 17, 0.45);
+  }
+  .tab-inactive {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-surface-variant);
+    color: var(--color-on-surface-variant);
+  }
+  .tab-inactive:hover {
+    background-color: var(--color-surface-container-low);
+  }
+</style>
+
 <script>
   const tabs = document.querySelectorAll('.course-tab')
   const cards = document.querySelectorAll('.course-card')
+  const emptyState = document.getElementById('empty-state')
+
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
-      tabs.forEach((t) => { t.classList.remove('bg-primary', 'text-on-primary', 'shadow-card'); t.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant') })
-      tab.classList.add('bg-primary', 'text-on-primary', 'shadow-card')
-      tab.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
-      const selected = (tab as HTMLElement).dataset.tab
-      cards.forEach((card) => {
-        (card as HTMLElement).style.display = (card as HTMLElement).dataset.status === selected ? '' : 'none'
+      // Reset all tabs
+      tabs.forEach((t) => {
+        t.classList.remove('tab-active')
+        t.classList.add('tab-inactive')
+        const icon = t.querySelector('.material-symbols-outlined') as HTMLElement
+        if (icon) icon.style.fontVariationSettings = ""
       })
+      // Activate clicked tab
+      tab.classList.add('tab-active')
+      tab.classList.remove('tab-inactive')
+      const activeIcon = tab.querySelector('.material-symbols-outlined') as HTMLElement
+      if (activeIcon) activeIcon.style.fontVariationSettings = "'FILL' 1"
+
+      const selected = (tab as HTMLElement).dataset.tab
+      let visibleCount = 0
+
+      cards.forEach((card) => {
+        const cardStatus = (card as HTMLElement).dataset.status
+        const show = selected === 'Todos' || cardStatus === selected
+        ;(card as HTMLElement).style.display = show ? '' : 'none'
+        if (show) visibleCount++
+      })
+
+      // Show/hide empty state
+      if (emptyState) {
+        emptyState.style.display = visibleCount === 0 ? 'flex' : 'none'
+      }
     })
   })
 </script>
