@@ -1,0 +1,14 @@
+name: Validar Origen de PR
+on:
+  pull_request:
+    branches: [main, dev]
+jobs:
+  verify-origin-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar Main
+        if: github.base_ref == 'main' && github.head_ref != 'dev'
+        run: exit 1
+      - name: Validar Dev
+        if: github.base_ref == 'dev' && github.head_ref != 'test'
+        run: exit 1
