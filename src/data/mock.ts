@@ -1,4 +1,12 @@
-import type { Event, Course, Constancia, GalleryEvent } from '../types'
+import type { Event, Course, Constancia, GalleryEvent, Receipt } from '../types'
+
+/** Comprobantes de pago del usuario (historial). */
+export const MOCK_RECEIPTS: Receipt[] = [
+  { id: 'r1', concept: '2do. Congreso Nacional de Tanatología', date: '2024-10-20', amount: 2900, method: 'Tarjeta •••• 4242', status: 'pagado', has_invoice: true },
+  { id: 'r2', concept: 'Diplomado en Cardiología', date: '2024-08-12', amount: 8000, method: 'Tarjeta •••• 4242', status: 'pagado', has_invoice: false },
+  { id: 'r3', concept: 'Capacitación: Primeros Auxilios Psicológicos', date: '2024-12-05', amount: 1102, method: 'Tarjeta •••• 1881', status: 'pagado', has_invoice: true },
+  { id: 'r4', concept: 'Taller de Intervención en Duelo', date: '2025-01-18', amount: 700, method: 'PayPal', status: 'reembolsado', has_invoice: false },
+]
 
 export const MOCK_EVENTS: Event[] = [
   {

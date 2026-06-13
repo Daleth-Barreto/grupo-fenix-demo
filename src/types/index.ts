@@ -115,6 +115,18 @@ export interface InvoiceDetails {
   fiscal_email: string
 }
 
+/** Comprobante de pago / recibo del historial del usuario. */
+export interface Receipt {
+  id: string
+  concept: string
+  date: string
+  amount: number
+  method: string
+  status: 'pagado' | 'pendiente' | 'reembolsado'
+  has_invoice: boolean
+  pdf_url?: string
+}
+
 export interface LiveStream {
   id: string
   title: string

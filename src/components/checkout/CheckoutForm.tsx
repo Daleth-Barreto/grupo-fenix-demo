@@ -18,11 +18,17 @@ export default function CheckoutForm({ event }: Props) {
 
   if (success) {
     return (
-      <div className="flex flex-col items-center text-center py-10 px-5">
-        <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-6">
-          <span className="material-symbols-outlined text-success text-[48px] filled">check_circle</span>
+      <div className="flex flex-col items-center text-center py-10 px-5 relative overflow-hidden">
+        <img
+          src="/brand/phoenix/phoenix_5.png"
+          alt=""
+          aria-hidden
+          className="absolute top-2 left-1/2 -translate-x-1/2 w-64 opacity-[0.05] pointer-events-none select-none"
+        />
+        <div className="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center mb-6 relative z-10">
+          <span className="material-symbols-outlined text-secondary text-[52px] filled">check_circle</span>
         </div>
-        <h2 className="text-[24px] font-bold text-primary mb-2">¡Pago exitoso!</h2>
+        <h2 className="text-[24px] font-bold text-primary mb-2 relative z-10">¡Pago exitoso!</h2>
         <p className="text-sm text-on-surface-variant mb-8 max-w-xs leading-relaxed">
           Te has inscrito correctamente a <strong>{event.title}</strong>. Se ha enviado el recibo a tu correo.
         </p>
