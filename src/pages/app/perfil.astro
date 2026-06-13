@@ -4,16 +4,27 @@ import AppLayout from '../../layouts/AppLayout.astro'
 const MENU_ITEMS = [
   { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Descarga tus certificados', path: '/app/constancias' },
   { icon: 'event_available', label: 'Reservaciones y cotización', sub: 'Solicita un evento a tu medida', path: '/app/reservaciones' },
-  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/configuracion' },
+  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/comprobantes' },
   { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion' },
 ]
 ---
 <AppLayout title="Perfil" section="Perfil" showSettings active="/app/perfil">
-  <div class="pt-6 pb-10 flex flex-col gap-7 max-w-xl mx-auto">
+  <!-- Banner de marca -->
+  <div class="-mx-5 relative bg-navy-gradient h-28 overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+    <img
+      src="/brand/phoenix/phoenix_5_white.png"
+      alt=""
+      aria-hidden="true"
+      class="absolute right-3 -top-1 w-44 opacity-[0.10] pointer-events-none select-none"
+    />
+  </div>
+
+  <div class="-mt-14 pb-10 flex flex-col gap-6 max-w-xl mx-auto">
     <!-- Avatar -->
     <section class="flex flex-col items-center text-center animate-fade-in-up">
       <div class="relative mb-3.5">
-        <div class="w-24 h-24 rounded-3xl overflow-hidden border-4 border-surface shadow-card flex items-center justify-center bg-navy-gradient">
+        <div class="w-24 h-24 rounded-3xl overflow-hidden border-4 border-surface shadow-elevated flex items-center justify-center bg-navy-gradient">
           <span class="text-white text-[32px] font-bold">M</span>
         </div>
         <button class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary rounded-full p-1.5 shadow-card border-2 border-surface hover:bg-secondary-deep transition-colors active:scale-95">
@@ -27,6 +38,12 @@ const MENU_ITEMS = [
     <!-- Eventos inscritos -->
     <a href="/app/congresos" class="relative overflow-hidden rounded-3xl shadow-card bg-navy-gradient hover:shadow-elevated transition-shadow active:scale-[0.98] duration-150 block group">
       <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+      <img
+        src="/brand/phoenix/phoenix_5_white.png"
+        alt=""
+        aria-hidden="true"
+        class="absolute -right-6 -bottom-8 w-36 opacity-[0.08] pointer-events-none select-none"
+      />
       <div class="relative z-10 flex items-center justify-between p-6">
         <div>
           <p class="text-white/80 text-sm font-medium mb-2">Mis eventos inscritos</p>

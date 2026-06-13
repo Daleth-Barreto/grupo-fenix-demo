@@ -1,0 +1,86 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+import { MOCK_RECEIPTS } from '../../data/mock'
+import { formatPrice } from '../../utils/format'
+import type { Receipt } from '../../types'
+
+const STATUS_META: Record<Receipt['status'], { label: string; cls: string; icon: string }> = {
+  pagado: { label: 'Pagado', cls: 'text-[#1b7d3f] bg-[#e3f6ea]', icon: 'check_circle' },
+  pendiente: { label: 'Pendiente', cls: 'text-[#9d4300] bg-[#fff0e0]', icon: 'schedule' },
+  reembolsado: { label: 'Reembolsado', cls: 'text-[#606060] bg-[#ececed]', icon: 'undo' },
+}
+
+const totalPagado = MOCK_RECEIPTS
+  .filter((r) => r.status === 'pagado')
+  .reduce((sum, r) => sum + r.amount, 0)
+
+function formatLongDate(date: string): string {
+  return new Date(date).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+---
+<AppLayout title="Mis comprobantes" section="Mis comprobantes" showBack active="/app/comprobantes">
+  <div class="pt-6 pb-10 flex flex-col gap-5">
+    <!-- Resumen -->
+    <section class="relative overflow-hidden rounded-3xl bg-navy-gradient shadow-hero p-6">
+      <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+      <img
+        src="/brand/phoenix/phoenix_5_white.png"
+        alt=""
+        aria-hidden="true"
+        class="absolute -right-8 -bottom-10 w-44 opacity-[0.07] pointer-events-none select-none"
+      />
+      <div class="relative z-10">
+        <p class="text-white/80 text-sm">Total pagado</p>
+        <p class="text-[32px] font-bold text-white leading-tight mt-1">{formatPrice(totalPagado)}</p>
+        <p class="text-primary-fixed-dim text-xs mt-1">{MOCK_RECEIPTS.length} movimientos en tu historial</p>
+      </div>
+    </section>
+
+    {MOCK_RECEIPTS.length === 0 ? (
+      <div class="text-center py-16">
+        <span class="material-symbols-outlined text-[56px] text-outline-variant block mb-3">receipt_long</span>
+        <p class="text-sm font-semibold text-primary">Aún no tienes comprobantes</p>
+        <p class="text-xs text-outline mt-1">Tus recibos y facturas aparecerán aquí tras tu primera compra.</p>
+      </div>
+    ) : (
+      <div class="flex flex-col gap-3">
+        {MOCK_RECEIPTS.map((r) => {
+          const st = STATUS_META[r.status]
+          return (
+            <article class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-4 flex flex-col gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-primary text-[22px]">receipt_long</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-semibold text-primary leading-snug">{r.concept}</h3>
+                  <p class="text-xs text-outline mt-0.5">{formatLongDate(r.date)} · {r.method}</p>
+                </div>
+                <span class="text-[15px] font-bold text-primary whitespace-nowrap">{formatPrice(r.amount)}</span>
+              </div>
+
+              <div class="flex items-center justify-between border-t border-surface-variant/70 pt-3">
+                <div class="flex items-center gap-2">
+                  <span class:list={['text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1', st.cls]}>
+                    <span class="material-symbols-outlined text-[12px]">{st.icon}</span>
+                    {st.label}
+                  </span>
+                  {r.has_invoice && (
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-primary bg-surface-container flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[12px]">description</span>
+                      Factura
+                    </span>
+                  )}
+                </div>
+                <button class="text-secondary hover:text-secondary-deep transition-colors flex items-center gap-1 text-xs font-semibold active:scale-95">
+                  <span class="material-symbols-outlined text-[18px]">download</span>
+                  PDF
+                </button>
+              </div>
+            </article>
+          )
+        })}
+      </div>
+    )}
+  </div>
+</AppLayout>
