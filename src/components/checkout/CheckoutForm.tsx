@@ -41,34 +41,34 @@ export default function CheckoutForm({ event }: Props) {
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-semibold text-primary ml-1">Titular de la tarjeta</label>
-            <input type="text" required placeholder="Nombre como aparece en la tarjeta"
-              className="w-full bg-surface-soft rounded-2xl py-3.5 px-4 text-sm text-primary placeholder:text-outline border border-transparent focus:border-secondary outline-none transition-all" />
+            <input type="text" autoComplete="cc-name" required placeholder="Nombre como aparece en la tarjeta"
+              className="w-full bg-surface-soft rounded-2xl py-4 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all min-h-[52px]" />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-semibold text-primary ml-1">Número de tarjeta</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">credit_card</span>
-              <input type="text" required placeholder="0000 0000 0000 0000" maxLength={19}
-                className="w-full bg-surface-soft rounded-2xl py-3.5 pl-11 pr-4 text-sm text-primary placeholder:text-outline border border-transparent focus:border-secondary outline-none transition-all font-mono" />
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[22px]">credit_card</span>
+              <input type="text" inputMode="numeric" autoComplete="cc-number" required placeholder="0000 0000 0000 0000" maxLength={19}
+                className="w-full bg-surface-soft rounded-2xl py-4 pl-12 pr-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all font-mono min-h-[52px]" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <label className="text-[13px] font-semibold text-primary ml-1">Expiración</label>
-              <input type="text" required placeholder="MM/AA" maxLength={5}
-                className="w-full bg-surface-soft rounded-2xl py-3.5 px-4 text-sm text-primary placeholder:text-outline border border-transparent focus:border-secondary outline-none transition-all text-center" />
+              <input type="text" inputMode="numeric" autoComplete="cc-exp" required placeholder="MM/AA" maxLength={5}
+                className="w-full bg-surface-soft rounded-2xl py-4 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-center min-h-[52px]" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[13px] font-semibold text-primary ml-1">CVV</label>
-              <input type="text" required placeholder="123" maxLength={4}
-                className="w-full bg-surface-soft rounded-2xl py-3.5 px-4 text-sm text-primary placeholder:text-outline border border-transparent focus:border-secondary outline-none transition-all text-center" />
+              <input type="text" inputMode="numeric" autoComplete="cc-csc" required placeholder="123" maxLength={4}
+                className="w-full bg-surface-soft rounded-2xl py-4 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-center min-h-[52px]" />
             </div>
           </div>
         </div>
       </div>
 
       <button type="submit" disabled={loading}
-        className="w-full bg-primary hover:bg-[#163859] text-white font-semibold text-[15px] py-4 rounded-2xl shadow-card transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2">
+        className="w-full bg-primary hover:bg-[#163859] text-white font-semibold text-[15px] py-4 rounded-2xl shadow-card transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2 min-h-[52px]">
         {loading ? (
           <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
         ) : (
