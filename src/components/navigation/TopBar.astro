@@ -1,10 +1,13 @@
 ---
+import LogoutButton from './LogoutButton'
+
 interface Props {
   title?: string
   showBack?: boolean
   showSettings?: boolean
+  showLogout?: boolean
 }
-const { title, showBack = false, showSettings = false } = Astro.props
+const { title, showBack = false, showSettings = false, showLogout = false } = Astro.props
 const section = title && title !== 'Grupo FÉNIX' ? title : null
 ---
 <header class="sticky top-0 z-40 bg-white border-b border-[#dce2f3] flex items-center justify-between px-5 h-16 shadow-sm">
@@ -28,10 +31,13 @@ const section = title && title !== 'Grupo FÉNIX' ? title : null
   </div>
 
   <div class="w-10 flex justify-end">
-    {showSettings && (
+    {showSettings && !showLogout && (
       <a href="/app/configuracion" class="text-[#0f2a44] hover:opacity-70 p-2 -mr-2 rounded-full transition-opacity active:scale-95 duration-150">
         <span class="material-symbols-outlined">settings</span>
       </a>
+    )}
+    {showLogout && (
+      <LogoutButton client:load />
     )}
   </div>
 </header>

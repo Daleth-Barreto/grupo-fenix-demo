@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import LivePlayer from '../../../components/live/LivePlayer'
+import AuthGuard from '../../../components/auth/AuthGuard'
+
+// Datos mock para testing - reemplazar con datos de Supabase
+const MOCK_LIVE_STREAMS_DATA = [
+  {
+    id: 'live-1',
+    title: 'Congreso Internacional de Medicina 2026 - Sesión Inaugural',
+    presenter: 'Dr. Carlos Mendoza',
+    status: 'live' as const,
+    scheduled_at: new Date().toISOString(),
+    hls_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+    course_id: 'c1',
+    event_id: 'e1'
+  },
+  {
+    id: 'live-2',
+    title: 'Webinar: Nuevas Tendencias en Odontología',
+    presenter: 'Dra. Ana López',
+    status: 'scheduled' as const,
+    scheduled_at: new Date(Date.now() + 3600000).toISOString(),
+    hls_url: '',
+    course_id: 'c2'
+  }
+]
+
+export function getStaticPaths() {
+  return [
+    { params: { id: 'live-1' } },
+    { params: { id: 'live-2' } }
+  ]
+}
+
+const { id } = Astro.params
+const stream = MOCK_LIVE_STREAMS_DATA.find((s: any) => s.id === id)
+
+if (!stream) return Astro.redirect('/app/inicio')
+
+const isLive = (stream as any).status === 'live'
+const isScheduled = (stream as any).status === 'scheduled'
+const isEnded = (stream as any).status === 'ended'
+
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString('es-MX', {
+    dateStyle: 'long',
+    timeStyle: 'short'
+  })
+}
+---
+<BaseLayout title={stream.title}>
+  <AuthGuard client:load>
+    <div class="min-h-screen bg-[#f9f9ff]">
+      <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
+        <div class="px-5 max-w-4xl mx-auto flex items-center gap-3 h-16">
+          <a href="/app/inicio" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </a>
+          <span class="font-semibold text-primary text-[15px] truncate">Transmisión en vivo</span>
+        </div>
+      </header>
+
+      <main class="max-w-4xl mx-auto">
+        {isLive && (stream as any).hls_url && (
+          <LivePlayer client:load hlsUrl={(stream as any).hls_url} title={(stream as any).title} presenter={(stream as any).presenter} />
+        )}
+
+        {isScheduled && (
+          <div class="px-5 py-12 text-center">
+            <div class="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-orange-600 text-[48px]">schedule</span>
+            </div>
+            <h1 class="text-[24px] font-bold text-primary mb-2">Transmisión programada</h1>
+            <p class="text-lg font-semibold text-secondary mb-4">{stream.title}</p>
+            <p class="text-sm text-on-surface-variant mb-2">Comenzará el</p>
+            <p class="text-base font-bold text-primary mb-6">{formatDateTime(stream.scheduled_at)}</p>
+            <p class="text-sm text-on-surface-variant">Por: {stream.presenter}</p>
+          </div>
+        )}
+
+        {isEnded && (
+          <div class="px-5 py-12 text-center">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-gray-600 text-[48px]">stop_circle</span>
+            </div>
+            <h1 class="text-[24px] font-bold text-primary mb-2">Transmisión finalizada</h1>
+            <p class="text-lg font-semibold text-primary mb-4">{stream.title}</p>
+            <p class="text-sm text-on-surface-variant mb-6">Esta transmisión ya ha finalizado</p>
+            <a href="/app/inicio" class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm">
+              Volver al inicio
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+          </div>
+        )}
+      </main>
+    </div>
+  </AuthGuard>
+</BaseLayout>

@@ -1,0 +1,22 @@
+import { supabase } from '../../lib/supabase'
+import { useAuthStore } from '../../store/auth.store'
+
+export default function LogoutButton() {
+  const clear = useAuthStore((state) => state.clear)
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    clear()
+    window.location.href = '/app/login'
+  }
+
+  return (
+    <button 
+      onClick={handleLogout}
+      className="text-[#0f2a44] hover:opacity-70 p-2 -mr-2 rounded-full transition-opacity active:scale-95 duration-150"
+      aria-label="Cerrar sesión"
+    >
+      <span className="material-symbols-outlined">logout</span>
+    </button>
+  )
+}
