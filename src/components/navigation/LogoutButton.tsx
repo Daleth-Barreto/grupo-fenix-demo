@@ -13,7 +13,7 @@ export default function LogoutButton() {
   return (
     <button 
       onClick={handleLogout}
-      className="text-[#0f2a44] hover:opacity-70 p-2 -mr-2 rounded-full transition-opacity active:scale-95 duration-150"
+      className="text-[#0f2a44] hover:opacity-70 p-2.5 -mr-2 rounded-full transition-opacity active:scale-95 duration-150 min-w-[44px] min-h-[44px] flex items-center justify-center"
       aria-label="Cerrar sesión"
     >
       <span className="material-symbols-outlined">logout</span>
