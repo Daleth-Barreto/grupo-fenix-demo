@@ -1,0 +1,28 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+---
+<AdminLayout title="Transmisiones en Vivo" section="Transmisiones en Vivo">
+  <div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-[28px] font-bold text-primary">Transmisiones en Vivo</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Gestiona streams con Owncast (100% gratis)</p>
+      </div>
+      <a href="/admin/en-vivo/nuevo" class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-secondary-deep transition-colors min-h-[44px]">
+        <span class="material-symbols-outlined text-[20px]">podcasts</span>
+        Nueva Transmisión
+      </a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#dce2f3]">
+        <p class="text-sm text-on-surface-variant">Transmisiones</p>
+      </div>
+      <div class="p-8 text-center text-on-surface-variant">
+        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">sensors</span>
+        <p class="font-medium">Sin transmisiones configuradas</p>
+        <p class="text-sm mt-1">Conecta tu instancia Owncast y crea una transmisión</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

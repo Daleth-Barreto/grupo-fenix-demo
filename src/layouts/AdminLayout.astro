@@ -1,0 +1,81 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import AdminGuard from '../components/admin/AdminGuard'
+
+interface Props {
+  title: string
+  section?: string
+}
+
+const { title, section } = Astro.props
+const currentPath = Astro.url.pathname
+
+const menuItems = [
+  { href: '/admin', icon: 'dashboard', label: 'Dashboard' },
+  { href: '/admin/eventos', icon: 'event', label: 'Eventos / Congresos' },
+  { href: '/admin/cursos', icon: 'school', label: 'Cursos' },
+  { href: '/admin/en-vivo', icon: 'podcasts', label: 'Transmisiones en Vivo' },
+  { href: '/admin/usuarios', icon: 'group', label: 'Usuarios' },
+  { href: '/admin/inscripciones', icon: 'how_to_reg', label: 'Inscripciones' },
+  { href: '/admin/constancias', icon: 'workspace_premium', label: 'Constancias' },
+  { href: '/admin/medios', icon: 'perm_media', label: 'Biblioteca de Medios' },
+  { href: '/admin/configuracion', icon: 'settings', label: 'Configuración' },
+]
+---
+<BaseLayout title={`${title} | Admin`}>
+  <AdminGuard client:load>
+    <div class="min-h-screen bg-[#f7f9fc]">
+      <header class="sticky top-0 z-50 bg-white border-b border-[#dce2f3] shadow-sm">
+        <div class="px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <button id="admin-menu-toggle" class="lg:hidden p-2 rounded-xl hover:bg-surface-container-low transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <span class="material-symbols-outlined">menu</span>
+            </button>
+            <a href="/admin" class="flex items-center gap-2">
+              <span class="font-bold text-primary text-[16px]">Grupo <span class="text-secondary">FÉNIX</span></span>
+              <span class="hidden sm:inline text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full font-semibold">ADMIN</span>
+            </a>
+            {section && <span class="hidden md:inline text-sm text-outline">/ {section}</span>}
+          </div>
+          <div class="flex items-center gap-2">
+            <a href="/app/inicio" class="text-sm text-on-surface-variant hover:text-primary px-3 py-2 rounded-xl hover:bg-surface-container-low transition-colors">Ver sitio</a>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex">
+        <aside id="admin-sidebar" class="fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] w-72 bg-white border-r border-[#dce2f3] transform -translate-x-full lg:translate-x-0 transition-transform z-40 overflow-y-auto">
+          <nav class="p-4 flex flex-col gap-1">
+            {menuItems.map((item) => {
+              const active = currentPath === item.href || (item.href !== '/admin' && currentPath.startsWith(item.href))
+              return (
+                <a href={item.href} class:list={['flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all', active ? 'bg-primary text-white shadow-card' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary']}>
+                  <span class="material-symbols-outlined text-[22px]" style={active ? "font-variation-settings: 'FILL' 1" : undefined}>{item.icon}</span>
+                  <span class="text-sm font-medium">{item.label}</span>
+                </a>
+              )
+            })}
+          </nav>
+        </aside>
+
+        <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto">
+          <slot />
+        </main>
+      </div>
+    </div>
+  </AdminGuard>
+
+  <script>
+    const toggle = document.getElementById('admin-menu-toggle')
+    const sidebar = document.getElementById('admin-sidebar')
+    toggle?.addEventListener('click', () => {
+      sidebar?.classList.toggle('-translate-x-full')
+    })
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      if (!sidebar?.contains(target) && !toggle?.contains(target) && window.innerWidth < 1024) {
+        sidebar?.classList.add('-translate-x-full')
+      }
+    })
+  </script>
+</BaseLayout>

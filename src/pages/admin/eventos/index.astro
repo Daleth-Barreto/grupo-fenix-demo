@@ -1,0 +1,28 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+---
+<AdminLayout title="Eventos" section="Eventos / Congresos">
+  <div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-[28px] font-bold text-primary">Eventos / Congresos</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Gestiona congresos, capacitaciones, talleres</p>
+      </div>
+      <a href="/admin/eventos/nuevo" class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-secondary-deep transition-colors min-h-[44px]">
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Nuevo Evento
+      </a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#dce2f3]">
+        <p class="text-sm text-on-surface-variant">Listado de eventos</p>
+      </div>
+      <div class="p-8 text-center text-on-surface-variant">
+        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">event</span>
+        <p class="font-medium">Sin eventos creados</p>
+        <p class="text-sm mt-1">Crea tu primer evento para empezar</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
