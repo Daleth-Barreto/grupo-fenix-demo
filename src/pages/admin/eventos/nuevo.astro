@@ -13,7 +13,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
       </div>
     </div>
 
-    <form class="flex flex-col gap-6">
+    <form id="event-form" class="flex flex-col gap-6">
       <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#dce2f3]">
           <h2 class="font-semibold text-primary">Información General</h2>
@@ -21,29 +21,29 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="md:col-span-2 flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Título del evento *</label>
-            <input type="text" placeholder="Ej. 1er Congreso Internacional..." class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="title" required type="text" placeholder="Ej. 1er Congreso Internacional..." class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Descripción *</label>
-            <textarea rows="4" placeholder="Describe el evento..." class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base resize-none"></textarea>
+            <textarea name="description" required rows="4" placeholder="Describe el evento..." class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base resize-none"></textarea>
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Categoría *</label>
-            <select class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base">
-              <option>Congreso</option>
-              <option>Capacitación</option>
-              <option>Curso</option>
-              <option>Taller</option>
-              <option>Diplomado</option>
-              <option>Seminario</option>
+            <select name="category" required class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base">
+              <option value="congreso">Congreso</option>
+              <option value="capacitacion">Capacitación</option>
+              <option value="curso">Curso</option>
+              <option value="taller">Taller</option>
+              <option value="diplomado">Diplomado</option>
+              <option value="seminario">Seminario</option>
             </select>
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Modalidad *</label>
-            <select class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base">
-              <option>Presencial</option>
-              <option>En línea</option>
-              <option>Híbrido</option>
+            <select name="modality" required class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base">
+              <option value="presencial">Presencial</option>
+              <option value="en_linea">En línea</option>
+              <option value="hibrido">Híbrido</option>
             </select>
           </div>
         </div>
@@ -56,23 +56,23 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Fecha de inicio *</label>
-            <input type="date" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="start_date" required type="date" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Fecha de fin *</label>
-            <input type="date" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="end_date" required type="date" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="md:col-span-2 flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Lugar / Plataforma</label>
-            <input type="text" placeholder="Ciudad, Hotel o URL de plataforma" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="location" type="text" placeholder="Ciudad, Hotel o URL de plataforma" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Precio (MXN) *</label>
-            <input type="number" placeholder="2500" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="price" required type="number" step="0.01" placeholder="2500" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Horas curriculares</label>
-            <input type="number" placeholder="32" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="hours" type="number" placeholder="32" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
         </div>
       </div>
@@ -88,4 +88,29 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
       </div>
     </form>
   </div>
+
+  <script>
+    const form = document.getElementById('event-form') as HTMLFormElement
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const formData = new FormData(form)
+      const body: any = {}
+      formData.forEach((v, k) => {
+        if (k === 'price' || k === 'hours') body[k] = v === '' ? null : Number(v)
+        else body[k] = v
+      })
+      const res = await fetch('/api/admin/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      const json = await res.json()
+      if (res.ok) {
+        alert('Evento creado correctamente')
+        window.location.href = '/admin/eventos'
+      } else {
+        alert(json.error || 'Error al crear evento')
+      }
+    })
+  </script>
 </AdminLayout>
