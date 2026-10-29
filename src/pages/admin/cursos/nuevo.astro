@@ -1,0 +1,99 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+---
+<AdminLayout title="Nuevo Curso" section="Cursos / Nuevo">
+  <div class="flex flex-col gap-6">
+    <div class="flex items-center gap-4">
+      <a href="/admin/cursos" class="p-2 rounded-xl hover:bg-surface-container-low transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <div>
+        <h1 class="text-[28px] font-bold text-primary">Crear Nuevo Curso</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Constructor con módulos, lecciones y actividades</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-[#dce2f3]">
+            <h2 class="font-semibold text-primary">Información del Curso</h2>
+          </div>
+          <div class="p-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-semibold text-primary">Título del curso *</label>
+              <input type="text" placeholder="Ej. Fundamentos de Neuroeducación" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            </div>
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-semibold text-primary">Descripción *</label>
+              <textarea rows="4" placeholder="Describe el contenido del curso..." class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base resize-none"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-semibold text-primary">Instructor *</label>
+                <input type="text" placeholder="Nombre del instructor" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-semibold text-primary">Precio (MXN)</label>
+                <input type="number" placeholder="1499" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-[#dce2f3] flex items-center justify-between">
+            <div>
+              <h2 class="font-semibold text-primary">Contenido del Curso</h2>
+              <p class="text-xs text-on-surface-variant mt-0.5">Módulos, lecciones y actividades</p>
+            </div>
+            <button type="button" class="inline-flex items-center gap-2 text-sm text-secondary font-semibold hover:underline">
+              <span class="material-symbols-outlined text-[18px]">add</span>
+              Añadir Módulo
+            </button>
+          </div>
+          <div class="p-6 text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">folder_open</span>
+            <p class="font-medium">No hay módulos aún</p>
+            <p class="text-sm mt-1">Añade el primer módulo para comenzar a estructurar el curso</p>
+            <button type="button" class="mt-4 inline-flex items-center gap-2 bg-surface-container-low text-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined text-[18px]">add</span>
+              Crear primer módulo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-[#dce2f3]">
+            <h2 class="font-semibold text-primary">Configuración</h2>
+          </div>
+          <div class="p-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-semibold text-primary">Portada</label>
+              <div class="border-2 border-dashed border-[#dce2f3] rounded-xl p-6 text-center hover:border-secondary transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[40px] text-outline block mb-2">image</span>
+                <p class="text-sm text-on-surface-variant">Subir imagen</p>
+                <p class="text-xs text-outline mt-1">JPG, PNG (max 2MB)</p>
+              </div>
+            </div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" class="w-5 h-5 rounded accent-[#fe9511]" />
+              <span class="text-sm text-primary">Curso destacado</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" class="w-5 h-5 rounded accent-[#fe9511]" />
+              <span class="text-sm text-primary">Requiere inscripción</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-secondary text-on-secondary px-6 py-3 rounded-xl font-semibold hover:bg-secondary-deep transition-colors min-h-[48px]">
+          <span class="material-symbols-outlined text-[20px]">save</span>
+          Guardar Curso
+        </button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
