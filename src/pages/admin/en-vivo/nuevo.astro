@@ -21,7 +21,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
       </div>
     </div>
 
-    <form class="flex flex-col gap-6">
+    <form id="live-form" class="flex flex-col gap-6">
       <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#dce2f3]">
           <h2 class="font-semibold text-primary">Información de la Transmisión</h2>
@@ -29,25 +29,30 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <div class="p-6 flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Título *</label>
-            <input type="text" placeholder="Ej. Congreso Internacional - Sesión Inaugural" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="title" required type="text" placeholder="Ej. Congreso Internacional - Sesión Inaugural" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">Ponente / Presentador *</label>
-            <input type="text" placeholder="Nombre del ponente" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="speaker" required type="text" placeholder="Nombre del ponente" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-2">
               <label class="text-sm font-semibold text-primary">Fecha y hora programada *</label>
-              <input type="datetime-local" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+              <input name="scheduled_at" required type="datetime-local" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
             </div>
             <div class="flex flex-col gap-2">
-              <label class="text-sm font-semibold text-primary">Asignar a</label>
-              <select class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base">
-                <option value="">Sin asignar</option>
-                <option>Evento / Congreso</option>
-                <option>Curso</option>
+              <label class="text-sm font-semibold text-primary">Estado</label>
+              <select name="status" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base">
+                <option value="programado">Programado</option>
+                <option value="en_vivo">En vivo</option>
+                <option value="finalizado">Finalizado</option>
+                <option value="cancelado">Cancelado</option>
               </select>
             </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-primary">Descripción</label>
+            <textarea name="description" rows="3" placeholder="Detalles de la transmisión..." class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base resize-none"></textarea>
           </div>
         </div>
       </div>
@@ -59,12 +64,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <div class="p-6 flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">URL HLS (.m3u8) *</label>
-            <input type="url" placeholder="https://tu-owncast.com/hls/stream.m3u8" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="hls_url" required type="url" placeholder="https://tu-owncast.com/hls/stream.m3u8" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
             <p class="text-xs text-on-surface-variant">Esta es la URL que se reproducirá en la app</p>
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm font-semibold text-primary">URL de la instancia Owncast</label>
-            <input type="url" placeholder="https://tu-owncast.com" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
+            <input name="owncast_url" type="url" placeholder="https://tu-owncast.com" class="w-full px-4 py-3 rounded-xl border border-[#dce2f3] focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all text-base" />
           </div>
         </div>
       </div>
@@ -80,4 +85,27 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
       </div>
     </form>
   </div>
+
+  <script>
+    const form = document.getElementById('live-form') as HTMLFormElement
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const formData = new FormData(form)
+      const body: any = {}
+      formData.forEach((v, k) => { body[k] = v })
+      if (body.scheduled_at) body.scheduled_at = new Date(body.scheduled_at).toISOString()
+      const res = await fetch('/api/admin/lives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      const json = await res.json()
+      if (res.ok) {
+        alert('Transmisión creada correctamente')
+        window.location.href = '/admin/en-vivo'
+      } else {
+        alert(json.error || 'Error al crear transmisión')
+      }
+    })
+  </script>
 </AdminLayout>
