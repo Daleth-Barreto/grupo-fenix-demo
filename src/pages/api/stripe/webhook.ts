@@ -1,4 +1,6 @@
 import type { APIRoute } from 'astro'
+
+export const prerender = false
 import Stripe from 'stripe'
 
 const stripeSecretKey = import.meta.env.STRIPE_SECRET_KEY
