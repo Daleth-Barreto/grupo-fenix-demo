@@ -74,7 +74,10 @@
    Base
    ============================================================ */
 * { box-sizing: border-box; }
-html { -webkit-tap-highlight-color: transparent; }
+html { 
+  -webkit-tap-highlight-color: transparent; 
+  scroll-behavior: smooth;
+}
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f9f9ff;
@@ -83,6 +86,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent zoom on input focus in iOS */
+input, select, textarea {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  input, select, textarea {
+    font-size: 14px;
+  }
 }
 
 .material-symbols-outlined {

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro'
-import ProgressBar from '../../../components/ui/ProgressBar.astro'
+import AuthGuard from '../../../components/auth/AuthGuard'
 import { getCourseById, MOCK_COURSES } from '../../../data/mock'
 
 export function getStaticPaths() {
@@ -10,36 +10,41 @@ export function getStaticPaths() {
 const { id } = Astro.params
 const course = getCourseById(id!)
 if (!course) return Astro.redirect('/app/cursos')
+
+const totalLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || course.total_lessons || 0
+const completedLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.filter(l => l.is_completed).length || 0), 0) || 0
+const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : (course.progress ?? 0)
 ---
 <BaseLayout title={course.title}>
-  <div class="min-h-screen bg-background pb-28">
-    <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
-      <div class="px-5 max-w-2xl mx-auto flex items-center gap-3 h-16">
-        <a href="/app/cursos" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
-          <span class="material-symbols-outlined">arrow_back</span>
-        </a>
-        <span class="font-semibold text-primary text-[15px] truncate">{course.title}</span>
-      </div>
-    </header>
+  <AuthGuard client:load>
+    <div class="min-h-screen bg-background pb-28">
+      <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
+        <div class="px-5 max-w-2xl mx-auto flex items-center gap-3 h-16">
+          <a href="/app/cursos" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </a>
+          <span class="font-semibold text-primary text-[15px] truncate">{course.title}</span>
+        </div>
+      </header>
 
-    <main class="px-5 max-w-2xl mx-auto pt-6 flex flex-col gap-6">
-      <!-- Info del curso -->
-      <section class="bg-navy-gradient rounded-3xl p-5 shadow-hero relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
-        <div class="relative z-10">
-          <h1 class="text-[20px] font-bold text-white leading-snug">{course.title}</h1>
-          <p class="text-xs text-primary-fixed-dim mt-1">{course.instructor}</p>
-          <div class="mt-4">
-            <div class="flex items-center justify-between text-xs text-white/80 mb-2">
-              <span>Progreso del curso</span>
-              <span class="font-bold text-white">{course.progress}%</span>
-            </div>
-            <div class="h-2 bg-white/20 rounded-full overflow-hidden">
-              <div class="h-full bg-secondary rounded-full" style={`width:${course.progress}%`}></div>
+      <main class="px-5 max-w-2xl mx-auto pt-6 flex flex-col gap-6">
+        <!-- Info del curso -->
+        <section class="bg-navy-gradient rounded-3xl p-5 shadow-hero relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
+          <div class="relative z-10">
+            <h1 class="text-[20px] font-bold text-white leading-snug">{course.title}</h1>
+            <p class="text-xs text-primary-fixed-dim mt-1">{course.instructor}</p>
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-xs text-white/80 mb-2">
+                <span>Progreso del curso</span>
+                <span class="font-bold text-white">{progress}% ({completedLessons}/{totalLessons})</span>
+              </div>
+              <div class="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div class="h-full bg-secondary rounded-full transition-all duration-500" style={`width:${progress}%`}></div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       <!-- Módulos -->
       <section class="flex flex-col gap-3">
@@ -100,7 +105,8 @@ if (!course) return Astro.redirect('/app/cursos')
         ))}
       </section>
     </main>
-  </div>
+    </div>
+  </AuthGuard>
 </BaseLayout>
 
 <script>
@@ -115,3 +121,4 @@ if (!course) return Astro.redirect('/app/cursos')
     })
   })
 </script>
+<div style="height: calc(1.5rem + env(safe-area-inset-bottom, 0px));"></div>
