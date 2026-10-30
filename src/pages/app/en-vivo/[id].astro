@@ -52,11 +52,11 @@ function formatDateTime(iso: string) {
 <BaseLayout title={stream.title}>
   <AuthGuard client:load>
     <div class="min-h-screen bg-[#f9f9ff]">
-      <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
-        <div class="px-5 max-w-4xl mx-auto flex items-center gap-3 h-16">
-          <a href="/app/inicio" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+      <header class="sticky top-0 z-50 bg-surface/98 backdrop-blur-lg border-b border-surface-variant shadow-card" style={`padding-top: env(safe-area-inset-top, 0px); height: calc(4rem + env(safe-area-inset-top, 0px));`}>
+        <div class="px-4 sm:px-5 max-w-4xl mx-auto flex items-center gap-3 h-16">
+          <button type="button" onclick="history.back()" class="p-2.5 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center">
             <span class="material-symbols-outlined">arrow_back</span>
-          </a>
+          </button>
           <span class="font-semibold text-primary text-[15px] truncate">Transmisión en vivo</span>
         </div>
       </header>

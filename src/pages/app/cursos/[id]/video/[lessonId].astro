@@ -33,7 +33,7 @@ if (!lesson) return Astro.redirect(`/app/cursos/${course.id}`)
         lessonTitle={lesson.title}
         duration={lesson.duration}
       />
-      <div class="px-5 py-4 bg-white border-t border-[#dce2f3]">
+      <div class="px-4 sm:px-5 py-4 bg-white border-t border-[#dce2f3]" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">
         <div class="max-w-2xl mx-auto">
           <MarkCompleteButton client:load lessonId={lessonId!} courseId={id!} />
         </div>

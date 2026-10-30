@@ -26,13 +26,13 @@ export default function MarkCompleteButton({ lessonId, courseId }: { lessonId: s
     <button
       onClick={handleMarkComplete}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-secondary text-on-secondary rounded-2xl font-semibold text-sm hover:bg-secondary-deep transition-colors active:scale-[0.98] disabled:opacity-60"
+      className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-secondary text-on-secondary rounded-2xl font-semibold text-sm hover:bg-secondary-deep transition-colors active:scale-[0.98] disabled:opacity-60 min-h-[52px]"
     >
       {loading ? (
         <span className="w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
       ) : (
         <>
-          <span className="material-symbols-outlined text-[18px]">check_circle</span>
+          <span className="material-symbols-outlined text-[20px]">check_circle</span>
           Marcar como completada
         </>
       )}

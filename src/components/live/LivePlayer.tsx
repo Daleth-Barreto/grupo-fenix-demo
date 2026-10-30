@@ -64,11 +64,11 @@ export default function LivePlayer({ hlsUrl, title, presenter }: LivePlayerProps
       <div className="bg-black w-full relative" style={{ aspectRatio: '16/9' }}>
         {loading && !error && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-9 h-9 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           </div>
         )}
         {error && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10 text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10 text-white px-4 text-center">
             <span className="material-symbols-outlined text-[48px] mb-2">error</span>
             <p className="text-sm">{error}</p>
           </div>
@@ -82,19 +82,19 @@ export default function LivePlayer({ hlsUrl, title, presenter }: LivePlayerProps
         />
       </div>
       
-      <div className="px-5 py-4 bg-white border-b border-[#dce2f3]">
+      <div className="px-4 sm:px-5 py-4 bg-white border-b border-[#dce2f3]" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
         <div className="flex items-center gap-2 mb-2">
           <span className="inline-flex items-center gap-1.5 bg-red-100 text-red-700 px-2.5 py-1 rounded-full text-xs font-bold">
             <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
             EN VIVO
           </span>
         </div>
-        <h1 className="text-[18px] font-bold text-[#0f2a44] leading-snug">{title}</h1>
+        <h1 className="text-[17px] sm:text-[18px] font-bold text-[#0f2a44] leading-snug">{title}</h1>
         <div className="flex items-center gap-2 mt-2">
-          <div className="w-7 h-7 rounded-full bg-[#f0f3ff] flex items-center justify-center">
-            <span className="material-symbols-outlined text-[14px] text-[#0f2a44]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+          <div className="w-8 h-8 rounded-full bg-[#f0f3ff] flex items-center justify-center">
+            <span className="material-symbols-outlined text-[16px] text-[#0f2a44]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
           </div>
-          <span className="text-xs text-[#44474d] font-medium">{presenter}</span>
+          <span className="text-xs sm:text-sm text-[#44474d] font-medium">{presenter}</span>
         </div>
       </div>
     </div>

@@ -1,0 +1,63 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro'
+---
+<AdminLayout title="Dashboard" section="Dashboard">
+  <div class="flex flex-col gap-6">
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Dashboard</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Resumen general de tu plataforma</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {[
+        { label: 'Usuarios', value: '—', icon: 'group', color: 'bg-blue-100 text-blue-700' },
+        { label: 'Eventos', value: '6', icon: 'event', color: 'bg-orange-100 text-orange-700' },
+        { label: 'Cursos', value: '4', icon: 'school', color: 'bg-green-100 text-green-700' },
+        { label: 'En Vivo', value: '0', icon: 'podcasts', color: 'bg-red-100 text-red-700' },
+      ].map((stat) => (
+        <div class="bg-white rounded-2xl p-5 border border-[#dce2f3] shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-on-surface-variant">{stat.label}</p>
+              <p class="text-2xl font-bold text-primary mt-1">{stat.value}</p>
+            </div>
+            <div class={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color}`}>
+              <span class="material-symbols-outlined text-[26px]">{stat.icon}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#dce2f3] flex items-center justify-between">
+          <h2 class="font-semibold text-primary">Accesos rápidos</h2>
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-3">
+          {[
+            { href: '/admin/eventos/nuevo', icon: 'add_circle', label: 'Nuevo Evento' },
+            { href: '/admin/cursos/nuevo', icon: 'add_circle', label: 'Nuevo Curso' },
+            { href: '/admin/en-vivo/nuevo', icon: 'podcasts', label: 'Crear Transmisión' },
+            { href: '/admin/usuarios', icon: 'manage_accounts', label: 'Gestionar Usuarios' },
+          ].map((item) => (
+            <a href={item.href} class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors">
+              <span class="material-symbols-outlined text-secondary text-[24px]">{item.icon}</span>
+              <span class="text-sm font-medium text-primary">{item.label}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#dce2f3]">
+          <h2 class="font-semibold text-primary">Próximas acciones</h2>
+        </div>
+        <div class="p-6 text-center text-on-surface-variant text-sm">
+          <span class="material-symbols-outlined text-[40px] block mb-2 text-outline">info</span>
+          Configura eventos, cursos y transmisiones para empezar
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

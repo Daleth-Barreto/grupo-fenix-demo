@@ -58,9 +58,9 @@ export default function RegisterForm() {
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-[13px] font-semibold text-primary ml-1">{label}</label>
       <div className="relative">
-        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">{icon}</span>
-        <input id={id} type={type} autoComplete={autoComplete} placeholder={placeholder} value={value} onChange={onChange}
-          className={`w-full bg-surface-soft rounded-2xl py-3.5 text-sm text-primary placeholder:text-outline outline-none pl-12 pr-4 transition-all ${error ? 'border border-error focus:ring-4 focus:ring-error/10' : 'border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10'}`} />
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[22px] pointer-events-none">{icon}</span>
+        <input id={id} type={type} inputMode={type === 'email' ? 'email' : undefined} autoComplete={autoComplete} placeholder={placeholder} value={value} onChange={onChange}
+          className={`w-full bg-surface-soft rounded-2xl py-4 text-base text-primary placeholder:text-outline outline-none pl-12 pr-4 transition-all min-h-[52px] ${error ? 'border border-error focus:ring-4 focus:ring-error/10' : 'border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10'}`} />
       </div>
       {error && <p className="text-xs text-error ml-1 flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">error</span>{error}</p>}
     </div>
@@ -88,7 +88,7 @@ export default function RegisterForm() {
       )}
 
       <button type="submit" disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 font-semibold rounded-2xl bg-secondary text-on-secondary hover:bg-secondary-deep shadow-card text-[15px] py-4 px-6 mt-1 disabled:opacity-60 transition-all active:scale-[0.98]">
+        className="w-full inline-flex items-center justify-center gap-2 font-semibold rounded-2xl bg-secondary text-on-secondary hover:bg-secondary-deep shadow-card text-[15px] py-4 px-6 mt-1 disabled:opacity-60 transition-all active:scale-[0.98] min-h-[52px]">
         {loading ? <span className="w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : 'Crear cuenta'}
       </button>
 
