@@ -1,14 +1,10 @@
 import type { APIRoute } from 'astro'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../../../../types/database.types'
 
-const supabase = createClient<Database>(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-)
+export const prerender = false
+import { getAdminSupabase } from '../../../../lib/supabase-admin'
 
 export const GET: APIRoute = async () => {
-  const { data, error } = await supabase
+  const { data, error } = await getAdminSupabase()
     .from('lives')
     .select('*')
     .order('created_at', { ascending: false })
@@ -20,7 +16,7 @@ export const GET: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json()
-    const { data, error } = await supabase
+    const { data, error } = await getAdminSupabase()
       .from('lives')
       .insert([body])
       .select()

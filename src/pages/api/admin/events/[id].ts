@@ -1,15 +1,11 @@
 import type { APIRoute } from 'astro'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../../../../types/database.types'
 
-const supabase = createClient<Database>(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-)
+export const prerender = false
+import { getAdminSupabase } from '../../../../lib/supabase-admin'
 
 export const GET: APIRoute = async ({ params }) => {
   const { id } = params
-  const { data, error } = await supabase
+  const { data, error } = await getAdminSupabase()
     .from('events')
     .select('*')
     .eq('id', id)
@@ -23,7 +19,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
   try {
     const { id } = params
     const body = await request.json()
-    const { data, error } = await supabase
+    const { data, error } = await getAdminSupabase()
       .from('events')
       .update(body)
       .eq('id', id)
@@ -39,7 +35,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
 
 export const DELETE: APIRoute = async ({ params }) => {
   const { id } = params
-  const { data, error } = await supabase
+  const { data, error } = await getAdminSupabase()
     .from('events')
     .delete()
     .eq('id', id)
