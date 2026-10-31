@@ -1,0 +1,105 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+---
+<AdminLayout title="Usuarios" section="Usuarios">
+  <div class="flex flex-col gap-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-[28px] font-bold text-primary">Usuarios</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Gestiona roles y accesos</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#dce2f3] flex items-center justify-between">
+        <p class="text-sm text-on-surface-variant">Listado de usuarios</p>
+        <input type="search" id="user-search" placeholder="Buscar por nombre o email..." class="hidden sm:block px-3 py-2 rounded-xl border border-[#dce2f3] text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all" />
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-surface-container-low">
+            <tr>
+              <th class="text-left text-xs font-semibold text-on-surface-variant px-6 py-3">Usuario</th>
+              <th class="text-left text-xs font-semibold text-on-surface-variant px-6 py-3">Teléfono</th>
+              <th class="text-left text-xs font-semibold text-on-surface-variant px-6 py-3">Rol</th>
+              <th class="text-right text-xs font-semibold text-on-surface-variant px-6 py-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody" class="divide-y divide-[#dce2f3]"></tbody>
+        </table>
+      </div>
+      <div id="users-empty" class="p-8 text-center text-on-surface-variant hidden">
+        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">group</span>
+        <p class="font-medium">Sin usuarios registrados</p>
+        <p class="text-sm mt-1">Los perfiles aparecerán al registrarse</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let users: any[] = []
+    async function load() {
+      const res = await fetch('/api/admin/users')
+      const json = await res.json()
+      users = json.data || []
+      render()
+    }
+    function render(filter = '') {
+      const tbody = document.getElementById('users-tbody')
+      const empty = document.getElementById('users-empty')
+      const filtered = users.filter(u => {
+        const term = filter.toLowerCase()
+        return (u.full_name || '').toLowerCase().includes(term)
+      })
+      if (filtered.length === 0) {
+        tbody!.innerHTML = ''
+        empty?.classList.remove('hidden')
+        return
+      }
+      empty?.classList.add('hidden')
+      tbody!.innerHTML = filtered.map(u => `
+        <tr class="hover:bg-surface-container-low/50 transition-colors">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">person</span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-primary">${u.full_name || 'Sin nombre'}</p>
+                <p class="text-xs text-on-surface-variant">${u.id}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-sm text-on-surface-variant">${u.phone || '-'}</td>
+          <td class="px-6 py-4">
+            <select data-id="${u.id}" class="role-select px-3 py-1.5 rounded-lg border border-[#dce2f3] text-sm focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all">
+              <option value="student" ${u.role === 'student' ? 'selected' : ''}>Estudiante</option>
+              <option value="instructor" ${u.role === 'instructor' ? 'selected' : ''}>Instructor</option>
+              <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Administrador</option>
+            </select>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <span class="text-xs text-outline">ID: ${u.id.slice(0, 8)}...</span>
+          </td>
+        </tr>
+      `).join('')
+      document.querySelectorAll('.role-select').forEach(sel => {
+        sel.addEventListener('change', async () => {
+          const id = sel.getAttribute('data-id')
+          const role = (sel as HTMLSelectElement).value
+          await fetch(`/api/admin/users/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role })
+          })
+          alert('Rol actualizado')
+          load()
+        })
+      })
+    }
+    document.getElementById('user-search')?.addEventListener('input', (e) => {
+      render((e.target as HTMLInputElement).value)
+    })
+    load()
+  </script>
+</AdminLayout>

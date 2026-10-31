@@ -17,7 +17,7 @@
   --color-secondary: #fe9511;
   --color-secondary-deep: #9d4300;
   --color-secondary-container: #fe9511;
-  --color-on-secondary: #ffffff;
+  --color-on-secondary: #0f2a44; /* navy sobre naranja: 6.64:1 (auditoría A9) */
   --color-secondary-fixed-dim: #ffb690;
 
   /* Acento dorado premium */
@@ -74,7 +74,10 @@
    Base
    ============================================================ */
 * { box-sizing: border-box; }
-html { -webkit-tap-highlight-color: transparent; }
+html { 
+  -webkit-tap-highlight-color: transparent; 
+  scroll-behavior: smooth;
+}
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f9f9ff;
@@ -83,6 +86,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent zoom on input focus in iOS */
+input, select, textarea {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  input, select, textarea {
+    font-size: 14px;
+  }
 }
 
 .material-symbols-outlined {

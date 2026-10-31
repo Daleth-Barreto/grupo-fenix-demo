@@ -3,6 +3,8 @@ import AppLayout from '../../layouts/AppLayout.astro'
 import Badge from '../../components/ui/Badge.astro'
 import Countdown from '../../components/events/Countdown'
 import UpcomingEvents from '../../components/sections/UpcomingEvents.astro'
+import UserGreeting from '../../components/auth/UserGreeting'
+import LiveBanner from '../../components/live/LiveBanner'
 import { MOCK_EVENTS, getFeaturedEvent } from '../../data/mock'
 import { formatDateRange } from '../../utils/format'
 
@@ -16,13 +18,16 @@ const QUICK_ACCESS = [
   { icon: 'person', label: 'Perfil', path: '/app/perfil' },
 ]
 ---
-<AppLayout title="Inicio" section="Inicio" active="/app/inicio">
+<AppLayout title="Inicio" section="Inicio" active="/app/inicio" showLogout={true}>
   <div class="pt-6 pb-10 flex flex-col gap-9">
     <!-- Bienvenida -->
     <section class="animate-fade-in-up">
-      <h1 class="text-[22px] font-bold text-primary leading-tight">¡Hola, María! <span>👋</span></h1>
+      <h1 class="text-[22px] font-bold text-primary leading-tight">¡Hola, <UserGreeting client:load fallback="María" /> </h1>
       <p class="text-sm text-on-surface-variant mt-1">¿Qué quieres aprender hoy?</p>
     </section>
+
+    <!-- Live Banner -->
+    <LiveBanner client:load />
 
     <!-- Resumen rápido -->
     <section class="grid grid-cols-3 gap-3 -mt-4 animate-fade-in-up">
@@ -34,7 +39,7 @@ const QUICK_ACCESS = [
         <a href={stat.path} class="bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-3 py-4 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-elevated">
           <span class="material-symbols-outlined text-secondary text-[24px]" style="font-variation-settings: 'FILL' 1">{stat.icon}</span>
           <span class="text-[18px] font-bold text-primary leading-none">{stat.value}</span>
-          <span class="text-[10px] text-on-surface-variant font-medium">{stat.label}</span>
+          <span class="text-[11px] text-on-surface-variant font-medium">{stat.label}</span>
         </a>
       ))}
     </section>

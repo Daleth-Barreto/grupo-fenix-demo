@@ -1,27 +1,28 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro'
+import LogoutButtonProfile from '../../components/profile/LogoutButtonProfile'
 
 const MENU_ITEMS = [
   { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Descarga tus certificados', path: '/app/constancias' },
   { icon: 'event_available', label: 'Reservaciones y cotización', sub: 'Solicita un evento a tu medida', path: '/app/reservaciones' },
-  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/configuracion' },
-  { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion' },
+  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/comprobantes' },
+  { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion/datos' },
 ]
 ---
-<AppLayout title="Perfil" section="Perfil" showSettings active="/app/perfil">
+<AppLayout title="Perfil" section="Perfil" showSettings showLogout={true} active="/app/perfil">
   <div class="pt-6 pb-10 flex flex-col gap-7 max-w-xl mx-auto">
     <!-- Avatar -->
     <section class="flex flex-col items-center text-center animate-fade-in-up">
       <div class="relative mb-3.5">
         <div class="w-24 h-24 rounded-3xl overflow-hidden border-4 border-surface shadow-card flex items-center justify-center bg-navy-gradient">
-          <span class="text-white text-[32px] font-bold">M</span>
+          <span class="text-white text-[32px] font-bold" id="profile-initial">M</span>
         </div>
         <button class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary rounded-full p-1.5 shadow-card border-2 border-surface hover:bg-secondary-deep transition-colors active:scale-95">
           <span class="material-symbols-outlined text-[14px] filled">edit</span>
         </button>
       </div>
-      <h1 class="text-[20px] font-bold text-primary" id="profile-name">María Fernanda</h1>
-      <p class="text-sm text-outline mt-0.5" id="profile-email">mfernanda@grupofenix.com</p>
+      <h1 class="text-[20px] font-bold text-primary" id="profile-name">Usuario</h1>
+      <p class="text-sm text-outline mt-0.5" id="profile-email">Cargando...</p>
     </section>
 
     <!-- Eventos inscritos -->
@@ -60,29 +61,26 @@ const MENU_ITEMS = [
     </nav>
 
     <!-- Logout -->
-    <button id="btn-logout" class="flex items-center justify-center gap-2.5 text-error text-sm font-bold hover:opacity-75 transition-opacity active:scale-95 px-4 mt-2">
-      <span class="material-symbols-outlined">logout</span>
-      Cerrar sesión
-    </button>
+    <LogoutButtonProfile client:load />
   </div>
 </AppLayout>
 
 <script>
   import { supabase } from '../../lib/supabase'
+  import { onAppReady } from '../../utils/app-ready'
 
-  // Update profile data from supabase session if available
-  supabase.auth.getSession().then(({ data }) => {
-    if (data.session?.user) {
+  // Muestra nombre, correo e inicial de la sesión una vez que la página está lista
+  onAppReady(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session?.user) return
       const { email, user_metadata } = data.session.user
       const nameEl = document.getElementById('profile-name')
       const emailEl = document.getElementById('profile-email')
-      if (nameEl && user_metadata?.full_name) nameEl.textContent = user_metadata.full_name
+      const initialEl = document.getElementById('profile-initial')
+      const fullName = user_metadata?.full_name || email?.split('@')[0] || 'Usuario'
+      if (nameEl) nameEl.textContent = fullName
       if (emailEl && email) emailEl.textContent = email
-    }
-  })
-
-  document.getElementById('btn-logout')?.addEventListener('click', async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/app/login'
+      if (initialEl) initialEl.textContent = fullName.charAt(0).toUpperCase()
+    })
   })
 </script>

@@ -3,7 +3,7 @@ export interface User {
   email: string
   full_name: string
   avatar_url?: string
-  role: 'student' | 'admin'
+  role: 'student' | 'instructor' | 'admin'
 }
 
 export interface Event {
@@ -119,10 +119,35 @@ export interface LiveStream {
   id: string
   title: string
   course_id?: string
+  event_id?: string
   status: 'scheduled' | 'live' | 'ended'
   scheduled_at: string
   stream_url?: string
+  hls_url?: string
   presenter: string
+  is_public?: boolean
+}
+
+export interface Order {
+  id: string
+  user_id: string
+  event_id?: string
+  course_id?: string
+  amount: number
+  status: 'pending' | 'paid' | 'cancelled' | 'refunded'
+  stripe_session_id?: string
+  invoice_details?: InvoiceDetails
+  created_at: string
+}
+
+export interface Enrollment {
+  id: string
+  user_id: string
+  event_id?: string
+  course_id?: string
+  order_id?: string
+  status: 'active' | 'expired'
+  enrolled_at: string
 }
 
 export interface Product {

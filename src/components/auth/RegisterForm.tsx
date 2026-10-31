@@ -1,6 +1,22 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 
+// Definido fuera del componente: si se define dentro, React lo recrea en cada
+// render y el input pierde el foco al escribir (auditoría A5).
+function Field({ label, icon, id, type = 'text', value, onChange, error, autoComplete, placeholder }: any) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="text-[13px] font-semibold text-primary ml-1">{label}</label>
+      <div className="relative">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[22px] pointer-events-none">{icon}</span>
+        <input id={id} type={type} inputMode={type === 'email' ? 'email' : undefined} autoComplete={autoComplete} placeholder={placeholder} value={value} onChange={onChange}
+          className={`w-full bg-surface-soft rounded-2xl py-4 text-base text-primary placeholder:text-outline outline-none pl-12 pr-4 transition-all min-h-[52px] ${error ? 'border border-error focus:ring-4 focus:ring-error/10' : 'border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10'}`} />
+      </div>
+      {error && <p className="text-xs text-error ml-1 flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">error</span>{error}</p>}
+    </div>
+  )
+}
+
 export default function RegisterForm() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -54,18 +70,6 @@ export default function RegisterForm() {
     )
   }
 
-  const Field = ({ label, icon, id, type = 'text', value, onChange, error, autoComplete, placeholder }: any) => (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[13px] font-semibold text-primary ml-1">{label}</label>
-      <div className="relative">
-        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">{icon}</span>
-        <input id={id} type={type} autoComplete={autoComplete} placeholder={placeholder} value={value} onChange={onChange}
-          className={`w-full bg-surface-soft rounded-2xl py-3.5 text-sm text-primary placeholder:text-outline outline-none pl-12 pr-4 transition-all ${error ? 'border border-error focus:ring-4 focus:ring-error/10' : 'border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10'}`} />
-      </div>
-      {error && <p className="text-xs text-error ml-1 flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">error</span>{error}</p>}
-    </div>
-  )
-
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field label="Nombre completo" icon="person" id="fullName" autoComplete="name" placeholder="María Fernanda López" value={fullName} onChange={(e: any) => setFullName(e.target.value)} error={errors.fullName} />
@@ -76,7 +80,7 @@ export default function RegisterForm() {
       <label className="flex items-start gap-3 cursor-pointer mt-1">
         <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 w-5 h-5 rounded-md accent-[#fe9511] cursor-pointer" />
         <span className="text-xs text-on-surface-variant leading-relaxed">
-          Acepto los <a href="/terminos" className="text-secondary font-semibold hover:underline">Términos y Condiciones</a> y el Aviso de Privacidad.
+          Acepto los <span className="text-secondary font-semibold">Términos y Condiciones</span> y el Aviso de Privacidad.
         </span>
       </label>
       {errors.terms && <p className="text-xs text-error ml-1 -mt-2">{errors.terms}</p>}
@@ -88,7 +92,7 @@ export default function RegisterForm() {
       )}
 
       <button type="submit" disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 font-semibold rounded-2xl bg-secondary text-on-secondary hover:bg-secondary-deep shadow-card text-[15px] py-4 px-6 mt-1 disabled:opacity-60 transition-all active:scale-[0.98]">
+        className="w-full inline-flex items-center justify-center gap-2 font-semibold rounded-2xl bg-secondary text-on-secondary hover:bg-secondary-deep shadow-card text-[15px] py-4 px-6 mt-1 disabled:opacity-60 transition-all active:scale-[0.98] min-h-[52px]">
         {loading ? <span className="w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : 'Crear cuenta'}
       </button>
 

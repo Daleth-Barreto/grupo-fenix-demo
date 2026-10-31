@@ -1,0 +1,90 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+
+const inputClass = 'w-full bg-surface-soft rounded-2xl py-4 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all min-h-[52px]'
+const labelClass = 'text-[13px] font-semibold text-primary ml-1'
+---
+<AppLayout title="Cambiar contraseña" section="Cambiar contraseña" showBack>
+  <div class="py-6 flex flex-col gap-6 max-w-xl mx-auto pb-12">
+    <form id="password-form" class="flex flex-col gap-5">
+      <div class="flex flex-col gap-2">
+        <label for="current-pw" class={labelClass}>Contraseña actual</label>
+        <input id="current-pw" type="password" autocomplete="current-password" required class={inputClass} />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="new-pw" class={labelClass}>Nueva contraseña</label>
+        <input id="new-pw" type="password" autocomplete="new-password" required minlength="8" placeholder="Mínimo 8 caracteres" class={inputClass} />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="confirm-pw" class={labelClass}>Confirmar nueva contraseña</label>
+        <input id="confirm-pw" type="password" autocomplete="new-password" required minlength="8" placeholder="Repite la nueva contraseña" class={inputClass} />
+      </div>
+
+      <p id="password-status" role="status" aria-live="polite" class="text-sm min-h-[1.25rem]"></p>
+
+      <button type="submit"
+        class="w-full inline-flex items-center justify-center gap-2 font-semibold rounded-2xl bg-secondary text-on-secondary hover:bg-secondary-deep shadow-card text-[15px] py-4 px-6 disabled:opacity-60 transition-all active:scale-[0.98] min-h-[52px]">
+        Actualizar contraseña
+      </button>
+    </form>
+  </div>
+</AppLayout>
+
+<script>
+  import { supabase } from '../../../lib/supabase'
+  import { onAppReady } from '../../../utils/app-ready'
+
+  onAppReady(() => {
+    const form = document.getElementById('password-form') as HTMLFormElement | null
+    const currentInput = document.getElementById('current-pw') as HTMLInputElement | null
+    const newInput = document.getElementById('new-pw') as HTMLInputElement | null
+    const confirmInput = document.getElementById('confirm-pw') as HTMLInputElement | null
+    const status = document.getElementById('password-status')
+    const submit = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null
+    if (!form || !currentInput || !newInput || !confirmInput) return
+
+    const say = (msg: string, ok = false) => {
+      if (!status) return
+      status.textContent = msg
+      status.className = `text-sm min-h-[1.25rem] ${ok ? 'text-success' : 'text-error'}`
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const current = currentInput.value
+      const next = newInput.value
+      const confirm = confirmInput.value
+
+      if (next.length < 8) return say('La nueva contraseña debe tener al menos 8 caracteres.')
+      if (next !== confirm) return say('Las contraseñas no coinciden.')
+      if (next === current) return say('La nueva contraseña debe ser distinta a la actual.')
+
+      if (submit) submit.disabled = true
+      say('Verificando…', true)
+
+      // Confirmamos la contraseña actual antes de cambiarla, para que alguien con la
+      // sesión abierta en un equipo ajeno no pueda cambiarla sin saberla.
+      const { data } = await supabase.auth.getSession()
+      const email = data.session?.user.email
+      if (!email) {
+        if (submit) submit.disabled = false
+        return say('Tu sesión expiró. Vuelve a iniciar sesión.')
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: current })
+      if (signInError) {
+        if (submit) submit.disabled = false
+        return say('No pudimos verificar tu contraseña actual. Revisa que esté bien escrita.')
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: next })
+      if (submit) submit.disabled = false
+      if (error) return say('No se pudo cambiar la contraseña. Intenta de nuevo.')
+
+      form.reset()
+      say('Contraseña actualizada.', true)
+    })
+  })
+</script>

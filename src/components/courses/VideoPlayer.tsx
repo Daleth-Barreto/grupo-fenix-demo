@@ -25,60 +25,60 @@ export default function VideoPlayer({ title, instructor, courseTitle, lessonTitl
     <div className="flex-1 flex flex-col bg-[#f9f9ff]">
       {/* Video Player */}
       <div className="bg-black w-full relative" style={{ aspectRatio: '16/9' }}>
-        <button onClick={() => window.history.back()} className="absolute top-4 left-4 z-20 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors active:scale-95">
+        <button onClick={() => window.history.back()} className="absolute top-3 left-3 z-20 text-white bg-black/60 backdrop-blur-sm rounded-full p-2.5 hover:bg-black/80 transition-colors active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center">
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
 
-        <button className="absolute top-4 right-4 z-20 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors">
+        <button className="absolute top-3 right-3 z-20 text-white bg-black/60 backdrop-blur-sm rounded-full p-2.5 hover:bg-black/80 transition-colors active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center">
           <span className="material-symbols-outlined">more_vert</span>
         </button>
 
         <button onClick={() => setPlaying(!playing)} className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-5 transition-all active:scale-95 border border-white/30">
-            <span className="material-symbols-outlined text-white text-[44px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+          <div className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-6 transition-all active:scale-95 border border-white/30">
+            <span className="material-symbols-outlined text-white text-[48px] sm:text-[56px]" style={{ fontVariationSettings: "'FILL' 1" }}>
               {playing ? 'pause' : 'play_arrow'}
             </span>
           </div>
         </button>
 
-        <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-8 z-10" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)' }}>
+        <div className="absolute bottom-0 left-0 right-0 px-3 sm:px-4 pb-2 sm:pb-3 pt-10 z-10" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-white text-xs font-medium">
+            <span className="text-white text-xs font-medium min-w-[36px]">
               {Math.floor(parseInt(duration) * progress / 100)}:00
             </span>
-            <div className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden cursor-pointer" onClick={(e) => {
+            <div className="flex-1 h-1.5 bg-white/30 rounded-full overflow-hidden cursor-pointer" onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect()
               setProgress(Math.round(((e.clientX - rect.left) / rect.width) * 100))
             }}>
               <div className="h-full bg-[#fe9511] rounded-full relative" style={{ width: `${progress}%` }}>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#fe9511] rounded-full border-2 border-white shadow" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-[#fe9511] rounded-full border-2 border-white shadow" />
               </div>
             </div>
-            <span className="text-white text-xs font-medium">{duration}</span>
+            <span className="text-white text-xs font-medium min-w-[36px] text-right">{duration}</span>
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <button className="text-white p-1"><span className="material-symbols-outlined text-[20px]">skip_previous</span></button>
-              <button className="text-white p-1"><span className="material-symbols-outlined text-[20px]">skip_next</span></button>
+            <div className="flex items-center gap-0.5">
+              <button className="text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95"><span className="material-symbols-outlined text-[22px]">skip_previous</span></button>
+              <button className="text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95"><span className="material-symbols-outlined text-[22px]">skip_next</span></button>
             </div>
-            <div className="flex items-center gap-1">
-              <button className="text-white p-1"><span className="material-symbols-outlined text-[20px]">closed_caption</span></button>
-              <button className="text-white p-1"><span className="material-symbols-outlined text-[20px]">fullscreen</span></button>
+            <div className="flex items-center gap-0.5">
+              <button className="text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95"><span className="material-symbols-outlined text-[22px]">closed_caption</span></button>
+              <button className="text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95"><span className="material-symbols-outlined text-[22px]">fullscreen</span></button>
             </div>
           </div>
         </div>
       </div>
 
       <div className="flex-1 flex flex-col">
-        <div className="px-5 py-4 bg-white border-b border-[#dce2f3]">
-          <h1 className="text-[16px] font-bold text-[#0f2a44] leading-snug">{lessonTitle}</h1>
-          <div className="flex items-center gap-2 mt-2">
-            <div className="w-7 h-7 rounded-full bg-[#f0f3ff] flex items-center justify-center">
-              <span className="material-symbols-outlined text-[14px] text-[#0f2a44]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+        <div className="px-4 sm:px-5 py-4 bg-white border-b border-[#dce2f3]">
+          <h1 className="text-[17px] sm:text-[18px] font-bold text-[#0f2a44] leading-snug">{lessonTitle}</h1>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <div className="w-8 h-8 rounded-full bg-[#f0f3ff] flex items-center justify-center">
+              <span className="material-symbols-outlined text-[16px] text-[#0f2a44]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
             </div>
             <span className="text-xs text-[#44474d] font-medium">{instructor}</span>
-            <span className="mx-1 text-[#c5c6cd]">·</span>
-            <span className="text-xs text-[#44474d]">{courseTitle}</span>
+            <span className="mx-1 text-[#c5c6cd] hidden sm:inline">·</span>
+            <span className="text-xs text-[#44474d] w-full sm:w-auto">{courseTitle}</span>
           </div>
         </div>
 

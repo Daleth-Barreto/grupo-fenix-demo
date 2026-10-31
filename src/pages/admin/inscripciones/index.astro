@@ -1,0 +1,32 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+---
+<AdminLayout title="Inscripciones" section="Inscripciones">
+  <div class="flex flex-col gap-6">
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Inscripciones / Órdenes</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Revisa las inscripciones a cursos, eventos y congresos</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#dce2f3] flex items-center justify-between">
+        <p class="text-sm text-on-surface-variant">Listado de inscripciones</p>
+        <div class="flex items-center gap-2">
+          <input type="search" placeholder="Buscar por usuario, folio..." class="hidden sm:block px-3 py-2 rounded-xl border border-[#dce2f3] text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all" />
+          <select class="px-3 py-2 rounded-xl border border-[#dce2f3] text-sm focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all">
+            <option>Todos los estados</option>
+            <option>Pendiente</option>
+            <option>Pagado</option>
+            <option>Cancelado</option>
+            <option>Reembolsado</option>
+          </select>
+        </div>
+      </div>
+      <div class="p-8 text-center text-on-surface-variant">
+        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">how_to_reg</span>
+        <p class="font-medium">Sin inscripciones aún</p>
+        <p class="text-sm mt-1">Cuando haya compras desde el sitio, aparecerán aquí</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
