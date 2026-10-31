@@ -1,0 +1,37 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import { TRAYECTORIA } from '../../../data/sitio'
+
+export const prerender = false
+
+const item = TRAYECTORIA.find((event) => event.slug === Astro.params.slug)
+if (!item) return Astro.redirect('/app/galeria')
+---
+<AppLayout title={item.titulo} section="Trayectoria Fénix" showBack active="/app/congresos" requireAuth={false}>
+  <article class="flex flex-col gap-6 pt-5 pb-10">
+    <img src={item.imagen} alt="" class="w-full aspect-[3/2] object-cover rounded-3xl shadow-card" />
+    <header>
+      <h1 class="text-[22px] font-bold text-primary leading-snug">{item.titulo}</h1>
+      <p class="text-sm text-on-surface-variant mt-2">{[item.fechas, item.lugar].filter(Boolean).join(' · ')}</p>
+      {item.asistentes && <p class="text-sm text-on-surface-variant">{item.asistentes} asistentes</p>}
+    </header>
+    <section class="flex flex-col gap-2">
+      <p class="text-sm font-semibold text-primary">{item.lema}</p>
+      <p class="text-sm text-on-surface-variant leading-relaxed">{item.resumen}</p>
+    </section>
+    <section class="flex flex-col gap-2">
+      <h2 class="text-[17px] font-bold text-primary">Ponentes</h2>
+      <ul class="flex flex-col gap-1.5 text-sm text-on-surface-variant">
+        {item.ponentes.map((name) => <li>{name}</li>)}
+      </ul>
+    </section>
+    {item.sede && (
+      <section class="flex flex-col gap-1">
+        <h2 class="text-[17px] font-bold text-primary">Sede</h2>
+        <p class="text-sm font-semibold text-primary">{item.sede}</p>
+        {item.direccion && <p class="text-sm text-on-surface-variant">{item.direccion}</p>}
+      </section>
+    )}
+    <a href="/app/congresos" class="self-start inline-flex bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm min-h-[48px] items-center">Ver próximos congresos</a>
+  </article>
+</AppLayout>

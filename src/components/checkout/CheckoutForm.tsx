@@ -2,10 +2,10 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { adminFetch } from '../../lib/admin-fetch'
 
-type Props = { eventId: string; courseId?: undefined } | { courseId: string; eventId?: undefined }
+type Props = { eventId: string; courseId?: undefined; ticketId?: string; isReservation?: boolean } | { courseId: string; eventId?: undefined; ticketId?: undefined; isReservation?: undefined }
 
 // La tarjeta se captura en la página de Stripe: la app nunca recibe esos datos.
-export default function CheckoutForm({ eventId, courseId }: Props) {
+export default function CheckoutForm({ eventId, courseId, ticketId, isReservation }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -16,7 +16,7 @@ export default function CheckoutForm({ eventId, courseId }: Props) {
     try {
       const res = await adminFetch('/api/checkout/session', {
         method: 'POST',
-        body: JSON.stringify(eventId ? { event_id: eventId } : { course_id: courseId }),
+        body: JSON.stringify(eventId ? { event_id: eventId, ticket_id: ticketId } : { course_id: courseId }),
       })
       if (res.status === 401) {
         window.location.href = `/app/login?next=${encodeURIComponent(window.location.pathname)}`
@@ -36,7 +36,7 @@ export default function CheckoutForm({ eventId, courseId }: Props) {
       <div className="bg-surface rounded-3xl p-5 shadow-sm border border-surface-variant/70 flex gap-3">
         <span className="material-symbols-outlined text-secondary text-[22px]">lock</span>
         <p className="text-sm text-on-surface-variant leading-relaxed">
-          Te llevaremos a la página segura de Stripe para completar tu pago. Tu inscripción se confirma cuando el pago se acredita.
+          Te llevaremos a la página segura de Stripe para completar tu pago. {isReservation ? 'Este es tu primer pago: después te contactamos para completar tu inscripción.' : 'Tu inscripción se confirma cuando el pago se acredita.'}
         </p>
       </div>
 
