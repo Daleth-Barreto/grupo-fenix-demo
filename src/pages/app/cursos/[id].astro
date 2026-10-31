@@ -11,23 +11,21 @@ const { id } = Astro.params
 const course = getCourseById(id!)
 if (!course) return Astro.redirect('/app/cursos')
 
-const totalLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || course.total_lessons || 0
-const completedLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.filter(l => l.is_completed).length || 0), 0) || 0
-const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : (course.progress ?? 0)
+const totalLessons = course.modules.flatMap((m) => m.lessons).length
 ---
 <BaseLayout title={course.title}>
   <AuthGuard client:load>
     <div class="min-h-screen bg-background pb-28">
-      <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
+      <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card" style="padding-top: env(safe-area-inset-top, 0px);">
         <div class="px-5 max-w-2xl mx-auto flex items-center gap-3 h-16">
-          <a href="/app/cursos" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+          <a href="/app/cursos" aria-label="Volver a mis cursos" class="p-2.5 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center">
             <span class="material-symbols-outlined">arrow_back</span>
           </a>
           <span class="font-semibold text-primary text-[15px] truncate">{course.title}</span>
         </div>
       </header>
 
-      <main class="px-5 max-w-2xl mx-auto pt-6 flex flex-col gap-6">
+      <main id="course-main" data-course-id={course.id} data-total={totalLessons} class="px-5 max-w-2xl mx-auto pt-6 flex flex-col gap-6">
         <!-- Info del curso -->
         <section class="bg-navy-gradient rounded-3xl p-5 shadow-hero relative overflow-hidden">
           <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
@@ -37,10 +35,10 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
             <div class="mt-4">
               <div class="flex items-center justify-between text-xs text-white/80 mb-2">
                 <span>Progreso del curso</span>
-                <span class="font-bold text-white">{progress}% ({completedLessons}/{totalLessons})</span>
+                <span id="course-progress-label" class="font-bold text-white">0% (0/{totalLessons})</span>
               </div>
               <div class="h-2 bg-white/20 rounded-full overflow-hidden">
-                <div class="h-full bg-secondary rounded-full transition-all duration-500" style={`width:${progress}%`}></div>
+                <div id="course-progress-bar" class="h-full bg-secondary rounded-full transition-all duration-500" style="width:0%"></div>
               </div>
             </div>
           </div>
@@ -51,7 +49,7 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
         <h2 class="text-[17px] font-bold text-primary">Contenido del curso</h2>
         {course.modules.map((mod) => (
           <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
-            <button class="w-full flex items-center justify-between p-4 text-left accordion-trigger active:scale-[0.99] duration-150 transition-transform" data-open="false">
+            <button class="w-full flex items-center justify-between p-4 text-left accordion-trigger active:scale-[0.99] duration-150 transition-transform" data-open="false" aria-expanded="false">
               <div class="flex items-center gap-3">
                 {mod.is_locked ? (
                   <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
@@ -72,13 +70,13 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
 
             <div class="accordion-content hidden px-4 pb-4">
               {mod.lessons.map((lesson) => (
-                <a href={mod.is_locked ? '#' : `/app/cursos/${course.id}/video/${lesson.id}`}
+                <a href={mod.is_locked ? undefined : `/app/cursos/${course.id}/video/${lesson.id}`}
+                  data-lesson-id={lesson.id}
+                  aria-disabled={mod.is_locked ? 'true' : undefined}
                   class:list={['flex items-center gap-3 py-3 border-b border-surface-variant/50 last:border-0', mod.is_locked ? 'opacity-50 pointer-events-none' : 'hover:bg-surface-container-low rounded-xl px-2 -mx-2 transition-colors']}>
-                  <span class:list={['material-symbols-outlined text-[20px]', lesson.is_completed ? 'text-success filled' : 'text-outline']}>
-                    {lesson.is_completed ? 'check_circle' : 'play_circle'}
-                  </span>
+                  <span class="lesson-icon material-symbols-outlined text-[20px] text-outline">play_circle</span>
                   <div class="flex-1 min-w-0">
-                    <p class:list={['text-sm', lesson.is_completed ? 'text-on-surface-variant' : 'text-primary font-medium']}>{lesson.title}</p>
+                    <p class="text-sm text-primary font-medium">{lesson.title}</p>
                     <p class="text-xs text-outline">{lesson.duration}</p>
                   </div>
                 </a>
@@ -89,9 +87,7 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
                   <p class="text-xs font-semibold text-primary mb-2">Actividades</p>
                   {mod.activities.map((act) => (
                     <div class="flex items-center gap-3 py-2">
-                      <span class:list={['material-symbols-outlined text-[18px]', act.is_done ? 'text-success filled' : 'text-outline']}>
-                        {act.is_done ? 'task_alt' : 'assignment'}
-                      </span>
+                      <span class="material-symbols-outlined text-[18px] text-outline">assignment</span>
                       <div class="flex-1">
                         <p class="text-xs text-primary font-medium">{act.title}</p>
                         {act.due_date && <p class="text-[11px] text-outline">Fecha límite: {act.due_date}</p>}
@@ -110,14 +106,49 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
 </BaseLayout>
 
 <script>
-  document.querySelectorAll('.accordion-trigger').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const content = trigger.nextElementSibling as HTMLElement
-      const arrow = trigger.querySelector('.accordion-arrow') as HTMLElement
-      const isOpen = trigger.getAttribute('data-open') === 'true'
-      trigger.setAttribute('data-open', String(!isOpen))
-      content.classList.toggle('hidden', isOpen)
-      arrow.style.transform = isOpen ? '' : 'rotate(180deg)'
+  import { onAppReady } from '../../../utils/app-ready'
+  import { adminFetch } from '../../../lib/admin-fetch'
+
+  onAppReady(() => {
+    const main = document.getElementById('course-main')
+    const courseId = main?.dataset.courseId
+    const total = Number(main?.dataset.total ?? 0)
+    if (courseId) {
+      adminFetch(`/api/progress?course_id=${encodeURIComponent(courseId)}`)
+        .then(async (res) => {
+          if (!res.ok) return
+          const { lesson_ids } = (await res.json()) as { lesson_ids: string[] }
+          const done = new Set(lesson_ids)
+          let completed = 0
+          document.querySelectorAll<HTMLElement>('[data-lesson-id]').forEach((lesson) => {
+            if (!done.has(lesson.dataset.lessonId ?? '')) return
+            completed++
+            const icon = lesson.querySelector('.lesson-icon')
+            if (icon) {
+              icon.textContent = 'check_circle'
+              icon.classList.replace('text-outline', 'text-success')
+              icon.classList.add('filled')
+            }
+          })
+          const percent = total ? Math.round((completed / total) * 100) : 0
+          const label = document.getElementById('course-progress-label')
+          const bar = document.getElementById('course-progress-bar')
+          if (label) label.textContent = `${percent}% (${completed}/${total})`
+          if (bar) bar.style.width = `${percent}%`
+        })
+        .catch(() => {})
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('.accordion-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const content = trigger.nextElementSibling as HTMLElement | null
+        const arrow = trigger.querySelector('.accordion-arrow') as HTMLElement | null
+        const isOpen = trigger.getAttribute('data-open') === 'true'
+        trigger.setAttribute('data-open', String(!isOpen))
+        trigger.setAttribute('aria-expanded', String(!isOpen))
+        content?.classList.toggle('hidden', isOpen)
+        if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)'
+      })
     })
   })
 </script>

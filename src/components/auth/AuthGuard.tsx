@@ -56,6 +56,15 @@ export default function AuthGuard({ children, redirectTo = '/app/login' }: AuthG
     return () => subscription.unsubscribe()
   }, [setUser, redirectTo])
 
+  // Cuando los hijos ya están en el DOM, avisamos a los <script> de la página
+  // (ver src/utils/app-ready.ts). Sin esto, sus botones no se conectan.
+  useEffect(() => {
+    if (!loading && user) {
+      document.documentElement.dataset.appReady = 'true'
+      document.dispatchEvent(new Event('app:ready'))
+    }
+  }, [loading, user])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">

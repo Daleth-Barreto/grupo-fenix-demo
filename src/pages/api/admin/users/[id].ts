@@ -1,22 +1,33 @@
 import type { APIRoute } from 'astro'
 
 export const prerender = false
-import { getAdminSupabase } from '../../../../lib/supabase-admin'
+import { requireRole, json, pickFields } from '../../../../lib/admin-auth'
 
-export const PUT: APIRoute = async ({ params, request }) => {
+const PROFILE_FIELDS = ['full_name', 'phone', 'avatar_url', 'role']
+const VALID_ROLES = ['student', 'instructor', 'admin']
+
+// Solo administradores pueden editar usuarios, y solo ellos pueden cambiar roles.
+export const PUT: APIRoute = async ({ params, request, locals }) => {
+  const auth = await requireRole(request, locals, ['admin'])
+  if (!auth.ok) return auth.response
+
   try {
-    const { id } = params
     const body = await request.json()
-    const { data, error } = await getAdminSupabase()
+    const update = pickFields(body, PROFILE_FIELDS)
+    if ('role' in update && !VALID_ROLES.includes(update.role as string)) {
+      return json({ error: 'Rol no válido' }, 400)
+    }
+
+    const { data, error } = await auth.db
       .from('user_profiles')
-      .update(body)
-      .eq('id', id)
+      .update(update)
+      .eq('id', params.id)
       .select()
       .single()
 
-    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 })
-    return new Response(JSON.stringify({ data }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    if (error) return json({ error: error.message }, 500)
+    return json({ data })
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 400 })
+    return json({ error: e.message }, 400)
   }
 }

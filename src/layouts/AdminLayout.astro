@@ -28,7 +28,7 @@ const menuItems = [
       <header class="sticky top-0 z-50 bg-white border-b border-[#dce2f3] shadow-sm">
         <div class="px-4 sm:px-6 h-16 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <button id="admin-menu-toggle" class="lg:hidden p-2 rounded-xl hover:bg-surface-container-low transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <button id="admin-menu-toggle" type="button" aria-label="Abrir menú" class="lg:hidden p-2 rounded-xl hover:bg-surface-container-low transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
               <span class="material-symbols-outlined">menu</span>
             </button>
             <a href="/admin" class="flex items-center gap-2">
@@ -66,16 +66,20 @@ const menuItems = [
   </AdminGuard>
 
   <script>
-    const toggle = document.getElementById('admin-menu-toggle')
-    const sidebar = document.getElementById('admin-sidebar')
-    toggle?.addEventListener('click', () => {
-      sidebar?.classList.toggle('-translate-x-full')
-    })
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement
-      if (!sidebar?.contains(target) && !toggle?.contains(target) && window.innerWidth < 1024) {
-        sidebar?.classList.add('-translate-x-full')
-      }
+    import { onAppReady } from '../utils/app-ready'
+
+    onAppReady(() => {
+      const toggle = document.getElementById('admin-menu-toggle')
+      const sidebar = document.getElementById('admin-sidebar')
+      toggle?.addEventListener('click', () => {
+        sidebar?.classList.toggle('-translate-x-full')
+      })
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement
+        if (!sidebar?.contains(target) && !toggle?.contains(target) && window.innerWidth < 1024) {
+          sidebar?.classList.add('-translate-x-full')
+        }
+      })
     })
   </script>
 </BaseLayout>

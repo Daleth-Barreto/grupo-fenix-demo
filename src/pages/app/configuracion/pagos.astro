@@ -1,0 +1,21 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+---
+<AppLayout title="Métodos de pago" section="Métodos de pago" showBack>
+  <div class="py-6 flex flex-col gap-5 max-w-xl mx-auto pb-12">
+    <section class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-5 flex flex-col gap-3">
+      <h1 class="text-[17px] font-bold text-primary">No tienes métodos de pago guardados</h1>
+      <p class="text-sm text-on-surface-variant leading-relaxed">
+        No guardamos tarjetas ni datos bancarios. Cuando pagas una inscripción, escribes tus datos en la página segura de Stripe.
+      </p>
+    </section>
+
+    <a href="/app/comprobantes" class="flex items-center justify-between px-4 py-4 bg-surface rounded-3xl shadow-card border border-surface-variant/70 hover:bg-surface-container-low transition-colors">
+      <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-primary text-[22px]">receipt_long</span>
+        <p class="text-sm font-medium text-primary">Mis comprobantes</p>
+      </div>
+      <span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+    </a>
+  </div>
+</AppLayout>

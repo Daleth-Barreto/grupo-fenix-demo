@@ -37,10 +37,14 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
   </div>
 
   <script>
+    import { adminFetch } from '../../../lib/admin-fetch'
+    import { onAppReady } from '../../../utils/app-ready'
+    import { escapeHtml } from '../../../utils/escape-html'
     let users: any[] = []
     async function load() {
-      const res = await fetch('/api/admin/users')
-      const json = await res.json()
+      const res = await adminFetch('/api/admin/users')
+      const json = (await res.json().catch(() => ({}))) as any
+      if (!res.ok) alert(json.error || 'No se pudo cargar la información')
       users = json.data || []
       render()
     }
@@ -65,41 +69,48 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
                 <span class="material-symbols-outlined text-primary">person</span>
               </div>
               <div>
-                <p class="text-sm font-medium text-primary">${u.full_name || 'Sin nombre'}</p>
-                <p class="text-xs text-on-surface-variant">${u.id}</p>
+                <p class="text-sm font-medium text-primary">${escapeHtml(u.full_name || 'Sin nombre')}</p>
+                <p class="text-xs text-on-surface-variant">${escapeHtml(u.id)}</p>
               </div>
             </div>
           </td>
-          <td class="px-6 py-4 text-sm text-on-surface-variant">${u.phone || '-'}</td>
+          <td class="px-6 py-4 text-sm text-on-surface-variant">${escapeHtml(u.phone || '-')}</td>
           <td class="px-6 py-4">
-            <select data-id="${u.id}" class="role-select px-3 py-1.5 rounded-lg border border-[#dce2f3] text-sm focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all">
+            <select data-id="${escapeHtml(u.id)}" class="role-select px-3 py-1.5 rounded-lg border border-[#dce2f3] text-sm focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all">
               <option value="student" ${u.role === 'student' ? 'selected' : ''}>Estudiante</option>
               <option value="instructor" ${u.role === 'instructor' ? 'selected' : ''}>Instructor</option>
               <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Administrador</option>
             </select>
           </td>
           <td class="px-6 py-4 text-right">
-            <span class="text-xs text-outline">ID: ${u.id.slice(0, 8)}...</span>
+            <span class="text-xs text-outline">ID: ${escapeHtml(String(u.id).slice(0, 8))}...</span>
           </td>
         </tr>
       `).join('')
       document.querySelectorAll('.role-select').forEach(sel => {
         sel.addEventListener('change', async () => {
           const id = sel.getAttribute('data-id')
-          const role = (sel as HTMLSelectElement).value
-          await fetch(`/api/admin/users/${id}`, {
+          const role = (sel as unknown as HTMLSelectElement).value
+          const res = await adminFetch(`/api/admin/users/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ role })
           })
-          alert('Rol actualizado')
+          if (res.ok) {
+            alert('Rol actualizado')
+          } else {
+            const body = (await res.json().catch(() => ({}))) as any
+            alert(body.error || 'No se pudo actualizar el rol')
+          }
           load()
         })
       })
     }
-    document.getElementById('user-search')?.addEventListener('input', (e) => {
-      render((e.target as HTMLInputElement).value)
+    onAppReady(() => {
+      document.getElementById('user-search')?.addEventListener('input', (e) => {
+        render((e.target as HTMLInputElement).value)
+      })
+      load()
     })
-    load()
   </script>
 </AdminLayout>

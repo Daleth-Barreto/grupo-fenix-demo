@@ -42,16 +42,20 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
 </AppLayout>
 
 <script>
-  const chips = document.querySelectorAll('.gallery-chip')
-  const items = document.querySelectorAll('.gallery-item')
-  chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      chips.forEach((c) => { c.classList.remove('bg-secondary', 'text-on-secondary', 'shadow-card'); c.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant') })
-      chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card')
-      chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
-      const cat = (chip as HTMLElement).dataset.category
-      items.forEach((item) => {
-        (item as HTMLElement).style.display = cat === 'Todos' || (item as HTMLElement).dataset.category === cat ? '' : 'none'
+  import { onAppReady } from '../../utils/app-ready'
+
+  onAppReady(() => {
+    const chips = document.querySelectorAll('.gallery-chip')
+    const items = document.querySelectorAll<HTMLElement>('.gallery-item')
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chips.forEach((c) => { c.classList.remove('bg-secondary', 'text-on-secondary', 'shadow-card'); c.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant') })
+        chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card')
+        chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+        const cat = (chip as HTMLElement).dataset.category
+        items.forEach((item) => {
+          item.style.display = cat === 'Todos' || item.dataset.category === cat ? '' : 'none'
+        })
       })
     })
   })

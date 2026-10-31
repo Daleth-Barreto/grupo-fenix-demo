@@ -1,4 +1,5 @@
 import type { Event, Course, Constancia, GalleryEvent } from '../types'
+import { isEventPast } from '../utils/format'
 
 export const MOCK_EVENTS: Event[] = [
   {
@@ -262,10 +263,31 @@ export function getEventById(id: string): Event | undefined {
   return MOCK_EVENTS.find((e) => e.id === id)
 }
 
+/** Eventos que aún no terminan, del más cercano al más lejano. */
+export function getUpcomingEvents(): Event[] {
+  return MOCK_EVENTS
+    .filter((e) => !isEventPast(e.date_end))
+    .sort((a, b) => a.date_start.localeCompare(b.date_start))
+}
+
+/** El evento marcado como destacado o, si ya pasó, el siguiente disponible. */
 export function getFeaturedEvent(): Event | undefined {
-  return MOCK_EVENTS.find((e) => e.is_featured)
+  const upcoming = getUpcomingEvents()
+  return upcoming.find((e) => e.is_featured) ?? upcoming[0]
 }
 
 export function getCourseById(id: string): Course | undefined {
   return MOCK_COURSES.find((c) => c.id === id)
+}
+
+/**
+ * Progreso calculado por lecciones completadas. Se usa tanto en la lista de cursos
+ * como en el detalle, para que ambos muestren el mismo porcentaje.
+ */
+export function getCourseProgress(course: Course): { completed: number; total: number; percent: number } {
+  const lessons = course.modules.flatMap((m) => m.lessons)
+  const completed = lessons.filter((l) => l.is_completed).length
+  const total = lessons.length
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0
+  return { completed, total, percent }
 }
