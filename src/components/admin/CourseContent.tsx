@@ -145,7 +145,10 @@ export default function CourseContent() {
             <div key={lesson.id} className="course-lesson border-t border-[#dce2f3] pt-3 flex flex-col gap-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-primary break-words">{lesson.title}</p>
-                {controls('lessons', lesson, { module_id: module.id })}
+                <span className="flex flex-wrap items-center gap-2">
+                  {lesson.type === 'quiz' && <a data-action="quiz" href={`/admin/cursos/cuestionario?id=${encodeURIComponent(lesson.id)}`} className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-primary text-white min-h-[36px] inline-flex items-center">Preguntas</a>}
+                  {controls('lessons', lesson, { module_id: module.id })}
+                </span>
               </div>
               <div className="pl-3 flex flex-col gap-1">
                 {(lesson.resources ?? []).map((resource: Row) => (

@@ -1,6 +1,6 @@
 /** Qué se puede crear y editar en cada sección del panel. Un solo lugar para agregar campos. */
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'datetime' | 'url' | 'select' | 'checkbox' | 'image' | 'file'
+export type FieldType = 'text' | 'textarea' | 'lines' | 'number' | 'date' | 'datetime' | 'url' | 'select' | 'checkbox' | 'image' | 'file'
 
 export interface FieldOption {
   value: string
@@ -40,6 +40,10 @@ export interface Section {
   columns: Column[]
   canCreate?: boolean
   canDelete?: boolean
+  canEdit?: boolean
+  /** Convierte entre la fila de la base y lo que se ve en el formulario. */
+  toForm?: (row: Row) => Row
+  fromForm?: (values: Row) => Row
   defaults?: () => Row
   validate?: (values: Row) => string | null
   actions?: RowAction[]
@@ -213,6 +217,111 @@ export const SECTIONS = {
       { label: 'Marcar enviada', visible: (r) => !r.sent_at, patch: () => ({ sent_at: new Date().toISOString() }) },
     ],
   },
+  sessions: {
+    singular: 'sesión',
+    endpoint: '/api/admin/sessions',
+    empty: 'Este programa todavía no tiene sesiones.',
+    canCreate: true,
+    canDelete: true,
+    validate: (v) => (v.ends_at && v.ends_at <= v.starts_at ? 'La hora de fin debe ser posterior a la de inicio.' : null),
+    link: (r) => ({ href: `/admin/agenda/sesion?id=${encodeURIComponent(r.id)}`, label: 'Administrar' }),
+    fields: [
+      { name: 'event_id', label: 'Evento', type: 'select', source: 'events', required: true },
+      { name: 'title', label: 'Título', required: true },
+      { name: 'description', label: 'Descripción', type: 'textarea' },
+      { name: 'speaker_name', label: 'Ponente' },
+      { name: 'speaker_bio', label: 'Semblanza del ponente', type: 'textarea' },
+      { name: 'room', label: 'Sala o lugar' },
+      { name: 'starts_at', label: 'Inicio', type: 'datetime', required: true },
+      { name: 'ends_at', label: 'Fin', type: 'datetime' },
+    ],
+    columns: [
+      { label: 'Sesión', value: (r) => r.title },
+      { label: 'Evento', value: (r, l) => l.events?.get(r.event_id) ?? '—' },
+      { label: 'Horario', value: (r) => new Date(r.starts_at).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' }) },
+      { label: 'Ponente', value: (r) => r.speaker_name || '—' },
+    ],
+  },
+  materials: {
+    singular: 'material',
+    endpoint: '/api/admin/session-materials',
+    empty: 'Sin materiales ni grabaciones.',
+    canCreate: true,
+    canDelete: true,
+    defaults: () => ({ kind: 'material' }),
+    fields: [
+      { name: 'title', label: 'Título', required: true },
+      { name: 'kind', label: 'Tipo', type: 'select', required: true, options: [{ value: 'material', label: 'Material' }, { value: 'grabacion', label: 'Grabación' }] },
+      { name: 'url', label: 'Archivo o dirección', type: 'file', required: true },
+    ],
+    columns: [
+      { label: 'Material', value: (r) => r.title },
+      { label: 'Tipo', value: (r) => (r.kind === 'grabacion' ? 'Grabación' : 'Material') },
+    ],
+  },
+  polls: {
+    singular: 'encuesta',
+    endpoint: '/api/admin/session-polls',
+    empty: 'Sin encuestas.',
+    canCreate: true,
+    canDelete: true,
+    defaults: () => ({ is_open: true }),
+    validate: (v) => (v.options?.length >= 2 ? null : 'Escribe al menos 2 opciones, una por línea.'),
+    fields: [
+      { name: 'question', label: 'Pregunta', required: true },
+      { name: 'options', label: 'Opciones (una por línea)', type: 'lines', required: true },
+      { name: 'is_open', label: 'Abierta', type: 'checkbox' },
+    ],
+    columns: [
+      { label: 'Encuesta', value: (r) => r.question },
+      { label: 'Opciones', value: (r) => (r.options ?? []).join(' · ') },
+      { label: 'Estado', value: (r) => (r.is_open ? 'Abierta' : 'Cerrada') },
+    ],
+    actions: [
+      { label: 'Cerrar', visible: (r) => r.is_open, patch: () => ({ is_open: false }) },
+      { label: 'Abrir', visible: (r) => !r.is_open, patch: () => ({ is_open: true }) },
+    ],
+  },
+  questions: {
+    singular: 'pregunta',
+    endpoint: '/api/admin/session-questions',
+    empty: 'Todavía no hay preguntas.',
+    canDelete: true,
+    canEdit: false,
+    fields: [],
+    columns: [
+      { label: 'Pregunta', value: (r) => r.body },
+      { label: 'Estado', value: (r) => (r.answered ? 'Respondida' : 'Sin responder') },
+    ],
+    actions: [
+      { label: 'Marcar respondida', visible: (r) => !r.answered, patch: () => ({ answered: true }) },
+    ],
+  },
+  quiz: {
+    singular: 'pregunta',
+    endpoint: '/api/admin/quiz-questions',
+    empty: 'Este cuestionario todavía no tiene preguntas.',
+    canCreate: true,
+    canDelete: true,
+    defaults: () => ({ position: 1, correct_index: 1 }),
+    toForm: (r) => ({ ...r, correct_index: Number(r.correct_index) + 1 }),
+    fromForm: (v) => ({ ...v, correct_index: Number(v.correct_index) - 1, position: v.position ?? 0 }),
+    validate: (v) => {
+      if (!(v.options?.length >= 2)) return 'Escribe al menos 2 opciones, una por línea.'
+      const correct = Number(v.correct_index)
+      return Number.isInteger(correct) && correct >= 1 && correct <= v.options.length ? null : `La respuesta correcta debe ser un número del 1 al ${v.options.length}.`
+    },
+    fields: [
+      { name: 'prompt', label: 'Pregunta', type: 'textarea', required: true },
+      { name: 'options', label: 'Opciones (una por línea)', type: 'lines', required: true },
+      { name: 'correct_index', label: 'Número de la opción correcta', type: 'number', required: true, help: 'Escribe 1 si es la primera opción, 2 si es la segunda, y así.' },
+      { name: 'position', label: 'Orden', type: 'number' },
+    ],
+    columns: [
+      { label: 'Pregunta', value: (r) => r.prompt },
+      { label: 'Correcta', value: (r) => (r.options ?? [])[r.correct_index] ?? '—' },
+    ],
+  },
   users: {
     singular: 'usuario',
     endpoint: '/api/admin/users',
@@ -234,6 +343,7 @@ export type SectionName = keyof typeof SECTIONS
 
 export const LESSON_TYPES: FieldOption[] = [
   { value: 'video', label: 'Video' },
+  { value: 'quiz', label: 'Cuestionario' },
   { value: 'texto', label: 'Texto' },
   { value: 'actividad', label: 'Actividad' },
   { value: 'recurso', label: 'Recurso' },

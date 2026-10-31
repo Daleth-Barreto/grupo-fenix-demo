@@ -138,6 +138,52 @@ export async function getCourse(id: string): Promise<PublicCourse | null> {
   return toCourse(data as CourseRow)
 }
 
+export interface PublicSession {
+  id: string
+  title: string
+  description: string | null
+  speaker_name: string | null
+  speaker_bio: string | null
+  room: string | null
+  starts_at: string
+  ends_at: string | null
+}
+
+export async function listSessions(eventId: string): Promise<PublicSession[]> {
+  const db = publicClient()
+  if (!db || !/^[0-9a-f-]{36}$/i.test(eventId)) return []
+  const { data, error } = await db
+    .from('event_sessions')
+    .select('id, title, description, speaker_name, speaker_bio, room, starts_at, ends_at')
+    .eq('event_id', eventId)
+    .order('starts_at', { ascending: true })
+  if (error) {
+    console.error('[agenda]', error.message)
+    return []
+  }
+  return (data ?? []) as PublicSession[]
+}
+
+export interface VerifiedCertificate {
+  valid: boolean
+  folio?: string
+  name?: string | null
+  title?: string | null
+  hours?: number | null
+  issued_at?: string | null
+}
+
+export async function verifyCertificate(folio: string): Promise<VerifiedCertificate | null> {
+  const db = publicClient()
+  if (!db) return null
+  const { data, error } = await db.rpc('verify_certificate', { p_folio: folio.trim().toUpperCase() })
+  if (error) {
+    console.error('[verificar]', error.message)
+    return null
+  }
+  return data as VerifiedCertificate
+}
+
 export const upcomingEvents = (events: Event[]): Event[] => events.filter((e) => !isEventPast(e.date_end))
 
 /** El evento marcado como destacado o, si no hay, el siguiente disponible. */

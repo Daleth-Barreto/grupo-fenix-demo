@@ -156,6 +156,41 @@ export const MEDIA = {
   order: { column: 'created_at', ascending: false },
   ownerColumn: 'uploaded_by',
 }
+export const SESSION = {
+  table: 'event_sessions',
+  fields: ['event_id', 'title', 'description', 'speaker_name', 'speaker_bio', 'room', 'starts_at', 'ends_at'],
+  roles: STAFF,
+  filters: ['event_id'],
+  order: { column: 'starts_at' },
+}
+export const SESSION_MATERIAL = {
+  table: 'session_materials',
+  fields: ['session_id', 'title', 'url', 'kind'],
+  roles: STAFF,
+  filters: ['session_id'],
+  order: { column: 'created_at' },
+}
+export const SESSION_POLL = {
+  table: 'session_polls',
+  fields: ['session_id', 'question', 'options', 'is_open'],
+  roles: STAFF,
+  filters: ['session_id'],
+  order: { column: 'created_at' },
+}
+export const SESSION_QUESTION = {
+  table: 'session_questions',
+  fields: ['answered'],
+  roles: STAFF,
+  filters: ['session_id'],
+  order: { column: 'created_at' },
+}
+export const QUIZ_QUESTION = {
+  table: 'quiz_questions',
+  fields: ['lesson_id', 'prompt', 'options', 'correct_index', 'position'],
+  roles: STAFF,
+  filters: ['lesson_id'],
+  order: { column: 'position' },
+}
 export const RESERVATION = {
   table: 'reservation_requests',
   fields: [] as string[],

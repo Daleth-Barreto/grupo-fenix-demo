@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
+import { adminFetch } from '../../lib/admin-fetch'
 
 interface Props {
   backHref: string
@@ -9,10 +10,13 @@ interface Props {
   duration: string
   videoUrl?: string
   isVideo?: boolean
+  lessonId?: string
 }
 
+const SAVE_EVERY_SECONDS = 15
+
 // Reproductor real: si la lección no tiene video lo dice, en vez de simular controles.
-export default function VideoPlayer({ backHref, instructor, courseTitle, lessonTitle, duration, videoUrl, isVideo = true }: Props) {
+export default function VideoPlayer({ backHref, instructor, courseTitle, lessonTitle, duration, videoUrl, isVideo = true, lessonId }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [error, setError] = useState(false)
 
@@ -28,6 +32,45 @@ export default function VideoPlayer({ backHref, instructor, courseTitle, lessonT
     }
     video.src = videoUrl
   }, [videoUrl])
+
+  // Continuar donde se quedó: guarda cada cierto tiempo y al pausar.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !videoUrl || !lessonId) return
+    const url = `/api/lessons/${encodeURIComponent(lessonId)}/position`
+    let lastSaved = 0
+    let resume = 0
+
+    const save = () => {
+      const seconds = Math.floor(video.currentTime)
+      if (seconds === lastSaved) return
+      lastSaved = seconds
+      adminFetch(url, { method: 'PUT', body: JSON.stringify({ seconds }) }).catch(() => {})
+    }
+    const onTime = () => { if (Math.abs(video.currentTime - lastSaved) >= SAVE_EVERY_SECONDS) save() }
+    const seek = () => {
+      // Si casi lo terminó, vuelve a empezar en lugar de saltar al final.
+      if (resume > 0 && (!video.duration || resume < video.duration - 10)) video.currentTime = resume
+    }
+
+    adminFetch(url)
+      .then(async (res) => {
+        if (!res.ok) return
+        resume = ((await res.json()) as { seconds: number }).seconds
+        lastSaved = resume
+        if (video.readyState >= 1) seek()
+      })
+      .catch(() => {})
+
+    video.addEventListener('loadedmetadata', seek)
+    video.addEventListener('timeupdate', onTime)
+    video.addEventListener('pause', save)
+    return () => {
+      video.removeEventListener('loadedmetadata', seek)
+      video.removeEventListener('timeupdate', onTime)
+      video.removeEventListener('pause', save)
+    }
+  }, [videoUrl, lessonId])
 
   return (
     <div className="flex-1 flex flex-col bg-background">

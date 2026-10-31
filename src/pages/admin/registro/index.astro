@@ -1,0 +1,13 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CheckIn from '../../../components/admin/CheckIn'
+---
+<AdminLayout title="Registro de entrada" section="Registro de entrada">
+  <div class="flex flex-col gap-6">
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Registro de entrada</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Escanea el boleto de cada asistente o búscalo por nombre.</p>
+    </div>
+    <CheckIn client:only="react" />
+  </div>
+</AdminLayout>

@@ -16,6 +16,7 @@ export default function CourseDetail({ courseId }: { courseId: string }) {
   const lessons = course.modules.flatMap((m) => m.lessons)
   const completed = lessons.filter((l) => done.has(l.id)).length
   const percent = lessons.length ? Math.round((completed / lessons.length) * 100) : 0
+  const next = lessons.find((l) => !done.has(l.id))
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,6 +31,13 @@ export default function CourseDetail({ courseId }: { courseId: string }) {
           <div className="h-full bg-secondary rounded-full" style={{ width: `${percent}%` }} />
         </div>
       </section>
+
+      {next && (
+        <a id="course-continue" href={`/app/cursos/${course.id}/video/${next.id}`} className="flex items-center justify-between gap-3 bg-secondary text-on-secondary rounded-2xl px-4 py-4 font-semibold text-sm min-h-[52px] shadow-card">
+          <span className="min-w-0 break-words">{completed > 0 ? 'Continuar' : 'Empezar'}: {next.title}</span>
+          <span className="material-symbols-outlined">play_circle</span>
+        </a>
+      )}
 
       {course.description && <p className="text-sm text-on-surface-variant leading-relaxed">{course.description}</p>}
 

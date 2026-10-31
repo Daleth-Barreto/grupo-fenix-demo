@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { verifyCertificate } from '../../lib/catalog'
+
+export const prerender = false
+
+const folio = Astro.params.folio ?? ''
+const result = await verifyCertificate(folio)
+const issued = result?.issued_at ? new Date(result.issued_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Mexico_City' }) : null
+---
+<BaseLayout title="Verificar constancia" description="Valida el folio de una constancia de Grupo Fénix.">
+  <main class="min-h-screen bg-background px-4 py-10 flex flex-col items-center">
+    <article id="verify-result" class="w-full max-w-md bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-6 flex flex-col gap-3">
+      {result === null && (
+        <>
+          <h1 class="text-[22px] font-bold text-primary">No pudimos verificar</h1>
+          <p class="text-sm text-on-surface-variant">Intenta de nuevo en un momento.</p>
+        </>
+      )}
+      {result?.valid === false && (
+        <>
+          <h1 class="text-[22px] font-bold text-error">Folio no encontrado</h1>
+          <p class="text-sm text-on-surface-variant break-all">No existe una constancia con el folio {folio}. Revisa que esté bien escrito.</p>
+        </>
+      )}
+      {result?.valid && (
+        <>
+          <h1 class="text-[22px] font-bold text-success">Constancia válida</h1>
+          <p class="text-base font-semibold text-primary break-words">{result.name}</p>
+          <p class="text-sm text-primary break-words">{result.title}</p>
+          {result.hours ? <p class="text-sm text-on-surface-variant">{result.hours} horas curriculares</p> : null}
+          {issued && <p class="text-sm text-on-surface-variant">Emitida el {issued}</p>}
+          <p class="text-xs text-outline break-all">Folio: {result.folio}</p>
+        </>
+      )}
+      <a href="/verificar" class="text-sm font-semibold text-primary underline mt-2">Verificar otro folio</a>
+    </article>
+  </main>
+</BaseLayout>
