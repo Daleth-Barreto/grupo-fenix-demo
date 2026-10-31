@@ -96,6 +96,7 @@ Correr en Supabase → SQL Editor, además del esquema base:
 
 - `docs/sql/user_progress.sql`: progreso de lecciones
 - `docs/sql/reservation_requests.sql`: solicitudes de cotización
+- `docs/sql/avatars.sql`: fotos de perfil
 
 ## 💳 Webhook de Stripe
 
