@@ -35,6 +35,18 @@ import AppLayout from '../../layouts/AppLayout.astro'
     <section class="flex flex-col gap-2">
       <h2 class="text-[11px] font-bold text-primary uppercase tracking-widest ml-1">Preferencias</h2>
       <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+        <div class="px-4 py-4 border-b border-surface-variant/70 flex flex-col gap-3">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-[22px]">dark_mode</span>
+            <p id="pref-theme-label" class="text-sm font-medium text-primary">Apariencia</p>
+          </div>
+          <div id="theme-options" role="group" aria-labelledby="pref-theme-label" class="grid grid-cols-3 gap-1 bg-surface-container-low rounded-2xl p-1">
+            <button type="button" data-theme-option="light" aria-pressed="false" class="theme-option rounded-xl py-2.5 text-sm font-semibold text-on-surface-variant min-h-[44px]">Claro</button>
+            <button type="button" data-theme-option="dark" aria-pressed="false" class="theme-option rounded-xl py-2.5 text-sm font-semibold text-on-surface-variant min-h-[44px]">Oscuro</button>
+            <button type="button" data-theme-option="auto" aria-pressed="false" class="theme-option rounded-xl py-2.5 text-sm font-semibold text-on-surface-variant min-h-[44px]">Automático</button>
+          </div>
+          <p class="text-xs text-on-surface-variant">Automático sigue el modo de tu celular. Se guarda en este dispositivo.</p>
+        </div>
         <div class="flex items-center justify-between px-4 py-4 border-b border-surface-variant/70">
           <div class="flex items-center gap-4">
             <span class="material-symbols-outlined text-primary text-[22px]">notifications</span>
@@ -96,14 +108,14 @@ import AppLayout from '../../layouts/AppLayout.astro'
 
     <p class="text-center text-xs text-outline mt-4">Grupo FÉNIX App v1.0.0</p>
   </div>
-  <div id="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title" class="fixed inset-0 z-50 flex items-end justify-center bg-primary/50 backdrop-blur-sm hidden">
+  <div id="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title" class="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 backdrop-blur-sm hidden">
     <div class="bg-surface rounded-t-3xl w-full max-w-md p-6 flex flex-col gap-4" style="padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));">
       <h3 id="delete-title" class="text-[18px] font-bold text-primary">¿Eliminar tu cuenta?</h3>
       <p class="text-sm text-on-surface-variant leading-relaxed">
         Esta acción es permanente y no se puede deshacer. Si tienes compras, inscripciones o constancias, deberás solicitarlo a soporte.
       </p>
       <p id="delete-error" role="alert" class="text-sm text-error hidden"></p>
-      <button type="button" id="btn-confirm-delete" class="bg-error text-white font-semibold text-[15px] py-4 rounded-2xl w-full disabled:opacity-60">Sí, eliminar mi cuenta</button>
+      <button type="button" id="btn-confirm-delete" class="bg-error-solid text-white font-semibold text-[15px] py-4 rounded-2xl w-full disabled:opacity-60">Sí, eliminar mi cuenta</button>
       <button type="button" id="btn-cancel-delete" class="bg-transparent text-primary border border-primary hover:bg-surface-container-low font-semibold text-[15px] py-4 rounded-2xl w-full">Cancelar</button>
     </div>
   </div>
@@ -124,6 +136,26 @@ import AppLayout from '../../layouts/AppLayout.astro'
   }
 
   onAppReady(async () => {
+    const theme = (window as unknown as { fenixTheme: { read: () => string; set: (choice: string) => void } }).fenixTheme
+    const themeButtons = document.querySelectorAll<HTMLButtonElement>('.theme-option')
+    const showTheme = (choice: string) => {
+      themeButtons.forEach((btn) => {
+        const on = btn.dataset.themeOption === choice
+        btn.setAttribute('aria-pressed', String(on))
+        btn.classList.toggle('bg-secondary', on)
+        btn.classList.toggle('text-on-secondary', on)
+        btn.classList.toggle('text-on-surface-variant', !on)
+      })
+    }
+    showTheme(theme.read())
+    themeButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.themeOption ?? 'light'
+        theme.set(choice)
+        showTheme(choice)
+      })
+    })
+
     const toggles = document.querySelectorAll<HTMLButtonElement>('.toggle-btn')
     const status = document.getElementById('prefs-status')
     const say = (msg: string) => { if (status) status.textContent = msg }

@@ -4,7 +4,11 @@
    GRUPO FÉNIX — Design System (Tailwind v4 @theme)
    ============================================================ */
 @theme {
-  /* Primary: Deep Navy */
+  /* Azul de la marca: no cambia en modo oscuro, se usa como fondo de portadas y botones */
+  --color-navy: #0f2a44;
+  --color-error-solid: #ba1a1a;
+
+  /* Primary: Deep Navy. En modo oscuro se aclara porque también es color de texto. */
   --color-primary: #0f2a44;
   --color-primary-container: #0f2a44;
   --color-primary-soft: #1e3a5f;
@@ -71,6 +75,46 @@
 }
 
 /* ============================================================
+   Modo oscuro: el panel de admin se queda en claro
+   ============================================================ */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-primary: #e6edf7;
+  --color-primary-soft: #c9d6ea;
+  --color-secondary-deep: #ffb169;
+
+  --color-background: #0b1622;
+  --color-surface: #13202f;
+  --color-surface-soft: #1a2a3c;
+  --color-surface-variant: #2c3e54;
+  --color-surface-container-lowest: #0f1b28;
+  --color-surface-container-low: #172636;
+  --color-surface-container: #1d2e41;
+  --color-surface-container-high: #24374c;
+  --color-surface-container-highest: #2c3e54;
+
+  --color-on-surface: #e7edf5;
+  --color-on-surface-variant: #b9c5d3;
+  --color-outline: #94a1b2;
+  --color-outline-variant: #5b6c81;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #5c1a17;
+  --color-on-error-container: #ffdad6;
+  --color-success: #6fd89b;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-elevated: 0 8px 24px -6px rgba(0, 0, 0, 0.55), 0 2px 6px -2px rgba(0, 0, 0, 0.35);
+  --shadow-hero: 0 20px 40px -12px rgba(0, 0, 0, 0.65);
+}
+html[data-theme="dark"] .bg-green-50, html[data-theme="dark"] .bg-green-100 { background-color: #143524; }
+html[data-theme="dark"] .border-green-200 { border-color: #1f5a3b; }
+html[data-theme="dark"] .text-green-600, html[data-theme="dark"] .text-green-700 { color: #6fd89b; }
+html[data-theme="dark"] .bg-red-100 { background-color: #5c1a17; }
+html[data-theme="dark"] .text-red-600, html[data-theme="dark"] .text-red-700 { color: #ffb4ab; }
+
+/* ============================================================
    Base
    ============================================================ */
 * { box-sizing: border-box; }
@@ -80,8 +124,8 @@ html {
 }
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #f9f9ff;
-  color: #151c27;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
