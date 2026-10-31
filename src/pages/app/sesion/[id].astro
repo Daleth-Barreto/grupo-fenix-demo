@@ -1,0 +1,14 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import SessionRoom from '../../../components/events/SessionRoom'
+
+export const prerender = false
+
+const { id } = Astro.params
+if (!id) return Astro.redirect('/app/mis-eventos')
+---
+<AppLayout title="Sesión" section="Sesión" showBack active="/app/perfil">
+  <div class="pt-5 pb-10">
+    <SessionRoom client:only="react" sessionId={id} />
+  </div>
+</AppLayout>

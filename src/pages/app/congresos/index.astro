@@ -49,6 +49,24 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
       ))}
     </div>
 
+    <!-- Buscador y filtros -->
+    <div class="flex flex-col gap-2 -mt-3">
+      <input id="event-search" type="search" aria-label="Buscar eventos" placeholder="Buscar por tema o ciudad" class="w-full bg-surface-soft rounded-2xl py-3 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary outline-none min-h-[48px]" />
+      <div class="grid grid-cols-2 gap-2">
+        <select id="event-modality" aria-label="Modalidad" class="w-full bg-surface border border-surface-variant rounded-2xl py-3 px-3 text-sm text-primary min-h-[48px]">
+          <option value="">Toda modalidad</option>
+          <option value="Presencial">Presencial</option>
+          <option value="En línea">En línea</option>
+          <option value="Híbrido">Híbrido</option>
+        </select>
+        <select id="event-when" aria-label="Fecha" class="w-full bg-surface border border-surface-variant rounded-2xl py-3 px-3 text-sm text-primary min-h-[48px]">
+          <option value="">Toda fecha</option>
+          <option value="proximos">Próximos</option>
+          <option value="pasados">Finalizados</option>
+        </select>
+      </div>
+    </div>
+
     <!-- Resultados -->
     <div class="flex items-center justify-between -mt-2">
       <p class="text-xs text-outline font-medium" id="results-count">{events.length} {events.length === 1 ? 'evento' : 'eventos'}</p>
@@ -57,7 +75,7 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
     <!-- Grid de tarjetas -->
     <div class="grid grid-cols-1 gap-5" id="events-grid">
       {events.map((event, i) => (
-        <div data-category={event.category}>
+        <div data-category={event.category} data-modality={event.modality} data-end={event.date_end} data-search={`${event.title} ${event.description} ${event.location}`.toLowerCase()}>
           <EventCard event={event} index={i} />
         </div>
       ))}
@@ -72,11 +90,31 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
 
 <script>
   import { onAppReady } from '../../../utils/app-ready'
+  import { isEventPast } from '../../../utils/format'
 
   onAppReady(() => {
-    const chips = document.querySelectorAll('.filter-chip')
+    const chips = document.querySelectorAll<HTMLElement>('.filter-chip')
     const cards = document.querySelectorAll<HTMLElement>('#events-grid > div')
     const count = document.getElementById('results-count')
+    const search = document.getElementById('event-search') as unknown as HTMLInputElement
+    const modality = document.getElementById('event-modality') as unknown as HTMLSelectElement
+    const when = document.getElementById('event-when') as unknown as HTMLSelectElement
+    let category = 'Todos'
+
+    const apply = () => {
+      const term = search.value.trim().toLowerCase()
+      let visible = 0
+      cards.forEach((card) => {
+        const past = isEventPast(card.dataset.end ?? '')
+        const show = (category === 'Todos' || card.dataset.category === category)
+          && (!modality.value || card.dataset.modality === modality.value)
+          && (!term || (card.dataset.search ?? '').includes(term))
+          && (when.value === '' || (when.value === 'proximos' ? !past : past))
+        card.style.display = show ? '' : 'none'
+        if (show) visible++
+      })
+      if (count) count.textContent = visible === 0 ? 'Sin resultados. Prueba con otro filtro.' : `${visible} evento${visible !== 1 ? 's' : ''}`
+    }
 
     chips.forEach((chip) => {
       chip.addEventListener('click', () => {
@@ -86,16 +124,13 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
         })
         chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
         chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
-
-        const cat = (chip as HTMLElement).dataset.category
-        let visible = 0
-        cards.forEach((card) => {
-          const show = cat === 'Todos' || card.dataset.category === cat
-          card.style.display = show ? '' : 'none'
-          if (show) visible++
-        })
-        if (count) count.textContent = `${visible} evento${visible !== 1 ? 's' : ''}${cat !== 'Todos' ? ` · ${cat}` : ''}`
+        category = chip.dataset.category ?? 'Todos'
+        apply()
       })
     })
+    search.addEventListener('input', apply)
+    modality.addEventListener('change', apply)
+    when.addEventListener('change', apply)
+    apply()
   })
 </script>

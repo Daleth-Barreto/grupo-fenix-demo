@@ -53,6 +53,7 @@ export default function CertificatesList() {
             )}
             {item.certificate_number && <p className="text-xs text-outline mt-0.5">Folio: {item.certificate_number}</p>}
             {item.sent_at && <p className="text-xs text-on-surface-variant mt-0.5">Enviada a tu correo</p>}
+            {item.certificate_number && <a href={`/app/constancias/${item.id}`} data-action="certificate" className="inline-block text-sm font-semibold text-primary underline mt-2 min-h-[32px]">Ver constancia</a>}
           </div>
         </article>
       ))}

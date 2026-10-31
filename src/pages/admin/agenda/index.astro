@@ -1,0 +1,13 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CrudManager from '../../../components/admin/CrudManager'
+---
+<AdminLayout title="Agenda" section="Agenda">
+  <div class="flex flex-col gap-6">
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Agenda</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Programa de cada evento, con sus ponentes. En cada sesión administras materiales, encuestas y preguntas.</p>
+    </div>
+    <CrudManager client:only="react" section="sessions" />
+  </div>
+</AdminLayout>

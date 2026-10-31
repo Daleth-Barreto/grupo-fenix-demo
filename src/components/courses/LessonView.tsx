@@ -1,5 +1,6 @@
 import VideoPlayer from './VideoPlayer'
 import MarkCompleteButton from './MarkCompleteButton'
+import QuizView from './QuizView'
 import { useCourse } from './useCourse'
 
 export default function LessonView({ courseId, lessonId }: { courseId: string; lessonId: string }) {
@@ -29,10 +30,12 @@ export default function LessonView({ courseId, lessonId }: { courseId: string; l
   return (
     <div className="min-h-screen flex flex-col">
       <VideoPlayer backHref={back} instructor={course.instructor ?? ''} courseTitle={course.title} lessonTitle={lesson.title}
-        duration={lesson.duration_minutes ? `${lesson.duration_minutes} min` : ''} videoUrl={lesson.video_url ?? undefined} isVideo={lesson.type === 'video'} />
+        duration={lesson.duration_minutes ? `${lesson.duration_minutes} min` : ''} videoUrl={lesson.video_url ?? undefined} isVideo={lesson.type === 'video'} lessonId={lesson.id} />
 
       <div className="px-4 sm:px-5 bg-surface flex flex-col gap-4 pb-4">
         {lesson.content && <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line">{lesson.content}</p>}
+
+        {lesson.type === 'quiz' && <QuizView lessonId={lesson.id} />}
 
         {lesson.resources.length > 0 && (
           <section>

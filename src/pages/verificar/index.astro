@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+---
+<BaseLayout title="Verificar constancia" description="Valida el folio de una constancia de Grupo Fénix.">
+  <main class="min-h-screen bg-background px-4 py-10 flex flex-col items-center">
+    <form id="verify-form" class="w-full max-w-md bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-6 flex flex-col gap-4">
+      <h1 class="text-[22px] font-bold text-primary">Verificar constancia</h1>
+      <label for="verify-folio" class="text-sm font-semibold text-primary">Folio</label>
+      <input id="verify-folio" required placeholder="GF-2026-XXXXXXXXXX" class="w-full bg-surface-soft rounded-2xl py-3 px-4 text-base text-primary border border-transparent focus:border-secondary outline-none min-h-[48px]" />
+      <button type="submit" class="bg-secondary text-on-secondary font-semibold rounded-2xl py-3 min-h-[48px]">Verificar</button>
+    </form>
+  </main>
+</BaseLayout>
+
+<script>
+  document.getElementById('verify-form')?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const input = document.getElementById('verify-folio') as HTMLInputElement
+    window.location.href = `/verificar/${encodeURIComponent(input.value.trim())}`
+  })
+</script>

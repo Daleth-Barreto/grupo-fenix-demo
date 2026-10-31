@@ -1,6 +1,7 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro'
 import LogoutButtonProfile from '../../components/profile/LogoutButtonProfile'
+import AdminPanelLink from '../../components/admin/AdminPanelLink'
 
 const MENU_ITEMS = [
   { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Tus certificados emitidos', path: '/app/constancias' },
@@ -28,6 +29,8 @@ const MENU_ITEMS = [
       <p class="text-sm text-outline mt-0.5" id="profile-email">Cargando...</p>
       <p id="photo-status" role="status" aria-live="polite" class="text-xs mt-1 min-h-[1rem]"></p>
     </section>
+
+    <AdminPanelLink client:only="react" />
 
     <!-- Eventos inscritos -->
     <a href="/app/mis-eventos" class="relative overflow-hidden rounded-3xl shadow-card bg-navy-gradient hover:shadow-elevated transition-shadow active:scale-[0.98] duration-150 block group">

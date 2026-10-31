@@ -42,6 +42,7 @@ export const POST: APIRoute = async ({ request, locals, url }) => {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       locale: 'es-419',
+      allow_promotion_codes: true,
       client_reference_id: auth.userId,
       customer_email: auth.email || undefined,
       metadata,
