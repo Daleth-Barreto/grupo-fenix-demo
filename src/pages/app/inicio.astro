@@ -5,11 +5,12 @@ import Countdown from '../../components/events/Countdown'
 import UpcomingEvents from '../../components/sections/UpcomingEvents.astro'
 import UserGreeting from '../../components/auth/UserGreeting'
 import LiveBanner from '../../components/live/LiveBanner'
-import { MOCK_EVENTS, getFeaturedEvent } from '../../data/mock'
+import DashboardStats from '../../components/account/DashboardStats'
+import { getUpcomingEvents, getFeaturedEvent } from '../../data/mock'
 import { formatDateRange } from '../../utils/format'
 
 const featured = getFeaturedEvent()
-const upcoming = MOCK_EVENTS.slice(0, 2)
+const upcoming = getUpcomingEvents().filter((e) => e.id !== featured?.id).slice(0, 3)
 
 const QUICK_ACCESS = [
   { icon: 'local_activity', label: 'Congresos', path: '/app/congresos' },
@@ -22,7 +23,7 @@ const QUICK_ACCESS = [
   <div class="pt-6 pb-10 flex flex-col gap-9">
     <!-- Bienvenida -->
     <section class="animate-fade-in-up">
-      <h1 class="text-[22px] font-bold text-primary leading-tight">¡Hola, <UserGreeting client:load fallback="María" /> </h1>
+      <h1 class="text-[22px] font-bold text-primary leading-tight">¡Hola, <UserGreeting client:load fallback="" /> </h1>
       <p class="text-sm text-on-surface-variant mt-1">¿Qué quieres aprender hoy?</p>
     </section>
 
@@ -30,29 +31,17 @@ const QUICK_ACCESS = [
     <LiveBanner client:load />
 
     <!-- Resumen rápido -->
-    <section class="grid grid-cols-3 gap-3 -mt-4 animate-fade-in-up">
-      {[
-        { icon: 'local_activity', value: '3', label: 'Inscritos', path: '/app/congresos' },
-        { icon: 'play_circle', value: '2', label: 'Cursos', path: '/app/cursos' },
-        { icon: 'workspace_premium', value: '3', label: 'Constancias', path: '/app/constancias' },
-      ].map((stat) => (
-        <a href={stat.path} class="bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-3 py-4 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-elevated">
-          <span class="material-symbols-outlined text-secondary text-[24px]" style="font-variation-settings: 'FILL' 1">{stat.icon}</span>
-          <span class="text-[18px] font-bold text-primary leading-none">{stat.value}</span>
-          <span class="text-[11px] text-on-surface-variant font-medium">{stat.label}</span>
-        </a>
-      ))}
-    </section>
+    <DashboardStats client:only="react" />
 
     <!-- Hero — Próximo Congreso -->
     {featured && (
-      <section class="animate-fade-in-up">
+      <section class="animate-fade-in-up" data-event-end={featured.date_end} data-remove-if-past>
         <div class="rounded-3xl overflow-hidden relative shadow-hero bg-navy-gradient">
           <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
           <img src="/brand/phoenix/phoenix_5_white.png" alt="" aria-hidden="true" class="absolute -right-8 -bottom-8 w-48 opacity-[0.07] pointer-events-none select-none" />
           <div class="relative z-10 p-6 flex flex-col gap-5">
             <div>
-              <Badge label="Próximo congreso" variant="orange" />
+              <Badge label="Evento destacado" variant="orange" />
               <h2 class="text-[24px] font-bold text-white leading-snug tracking-tight mt-3">{featured.title}</h2>
             </div>
 
@@ -75,12 +64,6 @@ const QUICK_ACCESS = [
               <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
             </a>
           </div>
-        </div>
-
-        <div class="flex justify-center gap-2 mt-3">
-          <div class="w-2 h-2 rounded-full bg-secondary"></div>
-          <div class="w-2 h-2 rounded-full bg-surface-variant"></div>
-          <div class="w-2 h-2 rounded-full bg-surface-variant"></div>
         </div>
       </section>
     )}

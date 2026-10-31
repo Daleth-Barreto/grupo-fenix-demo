@@ -8,28 +8,19 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <h1 class="text-[28px] font-bold text-primary">Biblioteca de Medios</h1>
         <p class="text-sm text-on-surface-variant mt-1">Imágenes, documentos y recursos (Supabase Storage)</p>
       </div>
-      <button class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-secondary-deep transition-colors min-h-[44px]">
-        <span class="material-symbols-outlined text-[20px]">upload</span>
-        Subir archivo
+      <button type="button" disabled class="inline-flex items-center gap-2 bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] cursor-not-allowed">
+        Subir archivo (próximamente)
       </button>
     </div>
 
     <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-[#dce2f3] flex items-center justify-between">
         <p class="text-sm text-on-surface-variant">Archivos</p>
-        <div class="flex items-center gap-2">
-          <button class="p-2 rounded-xl hover:bg-surface-container-low transition-colors">
-            <span class="material-symbols-outlined text-[20px]">view_list</span>
-          </button>
-          <button class="p-2 rounded-xl hover:bg-surface-container-low transition-colors">
-            <span class="material-symbols-outlined text-[20px]">grid_view</span>
-          </button>
-        </div>
       </div>
       <div class="p-8 text-center text-on-surface-variant">
         <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">perm_media</span>
-        <p class="font-medium">Sin archivos</p>
-        <p class="text-sm mt-1">Sube imágenes, PDFs u otros recursos para usar en cursos y eventos</p>
+        <p class="font-medium">Biblioteca en construcción</p>
+        <p class="text-sm mt-1">Todavía no se pueden subir archivos desde el panel.</p>
       </div>
     </div>
   </div>

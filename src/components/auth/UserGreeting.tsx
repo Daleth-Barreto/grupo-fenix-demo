@@ -17,5 +17,5 @@ export default function UserGreeting({ fallback = 'Usuario' }: UserGreetingProps
     }
   }, [user])
 
-  return <>{name}! 👋</>
+  return <>{name ? `${name}!` : '!'} 👋</>
 }

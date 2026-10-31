@@ -1,4 +1,5 @@
 import type { Event, Course, Constancia, GalleryEvent } from '../types'
+import { isEventPast } from '../utils/format'
 
 export const MOCK_EVENTS: Event[] = [
   {
@@ -262,8 +263,17 @@ export function getEventById(id: string): Event | undefined {
   return MOCK_EVENTS.find((e) => e.id === id)
 }
 
+/** Eventos que aún no terminan, del más cercano al más lejano. */
+export function getUpcomingEvents(): Event[] {
+  return MOCK_EVENTS
+    .filter((e) => !isEventPast(e.date_end))
+    .sort((a, b) => a.date_start.localeCompare(b.date_start))
+}
+
+/** El evento marcado como destacado o, si ya pasó, el siguiente disponible. */
 export function getFeaturedEvent(): Event | undefined {
-  return MOCK_EVENTS.find((e) => e.is_featured)
+  const upcoming = getUpcomingEvents()
+  return upcoming.find((e) => e.is_featured) ?? upcoming[0]
 }
 
 export function getCourseById(id: string): Course | undefined {

@@ -91,27 +91,34 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
 
   <script>
     import { adminFetch } from '../../../lib/admin-fetch'
-    const form = document.getElementById('event-form') as HTMLFormElement
-    form?.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      const formData = new FormData(form)
-      const body: any = {}
-      formData.forEach((v, k) => {
-        if (k === 'price' || k === 'hours') body[k] = v === '' ? null : Number(v)
-        else body[k] = v
-      })
-      const res = await adminFetch('/api/admin/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
-      const json = await res.json()
-      if (res.ok) {
-        alert('Evento creado correctamente')
-        window.location.href = '/admin/eventos'
-      } else {
-        alert(json.error || 'Error al crear evento')
+    import { onAppReady } from '../../../utils/app-ready'
+    onAppReady(() => {
+      const form = document.getElementById('event-form') as HTMLFormElement
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const formData = new FormData(form)
+        const body: any = {}
+        formData.forEach((v, k) => {
+          if (k === 'price' || k === 'hours') body[k] = v === '' ? null : Number(v)
+          else body[k] = v
+        })
+        if (body.end_date < body.start_date) {
+        alert('La fecha de fin no puede ser anterior a la de inicio.')
+        return
       }
+      const res = await adminFetch('/api/admin/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+        const json = (await res.json()) as any
+        if (res.ok) {
+          alert('Evento creado correctamente')
+          window.location.href = '/admin/eventos'
+        } else {
+          alert(json.error || 'Error al crear evento')
+        }
+      })
     })
   </script>
 </AdminLayout>

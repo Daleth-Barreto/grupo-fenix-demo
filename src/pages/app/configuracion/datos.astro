@@ -1,7 +1,7 @@
 ---
 import AppLayout from '../../../layouts/AppLayout.astro'
 
-const inputClass = 'w-full bg-surface-soft rounded-2xl py-4 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all min-h-[52px] disabled:opacity-60'
+const inputClass = 'w-full bg-surface-soft rounded-2xl py-4 px-4 text-base text-primary placeholder:text-outline border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all min-h-[52px]'
 const labelClass = 'text-[13px] font-semibold text-primary ml-1'
 ---
 <AppLayout title="Datos personales" section="Datos personales" showBack>
@@ -9,13 +9,18 @@ const labelClass = 'text-[13px] font-semibold text-primary ml-1'
     <form id="datos-form" class="flex flex-col gap-5">
       <div class="flex flex-col gap-2">
         <label for="full-name" class={labelClass}>Nombre completo</label>
-        <input id="full-name" name="full_name" type="text" autocomplete="name" maxlength="100" placeholder="Tu nombre y apellidos" class={inputClass} />
+        <input id="full-name" name="full_name" type="text" autocomplete="name" required minlength="3" maxlength="100" placeholder="Tu nombre y apellidos" class={inputClass} />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="phone" class={labelClass}>Teléfono</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="20" placeholder="10 dígitos" class={inputClass} />
       </div>
 
       <div class="flex flex-col gap-2">
         <label for="email" class={labelClass}>Correo electrónico</label>
-        <input id="email" name="email" type="email" disabled class={inputClass} />
-        <p class="text-xs text-outline ml-1">Por ahora el correo no se puede cambiar desde la app.</p>
+        <input id="email" name="email" type="email" autocomplete="email" required class={inputClass} />
+        <p class="text-xs text-outline ml-1">Si lo cambias, te pediremos confirmarlo desde tu correo.</p>
       </div>
 
       <p id="datos-status" role="status" aria-live="polite" class="text-sm min-h-[1.25rem]"></p>
@@ -31,14 +36,16 @@ const labelClass = 'text-[13px] font-semibold text-primary ml-1'
 <script>
   import { supabase } from '../../../lib/supabase'
   import { onAppReady } from '../../../utils/app-ready'
+  import { adminFetch } from '../../../lib/admin-fetch'
 
   onAppReady(async () => {
     const form = document.getElementById('datos-form') as HTMLFormElement | null
     const nameInput = document.getElementById('full-name') as HTMLInputElement | null
+    const phoneInput = document.getElementById('phone') as HTMLInputElement | null
     const emailInput = document.getElementById('email') as HTMLInputElement | null
     const status = document.getElementById('datos-status')
     const submit = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null
-    if (!form || !nameInput || !emailInput) return
+    if (!form || !nameInput || !phoneInput || !emailInput) return
 
     const say = (msg: string, ok = false) => {
       if (!status) return
@@ -48,27 +55,54 @@ const labelClass = 'text-[13px] font-semibold text-primary ml-1'
 
     const { data } = await supabase.auth.getSession()
     const user = data.session?.user
-    if (user) {
-      nameInput.value = (user.user_metadata?.full_name as string | undefined) ?? ''
-      emailInput.value = user.email ?? ''
+    let currentEmail = user?.email ?? ''
+    nameInput.value = (user?.user_metadata?.full_name as string | undefined) ?? ''
+    emailInput.value = currentEmail
+
+    const profileRes = await adminFetch('/api/account/profile').catch(() => null)
+    if (profileRes?.ok) {
+      const body = (await profileRes.json()) as { data?: { full_name: string | null; phone: string | null } }
+      if (body.data?.full_name) nameInput.value = body.data.full_name
+      phoneInput.value = body.data?.phone ?? ''
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
       const fullName = nameInput.value.trim()
-      if (fullName.length < 3) {
-        say('Escribe tu nombre completo (mínimo 3 caracteres).')
-        return
-      }
+      const phone = phoneInput.value.trim()
+      const email = emailInput.value.trim()
+
+      if (fullName.length < 3) return say('Escribe tu nombre completo (mínimo 3 caracteres).')
+      const digits = phone.replace(/\D/g, '').length
+      if (phone && digits < 10) return say('Escribe un teléfono de al menos 10 dígitos.')
+      if (!emailInput.checkValidity()) return say('Escribe un correo válido.')
+
       if (submit) submit.disabled = true
       say('Guardando…', true)
-      const { error } = await supabase.auth.updateUser({ data: { full_name: fullName } })
-      if (submit) submit.disabled = false
-      if (error) {
-        say('No se pudo guardar. Intenta de nuevo.')
-        return
+
+      try {
+        const res = await adminFetch('/api/account/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ full_name: fullName, phone }),
+        })
+        if (!res.ok) {
+          const body = (await res.json().catch(() => ({}))) as { error?: string }
+          throw new Error(body.error || 'No se pudieron guardar tus datos.')
+        }
+
+        const emailChanged = email !== currentEmail
+        const { error } = await supabase.auth.updateUser({
+          data: { full_name: fullName },
+          ...(emailChanged ? { email } : {}),
+        })
+        if (error) throw new Error(emailChanged ? 'Se guardaron tus datos, pero no se pudo cambiar el correo.' : 'No se pudieron guardar tus datos.')
+
+        say(emailChanged ? 'Datos guardados. Revisa tu correo para confirmar el cambio.' : 'Datos actualizados.', true)
+      } catch (err) {
+        say(err instanceof Error ? err.message : 'No se pudieron guardar tus datos.')
+      } finally {
+        if (submit) submit.disabled = false
       }
-      say('Datos actualizados.', true)
     })
   })
 </script>

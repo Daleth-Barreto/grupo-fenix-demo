@@ -1,27 +1,50 @@
+import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { adminFetch } from '../../lib/admin-fetch'
 
-interface Props { event: any }
+interface Props { eventId: string }
 
-// Auditoría C1: el pago aún no está conectado a Stripe.
-// No se capturan datos de tarjeta ni se simula un cobro exitoso.
-export default function CheckoutForm({ event }: Props) {
-  const handleSubmit = (e: FormEvent) => {
+// La tarjeta se captura en la página de Stripe: la app nunca recibe esos datos.
+export default function CheckoutForm({ eventId }: Props) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await adminFetch('/api/checkout/session', {
+        method: 'POST',
+        body: JSON.stringify({ event_id: eventId }),
+      })
+      if (res.status === 401) {
+        window.location.href = '/app/login'
+        return
+      }
+      const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string }
+      if (!res.ok || !body.url) throw new Error(body.error || 'No se pudo iniciar el pago.')
+      window.location.href = body.url
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo iniciar el pago.')
+      setLoading(false)
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <div className="bg-surface rounded-3xl p-5 shadow-sm border border-surface-variant/70">
-        <h3 className="text-sm font-bold text-primary mb-2">Pago en línea no disponible</h3>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="bg-surface rounded-3xl p-5 shadow-sm border border-surface-variant/70 flex gap-3">
+        <span className="material-symbols-outlined text-secondary text-[22px]">lock</span>
         <p className="text-sm text-on-surface-variant leading-relaxed">
-          Todavía no podemos cobrar en línea. No se realizó ningún cargo y no se guardaron datos de tarjeta.
-          Para inscribirte a <strong>{event?.title}</strong>, comunícate con nosotros para indicarte cómo hacerlo.
+          Te llevaremos a la página segura de Stripe para completar tu pago. Tu inscripción se confirma cuando el pago se acredita.
         </p>
       </div>
 
-      <button type="submit" disabled
-        className="w-full bg-surface-soft text-outline font-semibold text-[15px] py-4 rounded-2xl min-h-[52px] cursor-not-allowed">
-        Pago no disponible
+      {error && <p role="alert" className="text-sm text-error text-center">{error}</p>}
+
+      <button type="submit" disabled={loading}
+        className="w-full bg-secondary hover:bg-secondary-deep text-on-secondary font-semibold text-[15px] py-4 rounded-2xl min-h-[52px] shadow-card transition-all active:scale-[0.98] disabled:opacity-60">
+        {loading ? 'Conectando con Stripe…' : 'Continuar al pago'}
       </button>
     </form>
   )

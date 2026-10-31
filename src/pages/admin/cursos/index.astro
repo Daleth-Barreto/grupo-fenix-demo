@@ -8,10 +8,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <h1 class="text-[28px] font-bold text-primary">Cursos</h1>
         <p class="text-sm text-on-surface-variant mt-1">Constructor de cursos con módulos y lecciones</p>
       </div>
-      <a href="/admin/cursos/nuevo" class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-secondary-deep transition-colors min-h-[44px]">
-        <span class="material-symbols-outlined text-[20px]">add</span>
-        Nuevo Curso
-      </a>
+      <button type="button" disabled class="inline-flex items-center gap-2 bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] cursor-not-allowed">
+        Nuevo curso (próximamente)
+      </button>
     </div>
 
     <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
@@ -20,8 +19,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
       </div>
       <div class="p-8 text-center text-on-surface-variant">
         <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">school</span>
-        <p class="font-medium">Sin cursos creados</p>
-        <p class="text-sm mt-1">Usa el constructor para crear módulos, lecciones y actividades</p>
+        <p class="font-medium">Constructor de cursos en construcción</p>
+        <p class="text-sm mt-1">Los cursos de la app todavía vienen del catálogo de ejemplo.</p>
       </div>
     </div>
   </div>
