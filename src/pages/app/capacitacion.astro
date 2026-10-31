@@ -1,0 +1,41 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+import { CAPACITACIONES, CAPACITACION_BENEFICIOS, CAPACITACION_INTRO } from '../../data/sitio'
+---
+<AppLayout title="Capacitación laboral" section="Capacitación laboral" showBack active="/app/congresos" requireAuth={false}>
+  <div class="flex flex-col gap-7 pt-5 pb-10">
+    <section>
+      <h1 class="text-[28px] font-bold text-primary leading-tight">Impulsando el talento</h1>
+      <p class="text-sm text-on-surface-variant mt-2 leading-relaxed">{CAPACITACION_INTRO}</p>
+    </section>
+
+    {CAPACITACIONES.map((item) => (
+      <section id={item.id} class="flex flex-col gap-3">
+        <img src={item.imagen} alt="" loading="lazy" class="w-full aspect-[3/2] object-cover rounded-3xl shadow-card" />
+        <h2 class="text-[20px] font-bold text-primary leading-snug">{item.titulo}</h2>
+        <p class="text-sm font-semibold text-primary">{item.subtitulo}</p>
+        <p class="text-sm text-on-surface-variant leading-relaxed">{item.descripcion}</p>
+        <div class="flex flex-col gap-2">
+          {item.temas.map((tema) => (
+            <div class="bg-surface rounded-2xl border border-surface-variant/70 p-4">
+              <h3 class="text-sm font-semibold text-primary">{tema.titulo}</h3>
+              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">{tema.texto}</p>
+              {tema.norma && <p class="text-xs font-semibold text-secondary-deep mt-2">{tema.norma}</p>}
+            </div>
+          ))}
+        </div>
+        <a href="/app/reservaciones" class="self-start inline-flex bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm min-h-[48px] items-center">Reservar</a>
+      </section>
+    ))}
+
+    <section class="flex flex-col gap-2">
+      <h2 class="text-[17px] font-bold text-primary">Beneficios para tu empresa</h2>
+      {CAPACITACION_BENEFICIOS.map((item) => (
+        <div class="bg-surface rounded-2xl border border-surface-variant/70 p-4">
+          <h3 class="text-sm font-semibold text-primary">{item.titulo}</h3>
+          <p class="text-xs text-on-surface-variant mt-1">{item.texto}</p>
+        </div>
+      ))}
+    </section>
+  </div>
+</AppLayout>

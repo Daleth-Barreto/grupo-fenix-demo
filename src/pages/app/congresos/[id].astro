@@ -2,7 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 import Badge from '../../../components/ui/Badge.astro'
 import Button from '../../../components/ui/Button.astro'
-import { getEvent } from '../../../lib/catalog'
+import { getEvent, listTickets } from '../../../lib/catalog'
 import EventAgenda from '../../../components/events/EventAgenda'
 import { formatPrice, formatDateRange, daysUntil } from '../../../utils/format'
 
@@ -14,10 +14,14 @@ const event = await getEvent(id!)
 if (!event) return Astro.redirect('/app/congresos')
 
 const days = daysUntil(event.date_start)
+const tickets = await listTickets(event.id)
+const fullPrices = tickets.filter((ticket) => ticket.kind !== 'reservacion' && !ticket.sold_out).map((ticket) => ticket.price)
+const fromPrice = fullPrices.length ? Math.min(...fullPrices) : event.price
 const BENEFITS = [
-  { icon: 'group', label: 'Acceso a todas las ponencias' },
-  { icon: 'description', label: 'Material y recursos digitales' },
-  { icon: 'coffee', label: 'Coffee breaks y networking' },
+  { icon: 'group', label: 'Acceso a todas las conferencias' },
+  { icon: 'description', label: 'Kit de bienvenida y material de trabajo' },
+  { icon: 'coffee', label: 'Coffee break' },
+  { icon: 'workspace_premium', label: 'Constancia con valor curricular' },
 ]
 ---
 <BaseLayout title={event.title} description={event.description.slice(0, 160)} image={event.image_url}>
@@ -51,21 +55,23 @@ const BENEFITS = [
 
     <main class="px-5 max-w-2xl mx-auto -mt-2 flex flex-col gap-6 pt-6">
       <!-- Datos clave -->
-      <section class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-5 grid grid-cols-3 gap-3 text-center">
+      <section data-event-end={event.date_end} class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 p-5 grid grid-cols-3 gap-3 text-center">
         <div class="flex flex-col items-center gap-1">
           <span class="material-symbols-outlined text-secondary text-[22px]">event</span>
-          <p class="text-[11px] text-outline">Faltan</p>
-          <p class="text-sm font-bold text-primary"><span data-days-until={event.date_start}>{days}</span> días</p>
+          <p data-if-upcoming class="text-[11px] text-outline">Faltan</p>
+          <p data-if-upcoming class="text-sm font-bold text-primary"><span data-days-until={event.date_start}>{days}</span> días</p>
+          <p data-if-past style="display:none" class="text-[11px] text-outline">Estado</p>
+          <p data-if-past style="display:none" class="text-sm font-bold text-primary">Finalizado</p>
         </div>
         <div class="flex flex-col items-center gap-1 border-x border-surface-variant/70">
           <span class="material-symbols-outlined text-secondary text-[22px]">groups</span>
           <p class="text-[11px] text-outline">Ponentes</p>
-          <p class="text-sm font-bold text-primary">{event.speakers_count ?? '—'}</p>
+          <p class="text-sm font-bold text-primary">{event.speakers_count ?? 'Por confirmar'}</p>
         </div>
         <div class="flex flex-col items-center gap-1">
           <span class="material-symbols-outlined text-secondary text-[22px]">schedule</span>
           <p class="text-[11px] text-outline">Duración</p>
-          <p class="text-sm font-bold text-primary">{event.curricular_hours ?? '—'} hrs</p>
+          <p class="text-sm font-bold text-primary">{event.curricular_hours ? `${event.curricular_hours} hrs` : 'Por confirmar'}</p>
         </div>
       </section>
 
@@ -110,6 +116,32 @@ const BENEFITS = [
         </a>
       </section>
 
+      <!-- Entradas -->
+      {tickets.length > 0 && (
+        <section id="entradas" data-event-end={event.date_end} class="flex flex-col gap-3 scroll-mt-20">
+          <h2 class="text-[17px] font-bold text-primary">Entradas</h2>
+          {tickets.map((ticket) => (
+            <article class="ticket-option bg-surface rounded-2xl border border-surface-variant/70 p-4 flex flex-col gap-2">
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="text-sm font-semibold text-primary min-w-0 break-words">{ticket.name}</h3>
+                <p class="text-sm font-bold text-primary flex-shrink-0">{formatPrice(ticket.price)}</p>
+              </div>
+              {ticket.description && <p class="text-xs text-on-surface-variant leading-relaxed">{ticket.description}</p>}
+              {ticket.includes.length > 0 && (
+                <ul class="text-xs text-on-surface-variant flex flex-col gap-1">
+                  {ticket.includes.map((text) => <li>{text}</li>)}
+                </ul>
+              )}
+              {ticket.sold_out ? (
+                <p class="text-sm font-semibold text-on-surface-variant">Agotada</p>
+              ) : (
+                <a data-if-upcoming href={`/app/checkout/${event.id}?entrada=${ticket.id}`} class="self-start inline-flex bg-secondary text-on-secondary px-5 py-2.5 rounded-2xl font-semibold text-sm min-h-[44px] items-center">Elegir</a>
+              )}
+            </article>
+          ))}
+        </section>
+      )}
+
       <!-- Beneficios -->
       <section>
         <h2 class="text-[17px] font-bold text-primary mb-3">¿Qué incluye?</h2>
@@ -144,11 +176,11 @@ const BENEFITS = [
     <div data-event-end={event.date_end} class="fixed bottom-0 left-0 right-0 z-40 bg-surface/98 backdrop-blur-lg border-t border-surface-variant px-4 sm:px-5 py-3" style="padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px))">
       <div class="max-w-2xl mx-auto flex items-center gap-4">
         <div class="flex-shrink-0">
-          <p class="text-[11px] text-outline uppercase tracking-wider font-medium">Inversión</p>
-          <p class="text-[18px] sm:text-[20px] font-bold text-primary leading-tight">{formatPrice(event.price)}</p>
+          <p class="text-[11px] text-outline uppercase tracking-wider font-medium">{tickets.length > 0 ? 'Desde' : 'Inversión'}</p>
+          <p class="text-[18px] sm:text-[20px] font-bold text-primary leading-tight">{formatPrice(fromPrice)}</p>
         </div>
         <div data-if-upcoming class="flex-1 min-w-0">
-          <Button href={`/app/checkout/${event.id}`} variant="primary" fullWidth rightIcon="arrow_forward">Inscribirme</Button>
+          <Button href={tickets.length > 0 ? '#entradas' : `/app/checkout/${event.id}`} variant="primary" fullWidth rightIcon="arrow_forward">{tickets.length > 0 ? 'Ver entradas' : 'Inscribirme'}</Button>
         </div>
         <p data-if-past style="display:none" class="flex-1 text-center text-sm font-semibold text-on-surface-variant bg-surface-container rounded-2xl py-4">Evento finalizado</p>
       </div>

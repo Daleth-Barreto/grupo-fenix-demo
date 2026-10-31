@@ -21,15 +21,23 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
         Congresos, capacitaciones y talleres con valor curricular impartidos por especialistas.
       </p>
 
-      <a href="/app/galeria" class="mt-4 w-full flex items-center justify-between bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-4 py-3 hover:shadow-elevated transition-all active:scale-[0.98] group">
-        <span class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-xl bg-surface-container-low flex items-center justify-center text-primary group-hover:text-secondary transition-colors">
-            <span class="material-symbols-outlined text-[20px]">photo_library</span>
-          </span>
-          <span class="text-sm font-semibold text-primary">Ver eventos realizados</span>
-        </span>
-        <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
-      </a>
+      <div class="mt-4 flex flex-col gap-2">
+        {[
+          { href: '/app/galeria', icon: 'photo_library', label: 'Trayectoria Fénix' },
+          { href: '/app/capacitacion', icon: 'business_center', label: 'Capacitación laboral' },
+          { href: '/app/desarrollo', icon: 'school', label: 'Desarrollo profesional' },
+        ].map((link) => (
+          <a href={link.href} class="w-full flex items-center justify-between bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-4 py-3 hover:shadow-elevated transition-all active:scale-[0.98] group">
+            <span class="flex items-center gap-3">
+              <span class="w-9 h-9 rounded-xl bg-surface-container-low flex items-center justify-center text-primary group-hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined text-[20px]">{link.icon}</span>
+              </span>
+              <span class="text-sm font-semibold text-primary">{link.label}</span>
+            </span>
+            <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+          </a>
+        ))}
+      </div>
     </div>
 
     {featured && <FeaturedHero event={featured} />}

@@ -96,6 +96,7 @@ export const SECTIONS = {
     canDelete: true,
     defaults: () => ({ category: 'congreso', modality: 'presencial' }),
     validate: (v) => (v.end_date < v.start_date ? 'La fecha de fin no puede ser anterior a la de inicio.' : null),
+    link: (r) => ({ href: `/admin/eventos/entradas?id=${encodeURIComponent(r.id)}`, label: 'Entradas' }),
     fields: [
       { name: 'title', label: 'Título', required: true },
       { name: 'description', label: 'Descripción', type: 'textarea', required: true },
@@ -215,6 +216,29 @@ export const SECTIONS = {
     ],
     actions: [
       { label: 'Marcar enviada', visible: (r) => !r.sent_at, patch: () => ({ sent_at: new Date().toISOString() }) },
+    ],
+  },
+  tickets: {
+    singular: 'entrada',
+    endpoint: '/api/admin/event-tickets',
+    empty: 'Este evento se vende con su precio general. Agrega entradas para ofrecer varias opciones.',
+    canCreate: true,
+    canDelete: true,
+    defaults: () => ({ kind: 'admision' }),
+    fromForm: (v) => ({ ...v, position: v.position ?? 0 }),
+    fields: [
+      { name: 'name', label: 'Nombre', required: true },
+      { name: 'kind', label: 'Tipo', type: 'select', required: true, help: 'La reservación es un primer pago: no inscribe a la persona hasta que la registres.', options: [{ value: 'admision', label: 'Admisión' }, { value: 'hospedaje', label: 'Con hospedaje' }, { value: 'reservacion', label: 'Reservación' }] },
+      { name: 'price', label: 'Precio (MXN)', type: 'number', required: true },
+      { name: 'description', label: 'Descripción', type: 'textarea' },
+      { name: 'includes', label: 'Qué incluye (una cosa por línea)', type: 'lines' },
+      { name: 'position', label: 'Orden', type: 'number' },
+      { name: 'sold_out', label: 'Agotada', type: 'checkbox' },
+    ],
+    columns: [
+      { label: 'Entrada', value: (r) => r.name },
+      { label: 'Precio', value: (r) => money(r.price) },
+      { label: 'Estado', value: (r) => (r.sold_out ? 'Agotada' : 'Disponible') },
     ],
   },
   sessions: {
