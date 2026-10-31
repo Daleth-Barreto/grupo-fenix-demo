@@ -35,6 +35,7 @@ const currentPath = Astro.url.pathname
         <slot />
       </main>
       <BottomNav currentPath={active ?? currentPath} />
+      <script is:inline>document.documentElement.dataset.appReady = 'true'</script>
     </div>
   )}
 </BaseLayout>

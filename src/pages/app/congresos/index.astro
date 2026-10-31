@@ -2,12 +2,15 @@
 import AppLayout from '../../../layouts/AppLayout.astro'
 import EventCard from '../../../components/events/EventCard.astro'
 import FeaturedHero from '../../../components/events/FeaturedHero.astro'
-import { MOCK_EVENTS, getFeaturedEvent } from '../../../data/mock'
+import { listEvents, featuredEvent } from '../../../lib/catalog'
 
-const featured = getFeaturedEvent()
-const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
+export const prerender = false
+
+const { events, failed } = await listEvents()
+const featured = featuredEvent(events)
+const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Diplomado', 'Seminario']
 ---
-<AppLayout title="Congresos" section="Congresos" active="/app/congresos">
+<AppLayout title="Congresos" section="Congresos" active="/app/congresos" requireAuth={false}>
   <div class="flex flex-col gap-7 pt-2 pb-10">
     <!-- Título -->
     <div class="pt-1">
@@ -48,16 +51,21 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
 
     <!-- Resultados -->
     <div class="flex items-center justify-between -mt-2">
-      <p class="text-xs text-outline font-medium" id="results-count">{MOCK_EVENTS.length} eventos</p>
+      <p class="text-xs text-outline font-medium" id="results-count">{events.length} {events.length === 1 ? 'evento' : 'eventos'}</p>
     </div>
 
     <!-- Grid de tarjetas -->
     <div class="grid grid-cols-1 gap-5" id="events-grid">
-      {MOCK_EVENTS.map((event, i) => (
+      {events.map((event, i) => (
         <div data-category={event.category}>
           <EventCard event={event} index={i} />
         </div>
       ))}
+      {events.length === 0 && (
+        <p class="text-sm text-on-surface-variant text-center py-12">
+          {failed ? 'No pudimos cargar los eventos. Intenta de nuevo en un momento.' : 'Pronto publicaremos nuevos eventos.'}
+        </p>
+      )}
     </div>
   </div>
 </AppLayout>

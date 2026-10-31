@@ -1,27 +1,13 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CrudManager from '../../../components/admin/CrudManager'
 ---
 <AdminLayout title="Cursos" section="Cursos">
   <div class="flex flex-col gap-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-[28px] font-bold text-primary">Cursos</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Constructor de cursos con módulos y lecciones</p>
-      </div>
-      <button type="button" disabled class="inline-flex items-center gap-2 bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] cursor-not-allowed">
-        Nuevo curso (próximamente)
-      </button>
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Cursos</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Crea cursos y agrégales módulos, lecciones, recursos y actividades.</p>
     </div>
-
-    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
-      <div class="px-6 py-4 border-b border-[#dce2f3]">
-        <p class="text-sm text-on-surface-variant">Listado de cursos</p>
-      </div>
-      <div class="p-8 text-center text-on-surface-variant">
-        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">school</span>
-        <p class="font-medium">Constructor de cursos en construcción</p>
-        <p class="text-sm mt-1">Los cursos de la app todavía vienen del catálogo de ejemplo.</p>
-      </div>
-    </div>
+    <CrudManager client:only="react" section="courses" />
   </div>
 </AdminLayout>

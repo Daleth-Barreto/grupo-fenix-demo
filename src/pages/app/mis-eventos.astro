@@ -1,0 +1,13 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+import MyEvents from '../../components/account/MyEvents'
+---
+<AppLayout title="Mis eventos" section="Mis eventos" showBack active="/app/perfil">
+  <div class="flex flex-col gap-5 pt-5 pb-10">
+    <section class="text-center">
+      <h1 class="text-[28px] font-bold text-primary">Mis eventos</h1>
+      <p class="text-sm text-on-surface-variant mt-1.5">Los eventos en los que estás inscrito</p>
+    </section>
+    <MyEvents client:only="react" />
+  </div>
+</AppLayout>

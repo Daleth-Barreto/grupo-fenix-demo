@@ -1,27 +1,13 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro'
+import MediaLibrary from '../../../components/admin/MediaLibrary'
 ---
 <AdminLayout title="Biblioteca de Medios" section="Biblioteca de Medios">
   <div class="flex flex-col gap-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-[28px] font-bold text-primary">Biblioteca de Medios</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Imágenes, documentos y recursos (Supabase Storage)</p>
-      </div>
-      <button type="button" disabled class="inline-flex items-center gap-2 bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] cursor-not-allowed">
-        Subir archivo (próximamente)
-      </button>
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Biblioteca de Medios</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Sube imágenes y documentos, y copia su dirección para usarla en eventos y cursos.</p>
     </div>
-
-    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
-      <div class="px-6 py-4 border-b border-[#dce2f3] flex items-center justify-between">
-        <p class="text-sm text-on-surface-variant">Archivos</p>
-      </div>
-      <div class="p-8 text-center text-on-surface-variant">
-        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">perm_media</span>
-        <p class="font-medium">Biblioteca en construcción</p>
-        <p class="text-sm mt-1">Todavía no se pueden subir archivos desde el panel.</p>
-      </div>
-    </div>
+    <MediaLibrary client:only="react" />
   </div>
 </AdminLayout>

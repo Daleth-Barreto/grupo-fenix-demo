@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
+import { siteUrl } from '../../lib/site-url'
 
 export default function ResetPasswordForm() {
   const [email, setEmail] = useState('')
@@ -13,7 +14,7 @@ export default function ResetPasswordForm() {
     setLoading(true)
     
     const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/app/reset-password`,
+      redirectTo: siteUrl('/app/reset-password'),
     })
     
     setLoading(false)
