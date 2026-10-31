@@ -35,7 +35,7 @@ export default function LiveBanner() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full text-[10px] font-bold">
+                  <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full text-[11px] font-bold">
                     <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
                     EN VIVO
                   </span>

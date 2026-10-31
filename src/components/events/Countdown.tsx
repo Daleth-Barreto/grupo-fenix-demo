@@ -28,7 +28,7 @@ export default function Countdown({ targetDate }: Props) {
       <span className="text-[22px] font-bold leading-tight text-white">
         {String(value).padStart(2, '0')}
       </span>
-      <span className="text-[9px] font-semibold text-primary-fixed-dim tracking-widest">{label}</span>
+      <span className="text-[11px] font-semibold text-primary-fixed-dim tracking-widest">{label}</span>
     </div>
   )
 

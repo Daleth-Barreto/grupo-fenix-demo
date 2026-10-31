@@ -1,6 +1,22 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 
+// Definido fuera del componente: si se define dentro, React lo recrea en cada
+// render y el input pierde el foco al escribir (auditoría A5).
+function Field({ label, icon, id, type = 'text', value, onChange, error, autoComplete, placeholder }: any) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="text-[13px] font-semibold text-primary ml-1">{label}</label>
+      <div className="relative">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[22px] pointer-events-none">{icon}</span>
+        <input id={id} type={type} inputMode={type === 'email' ? 'email' : undefined} autoComplete={autoComplete} placeholder={placeholder} value={value} onChange={onChange}
+          className={`w-full bg-surface-soft rounded-2xl py-4 text-base text-primary placeholder:text-outline outline-none pl-12 pr-4 transition-all min-h-[52px] ${error ? 'border border-error focus:ring-4 focus:ring-error/10' : 'border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10'}`} />
+      </div>
+      {error && <p className="text-xs text-error ml-1 flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">error</span>{error}</p>}
+    </div>
+  )
+}
+
 export default function RegisterForm() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -53,18 +69,6 @@ export default function RegisterForm() {
       </div>
     )
   }
-
-  const Field = ({ label, icon, id, type = 'text', value, onChange, error, autoComplete, placeholder }: any) => (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[13px] font-semibold text-primary ml-1">{label}</label>
-      <div className="relative">
-        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[22px] pointer-events-none">{icon}</span>
-        <input id={id} type={type} inputMode={type === 'email' ? 'email' : undefined} autoComplete={autoComplete} placeholder={placeholder} value={value} onChange={onChange}
-          className={`w-full bg-surface-soft rounded-2xl py-4 text-base text-primary placeholder:text-outline outline-none pl-12 pr-4 transition-all min-h-[52px] ${error ? 'border border-error focus:ring-4 focus:ring-error/10' : 'border border-transparent focus:border-secondary focus:ring-4 focus:ring-secondary/10'}`} />
-      </div>
-      {error && <p className="text-xs text-error ml-1 flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">error</span>{error}</p>}
-    </div>
-  )
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
