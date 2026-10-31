@@ -1,5 +1,6 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro'
+import OrdersList from '../../components/account/OrdersList'
 ---
 <AppLayout title="Mis Comprobantes" section="Comprobantes" showBack active="/app/perfil">
   <div class="pt-2 pb-10">
@@ -8,28 +9,12 @@ import AppLayout from '../../layouts/AppLayout.astro'
         Mis Comprobantes
       </h1>
       <p class="text-sm text-on-surface-variant leading-relaxed mt-2">
-        Historial de pagos y facturas
+        Historial de tus pagos
       </p>
     </div>
 
     <div class="flex flex-col gap-4">
-      <!-- Empty state -->
-      <div class="bg-surface rounded-3xl p-8 text-center shadow-card border border-surface-variant/70">
-        <div class="w-20 h-20 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-4">
-          <span class="material-symbols-outlined text-outline text-[40px]">receipt_long</span>
-        </div>
-        <h2 class="text-lg font-bold text-primary mb-2">Sin comprobantes</h2>
-        <p class="text-sm text-on-surface-variant mb-6">
-          Aún no has realizado ningún pago
-        </p>
-        <a 
-          href="/app/congresos" 
-          class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-secondary-deep transition-colors active:scale-95"
-        >
-          Ver congresos
-          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-        </a>
-      </div>
+      <OrdersList client:only="react" />
     </div>
   </div>
 </AppLayout>

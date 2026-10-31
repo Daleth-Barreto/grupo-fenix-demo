@@ -25,9 +25,9 @@ const BENEFITS = [
 <BaseLayout title={event.title}>
   <div class="min-h-screen bg-background pb-28">
     <!-- Header fijo -->
-    <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card">
+    <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card" style="padding-top: env(safe-area-inset-top, 0px);">
       <div class="px-5 max-w-2xl mx-auto flex items-center gap-3 h-16">
-        <a href="/app/congresos" class="p-2 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95">
+        <a href="/app/congresos" aria-label="Volver a congresos" class="p-2.5 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center">
           <span class="material-symbols-outlined">arrow_back</span>
         </a>
         <span class="font-semibold text-primary text-[15px] truncate">{event.title}</span>
@@ -57,7 +57,7 @@ const BENEFITS = [
         <div class="flex flex-col items-center gap-1">
           <span class="material-symbols-outlined text-secondary text-[22px]">event</span>
           <p class="text-[11px] text-outline">Faltan</p>
-          <p class="text-sm font-bold text-primary">{days} días</p>
+          <p class="text-sm font-bold text-primary"><span data-days-until={event.date_start}>{days}</span> días</p>
         </div>
         <div class="flex flex-col items-center gap-1 border-x border-surface-variant/70">
           <span class="material-symbols-outlined text-secondary text-[22px]">groups</span>
@@ -130,13 +130,16 @@ const BENEFITS = [
     </main>
 
     <!-- Barra de acción fija -->
-    <div class="fixed bottom-0 left-0 right-0 z-40 bg-surface/98 backdrop-blur-lg border-t border-surface-variant px-4 sm:px-5 py-3" style="padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px))">
+    <div data-event-end={event.date_end} class="fixed bottom-0 left-0 right-0 z-40 bg-surface/98 backdrop-blur-lg border-t border-surface-variant px-4 sm:px-5 py-3" style="padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px))">
       <div class="max-w-2xl mx-auto flex items-center gap-4">
         <div class="flex-shrink-0">
           <p class="text-[11px] text-outline uppercase tracking-wider font-medium">Inversión</p>
           <p class="text-[18px] sm:text-[20px] font-bold text-primary leading-tight">{formatPrice(event.price)}</p>
         </div>
-        <Button href={`/app/checkout/${event.id}`} variant="primary" fullWidth rightIcon="arrow_forward">Inscribirme</Button>
+        <div data-if-upcoming class="flex-1 min-w-0">
+          <Button href={`/app/checkout/${event.id}`} variant="primary" fullWidth rightIcon="arrow_forward">Inscribirme</Button>
+        </div>
+        <p data-if-past style="display:none" class="flex-1 text-center text-sm font-semibold text-on-surface-variant bg-surface-container rounded-2xl py-4">Evento finalizado</p>
       </div>
     </div>
   </div>

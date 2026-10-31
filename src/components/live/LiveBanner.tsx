@@ -1,27 +1,30 @@
 import { useEffect, useState } from 'react'
+import { adminFetch } from '../../lib/admin-fetch'
 
 interface LiveStream {
   id: string
   title: string
-  presenter: string
-  status: 'live' | 'scheduled' | 'ended'
+  speaker: string | null
 }
 
 export default function LiveBanner() {
   const [liveStreams, setLiveStreams] = useState<LiveStream[]>([])
 
   useEffect(() => {
-    // TODO: Obtener desde Supabase. Hasta entonces no se muestra ningún "EN VIVO" falso (auditoría A3).
-    setLiveStreams([])
+    adminFetch('/api/live/current')
+      .then(async (res) => {
+        if (!res.ok) return
+        const body = (await res.json()) as { data?: LiveStream[] }
+        setLiveStreams(body.data ?? [])
+      })
+      .catch(() => {})
   }, [])
 
-  const liveStreamsFiltered = liveStreams.filter(s => s.status === 'live')
-
-  if (liveStreamsFiltered.length === 0) return null
+  if (liveStreams.length === 0) return null
 
   return (
     <section className="animate-fade-in-up">
-      {liveStreamsFiltered.map((stream) => (
+      {liveStreams.map((stream) => (
         <a
           key={stream.id}
           href={`/app/en-vivo/${stream.id}`}
@@ -41,7 +44,7 @@ export default function LiveBanner() {
                   </span>
                 </div>
                 <p className="text-white font-bold text-sm leading-tight">{stream.title}</p>
-                <p className="text-white/80 text-xs mt-0.5">{stream.presenter}</p>
+                <p className="text-white/80 text-xs mt-0.5">{stream.speaker}</p>
               </div>
             </div>
             <div className="bg-white/10 rounded-full p-2 group-hover:bg-white/20 transition-colors">

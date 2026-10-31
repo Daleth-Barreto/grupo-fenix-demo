@@ -80,27 +80,39 @@ import AppLayout from '../../layouts/AppLayout.astro'
       </div>
     </section>
 
-    <!-- Zona de Peligro: sin función todavía (requiere decisión sobre retención de datos fiscales) -->
+    <!-- Zona de Peligro: /api/account/delete rechaza la baja si hay compras o constancias -->
     <section class="flex flex-col gap-2">
       <h2 class="text-[11px] font-bold text-error uppercase tracking-widest ml-1">Zona de Peligro</h2>
       <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
-        <div aria-disabled="true" class="w-full flex items-center justify-between px-4 py-4 opacity-70">
-          <div class="flex items-center gap-4">
+        <button type="button" id="btn-delete-account" class="w-full flex items-center justify-between px-4 py-4 hover:bg-surface-container-low transition-colors text-left">
+          <span class="flex items-center gap-4">
             <span class="material-symbols-outlined text-error text-[22px]">delete</span>
             <span class="text-sm font-bold text-error">Eliminar mi cuenta</span>
-          </div>
-          <span class="text-[11px] font-semibold text-outline">Próximamente</span>
-        </div>
+          </span>
+          <span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+        </button>
       </div>
     </section>
 
     <p class="text-center text-xs text-outline mt-4">Grupo FÉNIX App v1.0.0</p>
+  </div>
+  <div id="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title" class="fixed inset-0 z-50 flex items-end justify-center bg-primary/50 backdrop-blur-sm hidden">
+    <div class="bg-surface rounded-t-3xl w-full max-w-md p-6 flex flex-col gap-4" style="padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));">
+      <h3 id="delete-title" class="text-[18px] font-bold text-primary">¿Eliminar tu cuenta?</h3>
+      <p class="text-sm text-on-surface-variant leading-relaxed">
+        Esta acción es permanente y no se puede deshacer. Si tienes compras, inscripciones o constancias, deberás solicitarlo a soporte.
+      </p>
+      <p id="delete-error" role="alert" class="text-sm text-error hidden"></p>
+      <button type="button" id="btn-confirm-delete" class="bg-error text-white font-semibold text-[15px] py-4 rounded-2xl w-full disabled:opacity-60">Sí, eliminar mi cuenta</button>
+      <button type="button" id="btn-cancel-delete" class="bg-transparent text-primary border border-primary hover:bg-surface-container-low font-semibold text-[15px] py-4 rounded-2xl w-full">Cancelar</button>
+    </div>
   </div>
 </AppLayout>
 
 <script>
   import { supabase } from '../../lib/supabase'
   import { onAppReady } from '../../utils/app-ready'
+  import { adminFetch } from '../../lib/admin-fetch'
 
   const setToggle = (btn: HTMLButtonElement, on: boolean) => {
     btn.setAttribute('aria-checked', String(on))
@@ -141,6 +153,45 @@ import AppLayout from '../../layouts/AppLayout.astro'
           say('Preferencia guardada.')
         }
       })
+    })
+
+    const dialog = document.getElementById('delete-dialog')
+    const openBtn = document.getElementById('btn-delete-account')
+    const cancelBtn = document.getElementById('btn-cancel-delete')
+    const confirmBtn = document.getElementById('btn-confirm-delete') as HTMLButtonElement | null
+    const deleteError = document.getElementById('delete-error')
+    const closeDialog = () => {
+      dialog?.classList.add('hidden')
+      openBtn?.focus()
+    }
+
+    openBtn?.addEventListener('click', () => {
+      deleteError?.classList.add('hidden')
+      dialog?.classList.remove('hidden')
+      cancelBtn?.focus()
+    })
+    cancelBtn?.addEventListener('click', closeDialog)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !dialog?.classList.contains('hidden')) closeDialog()
+    })
+    confirmBtn?.addEventListener('click', async () => {
+      confirmBtn.disabled = true
+      deleteError?.classList.add('hidden')
+      try {
+        const res = await adminFetch('/api/account/delete', { method: 'POST' })
+        if (!res.ok) {
+          const body = (await res.json().catch(() => ({}))) as { error?: string }
+          throw new Error(body.error || 'No se pudo eliminar la cuenta.')
+        }
+        await supabase.auth.signOut()
+        window.location.href = '/app/login'
+      } catch (err) {
+        if (deleteError) {
+          deleteError.textContent = err instanceof Error ? err.message : 'No se pudo eliminar la cuenta.'
+          deleteError.classList.remove('hidden')
+        }
+        confirmBtn.disabled = false
+      }
     })
   })
 </script>

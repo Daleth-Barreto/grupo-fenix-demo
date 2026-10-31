@@ -10,16 +10,16 @@ import AdminLayout from '../../layouts/AdminLayout.astro'
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {[
-        { label: 'Usuarios', value: '—', icon: 'group', color: 'bg-blue-100 text-blue-700' },
-        { label: 'Eventos', value: '6', icon: 'event', color: 'bg-orange-100 text-orange-700' },
-        { label: 'Cursos', value: '4', icon: 'school', color: 'bg-green-100 text-green-700' },
-        { label: 'En Vivo', value: '0', icon: 'podcasts', color: 'bg-red-100 text-red-700' },
+        { key: 'users', label: 'Usuarios', icon: 'group', color: 'bg-blue-100 text-blue-700' },
+        { key: 'events', label: 'Eventos', icon: 'event', color: 'bg-orange-100 text-orange-700' },
+        { key: 'courses', label: 'Cursos', icon: 'school', color: 'bg-green-100 text-green-700' },
+        { key: 'lives', label: 'En Vivo', icon: 'podcasts', color: 'bg-red-100 text-red-700' },
       ].map((stat) => (
         <div class="bg-white rounded-2xl p-5 border border-[#dce2f3] shadow-sm">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-on-surface-variant">{stat.label}</p>
-              <p class="text-2xl font-bold text-primary mt-1">{stat.value}</p>
+              <p class="text-2xl font-bold text-primary mt-1" data-stat={stat.key}>—</p>
             </div>
             <div class={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color}`}>
               <span class="material-symbols-outlined text-[26px]">{stat.icon}</span>
@@ -37,7 +37,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro'
         <div class="p-4 grid grid-cols-2 gap-3">
           {[
             { href: '/admin/eventos/nuevo', icon: 'add_circle', label: 'Nuevo Evento' },
-            { href: '/admin/cursos/nuevo', icon: 'add_circle', label: 'Nuevo Curso' },
+            { href: '/admin/inscripciones', icon: 'how_to_reg', label: 'Inscripciones' },
             { href: '/admin/en-vivo/nuevo', icon: 'podcasts', label: 'Crear Transmisión' },
             { href: '/admin/usuarios', icon: 'manage_accounts', label: 'Gestionar Usuarios' },
           ].map((item) => (
@@ -60,4 +60,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro'
       </div>
     </div>
   </div>
+
+  <script>
+    import { adminFetch } from '../../lib/admin-fetch'
+    import { onAppReady } from '../../utils/app-ready'
+
+    onAppReady(async () => {
+      const res = await adminFetch('/api/admin/stats')
+      if (!res.ok) return
+      const stats = (await res.json()) as Record<string, number>
+      document.querySelectorAll<HTMLElement>('[data-stat]').forEach((el) => {
+        const value = stats[el.dataset.stat ?? '']
+        if (typeof value === 'number') el.textContent = String(value)
+      })
+    })
+  </script>
 </AdminLayout>

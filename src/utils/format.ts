@@ -43,6 +43,13 @@ export function getDateChip(date: string): { day: string; month: string } {
   }
 }
 
+/** Un evento ya pasó cuando terminó su último día. */
+export function isEventPast(endDate: string): boolean {
+  const end = parseDate(endDate)
+  end.setHours(23, 59, 59, 999)
+  return end.getTime() < Date.now()
+}
+
 /** Calcula los días restantes hasta una fecha (>= 0). */
 export function daysUntil(date: string): number {
   const diff = parseDate(date).getTime() - Date.now()

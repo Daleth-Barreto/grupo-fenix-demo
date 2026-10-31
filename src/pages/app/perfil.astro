@@ -3,36 +3,36 @@ import AppLayout from '../../layouts/AppLayout.astro'
 import LogoutButtonProfile from '../../components/profile/LogoutButtonProfile'
 
 const MENU_ITEMS = [
-  { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Descarga tus certificados', path: '/app/constancias' },
+  { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Tus certificados emitidos', path: '/app/constancias' },
   { icon: 'event_available', label: 'Reservaciones y cotización', sub: 'Solicita un evento a tu medida', path: '/app/reservaciones' },
-  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/comprobantes' },
+  { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de tus pagos', path: '/app/comprobantes' },
   { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion/datos' },
 ]
 ---
-<AppLayout title="Perfil" section="Perfil" showSettings showLogout={true} active="/app/perfil">
+<AppLayout title="Perfil" section="Perfil" showSettings active="/app/perfil">
   <div class="pt-6 pb-10 flex flex-col gap-7 max-w-xl mx-auto">
     <!-- Avatar -->
     <section class="flex flex-col items-center text-center animate-fade-in-up">
       <div class="relative mb-3.5">
         <div class="w-24 h-24 rounded-3xl overflow-hidden border-4 border-surface shadow-card flex items-center justify-center bg-navy-gradient">
-          <span class="text-white text-[32px] font-bold" id="profile-initial">M</span>
+          <span class="text-white text-[32px] font-bold" id="profile-initial"></span>
         </div>
-        <button class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary rounded-full p-1.5 shadow-card border-2 border-surface hover:bg-secondary-deep transition-colors active:scale-95">
+        <button type="button" disabled aria-label="Cambiar foto (próximamente)" title="Próximamente"
+          class="absolute -bottom-1 -right-1 bg-secondary text-on-secondary rounded-full p-1.5 shadow-card border-2 border-surface opacity-50 cursor-not-allowed">
           <span class="material-symbols-outlined text-[14px] filled">edit</span>
         </button>
       </div>
-      <h1 class="text-[20px] font-bold text-primary" id="profile-name">Usuario</h1>
+      <h1 class="text-[20px] font-bold text-primary" id="profile-name"></h1>
       <p class="text-sm text-outline mt-0.5" id="profile-email">Cargando...</p>
     </section>
 
     <!-- Eventos inscritos -->
-    <a href="/app/congresos" class="relative overflow-hidden rounded-3xl shadow-card bg-navy-gradient hover:shadow-elevated transition-shadow active:scale-[0.98] duration-150 block group">
+    <a href="/app/comprobantes" class="relative overflow-hidden rounded-3xl shadow-card bg-navy-gradient hover:shadow-elevated transition-shadow active:scale-[0.98] duration-150 block group">
       <div class="absolute top-0 left-0 right-0 h-1 accent-line"></div>
       <div class="relative z-10 flex items-center justify-between p-6">
         <div>
           <p class="text-white/80 text-sm font-medium mb-2">Mis eventos inscritos</p>
           <div class="flex items-center gap-2.5">
-            <span class="text-[32px] font-bold text-white leading-none">3</span>
             <span class="material-symbols-outlined text-secondary text-[28px] filled">local_activity</span>
           </div>
         </div>

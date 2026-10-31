@@ -31,3 +31,6 @@ pnpm-debug.log*
 
 # test users
 USUARIOS_PRUEBA.md
+
+# vercel
+.vercel/

@@ -8,7 +8,7 @@ interface Props { event: Event }
 const { event } = Astro.props
 const days = daysUntil(event.date_start)
 ---
-<section class="relative rounded-3xl overflow-hidden shadow-hero bg-navy-gradient animate-fade-in-up">
+<section data-event-end={event.date_end} data-remove-if-past class="relative rounded-3xl overflow-hidden shadow-hero bg-navy-gradient animate-fade-in-up">
   {event.image_url && (
     <img src={event.image_url} alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity" />
   )}
@@ -16,7 +16,7 @@ const days = daysUntil(event.date_start)
 
   <div class="relative z-10 p-6 flex flex-col gap-5">
     <div class="flex items-center gap-2">
-      <Badge label="Próximo congreso" variant="orange" />
+      <Badge label="Evento destacado" variant="orange" />
       {event.has_certification && <Badge label="Valor curricular" variant="gold" icon="verified" />}
     </div>
 
@@ -39,7 +39,7 @@ const days = daysUntil(event.date_start)
     <!-- Datos premium -->
     <div class="glass-on-navy rounded-2xl px-5 py-4 flex items-center justify-around">
       <div class="text-center">
-        <p class="text-[22px] font-bold text-white leading-none">{days}</p>
+        <p class="text-[22px] font-bold text-white leading-none" data-days-until={event.date_start}>{days}</p>
         <p class="text-[11px] text-primary-fixed-dim tracking-widest mt-1">DÍAS</p>
       </div>
       <div class="w-px h-8 bg-white/15"></div>
