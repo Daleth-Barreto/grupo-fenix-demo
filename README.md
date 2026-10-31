@@ -103,6 +103,7 @@ Correr en Supabase → SQL Editor, además del esquema base:
 - `docs/sql/avatars.sql`: fotos de perfil
 - `docs/sql/contenido_y_admin.sql`: permisos del panel, bucket de medios y eventos iniciales
 - `docs/sql/boletos_y_asistencia.sql`: boletos con QR y registro de entrada
+- `docs/sql/etapas_2_y_3.sql`: agenda, preguntas, encuestas, cuestionarios, avance de video y constancias por asistencia
 
 En Authentication → URL Configuration, `Site URL` debe ser la dirección pública de la app y `Redirect URLs` debe incluir `https://TU-DOMINIO/**`. Si no, los correos de confirmación llevan a `localhost`.
 
