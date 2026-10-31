@@ -86,6 +86,58 @@ export async function getEvent(id: string): Promise<Event | null> {
   return toEvent(data as EventRow)
 }
 
+export interface PublicCourse {
+  id: string
+  title: string
+  description: string
+  instructor: string
+  price: number
+  image_url?: string
+}
+
+interface CourseRow {
+  id: string
+  title: string
+  description: string | null
+  instructor: string | null
+  price: number | null
+  cover_image: string | null
+}
+
+const COURSE_COLUMNS = 'id, title, description, instructor, price, cover_image'
+
+function toCourse(row: CourseRow): PublicCourse {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description ?? '',
+    instructor: row.instructor ?? '',
+    price: Number(row.price ?? 0),
+    image_url: row.cover_image ?? undefined,
+  }
+}
+
+/** Solo datos públicos: el contenido de las lecciones sigue reservado a los inscritos. */
+export async function listCourses(): Promise<{ courses: PublicCourse[]; failed: boolean }> {
+  const db = publicClient()
+  if (!db) return { courses: [], failed: true }
+  const { data, error } = await db.from('courses').select(COURSE_COLUMNS).eq('published', true).order('created_at', { ascending: false })
+  if (error) {
+    console.error('[catalogo] No se pudieron leer los cursos', error.message)
+    return { courses: [], failed: true }
+  }
+  return { courses: ((data ?? []) as CourseRow[]).map(toCourse), failed: false }
+}
+
+export async function getCourse(id: string): Promise<PublicCourse | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null
+  const db = publicClient()
+  if (!db) return null
+  const { data, error } = await db.from('courses').select(COURSE_COLUMNS).eq('id', id).eq('published', true).maybeSingle()
+  if (error || !data) return null
+  return toCourse(data as CourseRow)
+}
+
 export const upcomingEvents = (events: Event[]): Event[] => events.filter((e) => !isEventPast(e.date_end))
 
 /** El evento marcado como destacado o, si no hay, el siguiente disponible. */

@@ -88,6 +88,10 @@ STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 ```
 
+Para correos automáticos también se necesitan `RESEND_API_KEY`, `EMAIL_FROM` y `CRON_SECRET`. Sin ellas la app funciona, pero no envía correos.
+
+OXXO y meses sin intereses se activan en el panel de Stripe, en Payment Methods. El checkout ya los ofrece cuando están activos. Una orden con OXXO queda pendiente hasta que el webhook confirma el pago.
+
 Sin `SUPABASE_SERVICE_ROLE_KEY`, las APIs usan el token del usuario y las reglas RLS de Supabase. Sin las variables de Stripe, el checkout avisa que el pago no está disponible: no se simula ningún pago.
 
 ## 🗄️ Base de datos
@@ -103,7 +107,7 @@ En Authentication → URL Configuration, `Site URL` debe ser la dirección públ
 
 ## 💳 Webhook de Stripe
 
-Registrar `https://TU-DOMINIO/api/stripe/webhook` con los eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` y `checkout.session.expired`.
+El webhook necesita `SUPABASE_SERVICE_ROLE_KEY`. Registrar `https://TU-DOMINIO/api/stripe/webhook` con los eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` y `checkout.session.expired`.
 
 ## 📌 Estado
 

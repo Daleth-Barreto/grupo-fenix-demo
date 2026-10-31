@@ -27,7 +27,7 @@ export default function AuthGuard({ children, redirectTo = '/app/login' }: AuthG
       } else {
         setUser(null)
         if (typeof window !== 'undefined') {
-          window.location.href = redirectTo
+          window.location.href = `${redirectTo}?next=${encodeURIComponent(window.location.pathname)}`
         }
       }
       setLoading(false)

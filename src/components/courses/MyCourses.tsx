@@ -46,7 +46,7 @@ export default function MyCourses() {
         <span className="material-symbols-outlined text-outline text-[48px] block mb-3">school</span>
         <h2 className="text-lg font-bold text-primary mb-2">Aún no estás inscrito en ningún curso</h2>
         <p className="text-sm text-on-surface-variant mb-6">Cuando te inscribas, tus cursos aparecerán aquí.</p>
-        <a href="/app/congresos" className="inline-flex bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm">Ver eventos</a>
+        <a href="/app/cursos/catalogo" className="inline-flex bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm">Ver cursos disponibles</a>
       </div>
     )
   }
@@ -63,6 +63,8 @@ export default function MyCourses() {
           </button>
         ))}
       </div>
+
+      <a href="/app/cursos/catalogo" className="text-sm font-semibold text-primary underline text-center">Ver cursos disponibles</a>
 
       <div className="flex flex-col gap-4">
         {visible.map(({ course, percent, status }) => (

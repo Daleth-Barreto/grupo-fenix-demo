@@ -81,6 +81,9 @@ alter table public.courses enable row level security;
 drop policy if exists "cursos: leer" on public.courses;
 create policy "cursos: leer" on public.courses for select to authenticated
   using (public.has_course_access(id));
+drop policy if exists "cursos: catalogo" on public.courses;
+create policy "cursos: catalogo" on public.courses for select to anon, authenticated
+  using (published is true);
 drop policy if exists "cursos: staff" on public.courses;
 create policy "cursos: staff" on public.courses for all to authenticated
   using (public.is_admin_or_instructor()) with check (public.is_admin_or_instructor());

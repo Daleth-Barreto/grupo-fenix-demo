@@ -8,15 +8,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const auth = await requireRole(request, locals, ['student', 'instructor', 'admin'])
   if (!auth.ok) return auth.response
 
-  const [orders, courses, certificates] = await Promise.all([
-    auth.db.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', auth.userId).eq('status', 'pagado'),
+  const [events, courses, certificates] = await Promise.all([
+    auth.db.from('enrollments').select('id', { count: 'exact', head: true }).eq('user_id', auth.userId).not('event_id', 'is', null).in('status', ['activo', 'completado']),
     auth.db.from('enrollments').select('id', { count: 'exact', head: true }).eq('user_id', auth.userId).not('course_id', 'is', null).in('status', ['activo', 'completado']),
     auth.db.from('certificates').select('id', { count: 'exact', head: true }).eq('user_id', auth.userId),
   ])
 
-  if (orders.error || courses.error || certificates.error) {
+  if (events.error || courses.error || certificates.error) {
     return json({ error: 'No se pudo cargar tu resumen.' }, 500)
   }
 
-  return json({ enrolled: orders.count ?? 0, courses: courses.count ?? 0, certificates: certificates.count ?? 0 })
+  return json({ enrolled: events.count ?? 0, courses: courses.count ?? 0, certificates: certificates.count ?? 0 })
 }

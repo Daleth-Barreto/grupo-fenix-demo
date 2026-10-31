@@ -4,7 +4,7 @@ import { adminFetch } from '../../lib/admin-fetch'
 interface Summary { enrolled: number; courses: number; certificates: number }
 
 const STATS = [
-  { key: 'enrolled', icon: 'local_activity', label: 'Inscritos', path: '/app/comprobantes' },
+  { key: 'enrolled', icon: 'local_activity', label: 'Inscritos', path: '/app/mis-eventos' },
   { key: 'courses', icon: 'play_circle', label: 'Cursos', path: '/app/cursos' },
   { key: 'certificates', icon: 'workspace_premium', label: 'Constancias', path: '/app/constancias' },
 ] as const

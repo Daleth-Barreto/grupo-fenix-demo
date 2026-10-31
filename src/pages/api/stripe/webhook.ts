@@ -4,14 +4,13 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { getServiceClient, json } from '../../../lib/admin-auth'
 import { getStripe } from '../../../lib/stripe-server'
 import { getEnv } from '../../../lib/server-env'
+import { enrollFromOrder } from '../../../lib/enrollment'
+import { appUrl, sendEmail } from '../../../lib/email'
 
 export const prerender = false
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-// Marca la orden como pagada. Stripe puede repetir el evento: repetirlo no debe duplicar nada.
-async function markPaid(db: SupabaseClient, session: Stripe.Checkout.Session): Promise<void> {
-  const eventId = session.metadata?.event_id ?? ''
+// Marca la orden como pagada y da acceso. Stripe puede repetir el evento sin duplicar nada.
+async function markPaid(db: SupabaseClient, session: Stripe.Checkout.Session, origin: string): Promise<void> {
   const userId = session.metadata?.user_id ?? session.client_reference_id ?? null
 
   const { data: updated, error } = await db
@@ -39,25 +38,20 @@ async function markPaid(db: SupabaseClient, session: Stripe.Checkout.Session): P
     orderId = data.id
   }
 
-  // enrollments.event_id es uuid: los eventos del catálogo de ejemplo solo quedan en la orden.
-  if (!userId || !UUID.test(eventId)) return
-
-  const { data: existing, error: existingError } = await db
-    .from('enrollments')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('event_id', eventId)
-    .limit(1)
-  if (existingError) throw existingError
-  if (existing && existing.length > 0) return
-
-  const { error: enrollError } = await db
-    .from('enrollments')
-    .insert({ user_id: userId, event_id: eventId, order_id: orderId, status: 'activo' })
-  if (enrollError) throw enrollError
+  const enrolledNow = await enrollFromOrder(db, { orderId: orderId as string, userId, metadata: session.metadata })
+  if (enrolledNow) {
+    const title = session.metadata?.event_title ?? 'tu inscripción'
+    await sendEmail(
+      session.customer_details?.email ?? session.customer_email,
+      `Pago confirmado: ${title}`,
+      '¡Tu inscripción está confirmada!',
+      [`Recibimos tu pago de ${title}.`, 'Puedes consultar tu inscripción y tu comprobante en la app.'],
+      { href: appUrl('/app/mis-eventos', origin), label: 'Ver mis inscripciones' },
+    )
+  }
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, url }) => {
   const stripe = getStripe()
   const webhookSecret = getEnv('STRIPE_WEBHOOK_SECRET')
   const db = getServiceClient()
@@ -83,7 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
       const session = event.data.object as Stripe.Checkout.Session
-      if (session.payment_status === 'paid') await markPaid(db, session)
+      if (session.payment_status === 'paid') await markPaid(db, session, url.origin)
     } else if (event.type === 'checkout.session.expired' || event.type === 'checkout.session.async_payment_failed') {
       const session = event.data.object as Stripe.Checkout.Session
       const { error } = await db
