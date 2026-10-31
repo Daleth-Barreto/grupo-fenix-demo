@@ -1,0 +1,22 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import CertificateView from '../../../components/account/CertificateView'
+
+export const prerender = false
+
+const { id } = Astro.params
+if (!id) return Astro.redirect('/app/constancias')
+---
+<AppLayout title="Constancia" section="Constancia" showBack active="/app/constancias">
+  <div class="pt-5 pb-10">
+    <CertificateView client:only="react" certificateId={id} />
+  </div>
+</AppLayout>
+
+<style is:global>
+  @media print {
+    header, nav, .no-print { display: none !important; }
+    body, main, #certificate { background: #ffffff !important; }
+    #certificate { margin: 0 !important; }
+  }
+</style>
