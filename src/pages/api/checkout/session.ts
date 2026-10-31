@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro'
 import { requireRole, json } from '../../../lib/admin-auth'
 import { getStripe } from '../../../lib/stripe-server'
-import { getCourse, getEvent } from '../../../lib/catalog'
+import { getCourse, getEvent, listTickets } from '../../../lib/catalog'
 import { isEventPast } from '../../../utils/format'
 
 export const prerender = false
@@ -15,13 +15,20 @@ export const POST: APIRoute = async ({ request, locals, url }) => {
   const stripe = getStripe()
   if (!stripe) return json({ error: 'El pago en línea todavía no está disponible.' }, 503)
 
-  const body = (await request.json().catch(() => null)) as { event_id?: unknown; course_id?: unknown } | null
+  const body = (await request.json().catch(() => null)) as { event_id?: unknown; course_id?: unknown; ticket_id?: unknown } | null
   const event = typeof body?.event_id === 'string' ? await getEvent(body.event_id) : null
   const course = !event && typeof body?.course_id === 'string' ? await getCourse(body.course_id) : null
   const item = event ?? course
   if (!item) return json({ error: 'No encontramos lo que quieres comprar.' }, 404)
   if (event && isEventPast(event.date_end)) return json({ error: 'Este evento ya finalizó.' }, 409)
-  if (!(item.price > 0)) return json({ error: 'Esta inscripción no se paga en línea. Escríbenos para inscribirte.' }, 409)
+
+  // El precio sale de la entrada elegida, siempre leída en el servidor.
+  const tickets = event ? await listTickets(event.id) : []
+  const ticket = tickets.find((option) => option.id === body?.ticket_id)
+  if (tickets.length > 0 && !ticket) return json({ error: 'Elige un tipo de entrada.' }, 409)
+  if (ticket?.sold_out) return json({ error: 'Esta entrada está agotada.' }, 409)
+  const price = ticket?.price ?? item.price
+  if (!(price > 0)) return json({ error: 'Esta inscripción no se paga en línea. Escríbenos para inscribirte.' }, 409)
 
   const column = event ? 'event_id' : 'course_id'
   const { data: enrolled, error: enrolledError } = await auth.db
@@ -35,7 +42,7 @@ export const POST: APIRoute = async ({ request, locals, url }) => {
   if (enrolled && enrolled.length > 0) return json({ error: 'Ya estás inscrito.' }, 409)
 
   // event_title se conserva porque los comprobantes ya lo leen, también en compras de cursos.
-  const metadata = { [column]: item.id, event_title: item.title, user_id: auth.userId }
+  const metadata = { [column]: item.id, event_title: item.title, user_id: auth.userId, ...(ticket ? { ticket_id: ticket.id, ticket_name: ticket.name, ticket_kind: ticket.kind } : {}) }
   const back = event ? `/app/checkout/${item.id}` : `/app/checkout/curso/${item.id}`
 
   try {
@@ -50,8 +57,8 @@ export const POST: APIRoute = async ({ request, locals, url }) => {
         quantity: 1,
         price_data: {
           currency: 'mxn',
-          unit_amount: Math.round(item.price * 100),
-          product_data: { name: item.title },
+          unit_amount: Math.round(price * 100),
+          product_data: { name: ticket ? `${item.title} · ${ticket.name}` : item.title },
         },
       }],
       success_url: `${url.origin}/app/checkout/exito?session_id={CHECKOUT_SESSION_ID}`,
@@ -60,7 +67,7 @@ export const POST: APIRoute = async ({ request, locals, url }) => {
 
     const { error } = await auth.db.from('orders').insert({
       user_id: auth.userId,
-      amount: item.price,
+      amount: price,
       currency: 'mxn',
       status: 'pendiente',
       stripe_session_id: session.id,

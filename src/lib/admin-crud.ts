@@ -156,6 +156,13 @@ export const MEDIA = {
   order: { column: 'created_at', ascending: false },
   ownerColumn: 'uploaded_by',
 }
+export const EVENT_TICKET = {
+  table: 'event_tickets',
+  fields: ['event_id', 'name', 'kind', 'description', 'includes', 'price', 'position', 'sold_out'],
+  roles: STAFF,
+  filters: ['event_id'],
+  order: { column: 'position' },
+}
 export const SESSION = {
   table: 'event_sessions',
   fields: ['event_id', 'title', 'description', 'speaker_name', 'speaker_bio', 'room', 'starts_at', 'ends_at'],

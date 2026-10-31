@@ -1,0 +1,11 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CrudManager from '../../../components/admin/CrudManager'
+---
+<AdminLayout title="Entradas" section="Eventos / Entradas">
+  <div class="flex flex-col gap-4">
+    <a href="/admin/eventos" class="text-sm font-semibold text-primary underline self-start">Volver a eventos</a>
+    <h1 class="text-[28px] font-bold text-primary">Tipos de entrada</h1>
+    <CrudManager client:only="react" section="tickets" scope={{ column: 'event_id', param: 'id' }} />
+  </div>
+</AdminLayout>

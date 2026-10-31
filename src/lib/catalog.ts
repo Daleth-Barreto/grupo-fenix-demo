@@ -138,6 +138,32 @@ export async function getCourse(id: string): Promise<PublicCourse | null> {
   return toCourse(data as CourseRow)
 }
 
+export interface EventTicket {
+  id: string
+  name: string
+  kind: 'reservacion' | 'admision' | 'hospedaje'
+  description: string | null
+  includes: string[]
+  price: number
+  sold_out: boolean
+}
+
+// Si la tabla aún no existe, el evento sigue vendiéndose con su precio general.
+export async function listTickets(eventId: string): Promise<EventTicket[]> {
+  const db = publicClient()
+  if (!db || !/^[0-9a-f-]{36}$/i.test(eventId)) return []
+  const { data, error } = await db
+    .from('event_tickets')
+    .select('id, name, kind, description, includes, price, sold_out')
+    .eq('event_id', eventId)
+    .order('position', { ascending: true })
+  if (error) {
+    console.error('[entradas]', error.message)
+    return []
+  }
+  return ((data ?? []) as EventTicket[]).map((ticket) => ({ ...ticket, price: Number(ticket.price), includes: ticket.includes ?? [] }))
+}
+
 export interface PublicSession {
   id: string
   title: string
