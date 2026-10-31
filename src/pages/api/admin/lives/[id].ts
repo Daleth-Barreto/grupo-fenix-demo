@@ -1,35 +1,44 @@
 import type { APIRoute } from 'astro'
 
 export const prerender = false
-import { getAdminSupabase } from '../../../../lib/supabase-admin'
+import { requireRole, json, pickFields } from '../../../../lib/admin-auth'
 
-export const PUT: APIRoute = async ({ params, request }) => {
+const LIVE_FIELDS = [
+  'title', 'speaker', 'description', 'hls_url', 'owncast_url', 'status',
+  'scheduled_at', 'started_at', 'ended_at', 'event_id', 'course_id',
+]
+
+export const PUT: APIRoute = async ({ params, request, locals }) => {
+  const auth = await requireRole(request, locals, ['admin', 'instructor'])
+  if (!auth.ok) return auth.response
+
   try {
-    const { id } = params
     const body = await request.json()
-    const { data, error } = await getAdminSupabase()
+    const { data, error } = await auth.db
       .from('lives')
-      .update(body)
-      .eq('id', id)
+      .update(pickFields(body, LIVE_FIELDS))
+      .eq('id', params.id)
       .select()
       .single()
 
-    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 })
-    return new Response(JSON.stringify({ data }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    if (error) return json({ error: error.message }, 500)
+    return json({ data })
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 400 })
+    return json({ error: e.message }, 400)
   }
 }
 
-export const DELETE: APIRoute = async ({ params }) => {
-  const { id } = params
-  const { data, error } = await getAdminSupabase()
+export const DELETE: APIRoute = async ({ params, request, locals }) => {
+  const auth = await requireRole(request, locals, ['admin', 'instructor'])
+  if (!auth.ok) return auth.response
+
+  const { data, error } = await auth.db
     .from('lives')
     .delete()
-    .eq('id', id)
+    .eq('id', params.id)
     .select()
     .single()
 
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 })
-  return new Response(JSON.stringify({ data }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  if (error) return json({ error: error.message }, 500)
+  return json({ data })
 }

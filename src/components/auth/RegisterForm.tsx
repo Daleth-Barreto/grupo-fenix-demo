@@ -30,7 +30,10 @@ export default function RegisterForm() {
     setLoading(true)
     const { error } = await supabase.auth.signUp({
       email: email.trim(), password,
-      options: { data: { full_name: fullName.trim() } },
+      options: {
+        data: { full_name: fullName.trim() },
+        emailRedirectTo: `${window.location.origin}/app/login`,
+      },
     })
     setLoading(false)
     if (error) setServerError(error.message)
