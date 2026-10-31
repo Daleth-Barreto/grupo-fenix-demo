@@ -1,0 +1,35 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro'
+import { CONTACTO, FILOSOFIA } from '../../data/sitio'
+
+const LINKS = [
+  { icon: 'mail', label: 'Correo', value: CONTACTO.email, href: `mailto:${CONTACTO.email}` },
+  { icon: 'photo_camera', label: 'Instagram', value: CONTACTO.instagram.label, href: CONTACTO.instagram.url },
+  { icon: 'thumb_up', label: 'Facebook', value: CONTACTO.facebook.label, href: CONTACTO.facebook.url },
+  { icon: 'language', label: 'Sitio web', value: 'eventosgrupofenix.com', href: CONTACTO.web },
+]
+---
+<AppLayout title="Contacto" section="Contacto" showBack active="/app/perfil" requireAuth={false}>
+  <div class="flex flex-col gap-6 pt-5 pb-10">
+    <section>
+      <h1 class="text-[28px] font-bold text-primary leading-tight">{FILOSOFIA.lema}</h1>
+      <p class="text-sm text-on-surface-variant mt-2 leading-relaxed">{FILOSOFIA.texto}</p>
+    </section>
+    <section class="flex flex-col gap-2" aria-label="Datos de contacto">
+      {LINKS.map((link) => (
+        <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" class="flex items-center gap-3 bg-surface rounded-2xl border border-surface-variant/70 p-4 min-h-[56px]">
+          <span class="material-symbols-outlined text-secondary text-[22px]">{link.icon}</span>
+          <span class="min-w-0">
+            <span class="block text-xs text-on-surface-variant">{link.label}</span>
+            <span class="block text-sm font-semibold text-primary break-all">{link.value}</span>
+          </span>
+        </a>
+      ))}
+    </section>
+    <section class="bg-surface-container-low rounded-2xl p-4">
+      <h2 class="text-sm font-bold text-primary">Métodos de pago</h2>
+      <p class="text-sm text-on-surface-variant mt-1">{CONTACTO.pagos}</p>
+    </section>
+    <a href="/app/reservaciones" class="self-start inline-flex bg-secondary text-on-secondary px-6 py-3 rounded-2xl font-semibold text-sm min-h-[48px] items-center">Solicitar información</a>
+  </div>
+</AppLayout>
