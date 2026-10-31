@@ -20,6 +20,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const auth = await requireRole(request, locals, ['student', 'instructor', 'admin'])
   if (!auth.ok) return auth.response
 
+  if (!auth.hasServiceRole) {
+    return json({ error: 'Por ahora, escríbenos a soporte para eliminar tu cuenta.' }, 503)
+  }
+
   const userId = auth.userId
 
   // 1) Revisar referencias antes de tocar nada.

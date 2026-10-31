@@ -10,9 +10,9 @@ import { getEnv } from './server-env'
  *  3. Leemos el rol desde public.user_profiles (la fuente de verdad),
  *     NO desde user_metadata, que el propio usuario puede modificar.
  *
- * Variables de entorno (SOLO servidor, sin PUBLIC_):
- *  - SUPABASE_SERVICE_ROLE_KEY
- * Las PUBLIC_* se usan igual que en el resto de la app.
+ * SUPABASE_SERVICE_ROLE_KEY (solo servidor, sin PUBLIC_) es opcional. Sin ella, cada
+ * consulta usa el token del usuario, así que las reglas RLS deciden qué puede hacer.
+ * Solo la requieren el webhook de Stripe y la baja de cuenta.
  */
 
 export type AppRole = 'student' | 'instructor' | 'admin'
@@ -33,7 +33,7 @@ export function getServiceClient(): SupabaseClient | null {
 }
 
 export type AuthResult =
-  | { ok: true; userId: string; email: string; role: AppRole; db: SupabaseClient }
+  | { ok: true; userId: string; email: string; role: AppRole; db: SupabaseClient; hasServiceRole: boolean }
   | { ok: false; response: Response }
 
 export async function requireRole(
@@ -43,8 +43,7 @@ export async function requireRole(
 ): Promise<AuthResult> {
   const url = getEnv('PUBLIC_SUPABASE_URL')
   const anonKey = getEnv('PUBLIC_SUPABASE_ANON_KEY')
-  const db = getServiceClient()
-  if (!url || !anonKey || !db) {
+  if (!url || !anonKey) {
     return { ok: false, response: json({ error: 'Servidor mal configurado' }, 500) }
   }
 
@@ -59,6 +58,13 @@ export async function requireRole(
   if (userError || !userData.user) {
     return { ok: false, response: json({ error: 'Sesión inválida' }, 401) }
   }
+
+  // Sin service_role, las consultas van con el token del usuario y las limita RLS.
+  const service = getServiceClient()
+  const db = service ?? createClient(url, anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  })
 
   const { data: profile, error: profileError } = await db
     .from('user_profiles')
@@ -75,7 +81,7 @@ export async function requireRole(
     return { ok: false, response: json({ error: 'Sin permiso' }, 403) }
   }
 
-  return { ok: true, userId: userData.user.id, email: userData.user.email ?? '', role, db }
+  return { ok: true, userId: userData.user.id, email: userData.user.email ?? '', role, db, hasServiceRole: Boolean(service) }
 }
 
 /** Copia solo las llaves permitidas. Evita mass assignment desde el body. */
