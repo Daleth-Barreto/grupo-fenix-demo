@@ -70,11 +70,11 @@ export default function MyCourses() {
         {visible.map(({ course, percent, status }) => (
           <a key={course.id} href={`/app/cursos/${course.id}`} data-course-id={course.id}
             className="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated transition-all active:scale-[0.98] block">
-            <div className="relative w-full h-36 overflow-hidden bg-primary">
+            <div className="relative w-full h-36 overflow-hidden bg-navy">
               {course.cover_image
                 ? <img src={course.cover_image} alt="" className="w-full h-full object-cover" />
                 : <div className="w-full h-full bg-navy-gradient" />}
-              <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-semibold bg-primary/90 text-white">{status}</div>
+              <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-semibold bg-navy/90 text-white">{status}</div>
             </div>
             <div className="p-4 flex flex-col gap-2">
               <h2 className="text-[15px] font-semibold text-primary line-clamp-2 leading-snug">{course.title}</h2>
