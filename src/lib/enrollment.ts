@@ -22,7 +22,8 @@ function targetOf(metadata: OrderTarget['metadata']): { column: 'event_id' | 'co
  */
 export async function enrollFromOrder(db: SupabaseClient, order: OrderTarget): Promise<boolean> {
   const target = targetOf(order.metadata)
-  if (!order.userId || !target) return false
+  // Una reservación es un primer pago: el equipo inscribe a la persona cuando complete el resto.
+  if (!order.userId || !target || order.metadata?.ticket_kind === 'reservacion') return false
 
   const { data: existing, error } = await db
     .from('enrollments')

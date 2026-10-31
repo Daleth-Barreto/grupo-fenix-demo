@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 import CheckoutForm from '../../../components/checkout/CheckoutForm'
-import { getEvent } from '../../../lib/catalog'
+import { getEvent, listTickets } from '../../../lib/catalog'
 import { formatPrice } from '../../../utils/format'
 
 export const prerender = false
@@ -9,6 +9,10 @@ export const prerender = false
 const { id } = Astro.params
 const event = await getEvent(id!)
 if (!event) return Astro.redirect('/app/congresos')
+
+const tickets = await listTickets(event.id)
+const ticket = tickets.find((option) => option.id === Astro.url.searchParams.get('entrada') && !option.sold_out)
+if (tickets.length > 0 && !ticket) return Astro.redirect(`/app/congresos/${event.id}#entradas`)
 ---
 <BaseLayout title={`Checkout: ${event.title}`}>
   <div class="min-h-screen bg-background flex flex-col">
@@ -27,12 +31,13 @@ if (!event) return Astro.redirect('/app/congresos')
         </div>
         <div class="flex flex-col justify-between py-1">
           <h2 class="text-sm font-semibold text-primary line-clamp-2 leading-snug">{event.title}</h2>
-          <p class="text-[18px] font-bold text-secondary leading-none">{formatPrice(event.price)}</p>
+          {ticket && <p class="text-xs text-on-surface-variant">{ticket.name}</p>}
+          <p class="text-[18px] font-bold text-secondary leading-none">{formatPrice(ticket?.price ?? event.price)}</p>
         </div>
       </section>
 
       <div data-if-upcoming>
-        <CheckoutForm client:load eventId={event.id} />
+        <CheckoutForm client:load eventId={event.id} ticketId={ticket?.id} isReservation={ticket?.kind === 'reservacion'} />
       </div>
       <p data-if-past style="display:none" class="text-sm font-semibold text-on-surface-variant text-center">Este evento ya finalizó.</p>
     </main>

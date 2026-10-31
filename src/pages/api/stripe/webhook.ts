@@ -12,6 +12,8 @@ export const prerender = false
 // Marca la orden como pagada y da acceso. Stripe puede repetir el evento sin duplicar nada.
 async function markPaid(db: SupabaseClient, session: Stripe.Checkout.Session, origin: string): Promise<void> {
   const userId = session.metadata?.user_id ?? session.client_reference_id ?? null
+  const { data: previous } = await db.from('orders').select('status').eq('stripe_session_id', session.id).maybeSingle()
+  const alreadyPaid = previous?.status === 'pagado'
 
   const { data: updated, error } = await db
     .from('orders')
@@ -48,6 +50,15 @@ async function markPaid(db: SupabaseClient, session: Stripe.Checkout.Session, or
       '¡Tu inscripción está confirmada!',
       [`Recibimos tu pago de ${title}.`, 'Puedes consultar tu inscripción y tu comprobante en la app.'],
       { href: appUrl('/app/mis-eventos', origin), label: 'Ver mis inscripciones' },
+    )
+  } else if (session.metadata?.ticket_kind === 'reservacion' && !alreadyPaid) {
+    const title = session.metadata?.event_title ?? 'tu evento'
+    await sendEmail(
+      session.customer_details?.email ?? session.customer_email,
+      `Reservación recibida: ${title}`,
+      '¡Recibimos tu reservación!',
+      [`Recibimos tu primer pago para ${title}.`, 'Nuestro equipo te contactará para completar tu inscripción.'],
+      { href: appUrl('/app/comprobantes', origin), label: 'Ver mi comprobante' },
     )
   }
 }
