@@ -29,10 +29,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
 
   <script>
     import { adminFetch } from '../../../lib/admin-fetch'
+    import { onAppReady } from '../../../utils/app-ready'
     import { escapeHtml } from '../../../utils/escape-html'
     async function load() {
       const res = await adminFetch('/api/admin/events')
-      const json = (await res.json()) as any
+      const json = (await res.json().catch(() => ({}))) as any
+      if (!res.ok) alert(json.error || 'No se pudo cargar la información')
       const list = document.getElementById('events-list')
       const empty = document.getElementById('events-empty')
       if (!json.data || json.data.length === 0) {
@@ -72,6 +74,6 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         })
       })
     }
-    load()
+    onAppReady(load)
   </script>
 </AdminLayout>

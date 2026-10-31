@@ -38,11 +38,13 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
 
   <script>
     import { adminFetch } from '../../../lib/admin-fetch'
+    import { onAppReady } from '../../../utils/app-ready'
     import { escapeHtml } from '../../../utils/escape-html'
     let users: any[] = []
     async function load() {
       const res = await adminFetch('/api/admin/users')
-      const json = (await res.json()) as any
+      const json = (await res.json().catch(() => ({}))) as any
+      if (!res.ok) alert(json.error || 'No se pudo cargar la información')
       users = json.data || []
       render()
     }
@@ -104,9 +106,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         })
       })
     }
-    document.getElementById('user-search')?.addEventListener('input', (e) => {
-      render((e.target as HTMLInputElement).value)
+    onAppReady(() => {
+      document.getElementById('user-search')?.addEventListener('input', (e) => {
+        render((e.target as HTMLInputElement).value)
+      })
+      load()
     })
-    load()
   </script>
 </AdminLayout>

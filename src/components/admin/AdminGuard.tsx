@@ -42,6 +42,14 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     check()
   }, [setUser])
 
+  // Los <script> de la página corren antes de que exista su DOM: ver utils/app-ready.ts
+  useEffect(() => {
+    if (authorized) {
+      document.documentElement.dataset.appReady = 'true'
+      document.dispatchEvent(new Event('app:ready'))
+    }
+  }, [authorized])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">

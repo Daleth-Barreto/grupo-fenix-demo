@@ -16,7 +16,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
     <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
       <span class="material-symbols-outlined text-blue-600">info</span>
       <div class="text-sm">
-        <p class="font-semibold text-blue-900">Owncast configurado</p>
+        <p class="font-semibold text-blue-900">Datos de Owncast</p>
         <p class="text-blue-700 mt-0.5">Usa el stream key y URL HLS de tu instancia Owncast. Todo es 100% gratis.</p>
       </div>
     </div>
@@ -88,25 +88,28 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
 
   <script>
     import { adminFetch } from '../../../lib/admin-fetch'
-    const form = document.getElementById('live-form') as HTMLFormElement
-    form?.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      const formData = new FormData(form)
-      const body: any = {}
-      formData.forEach((v, k) => { body[k] = v })
-      if (body.scheduled_at) body.scheduled_at = new Date(body.scheduled_at).toISOString()
-      const res = await adminFetch('/api/admin/lives', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+    import { onAppReady } from '../../../utils/app-ready'
+    onAppReady(() => {
+      const form = document.getElementById('live-form') as HTMLFormElement
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const formData = new FormData(form)
+        const body: any = {}
+        formData.forEach((v, k) => { body[k] = v })
+        if (body.scheduled_at) body.scheduled_at = new Date(body.scheduled_at).toISOString()
+        const res = await adminFetch('/api/admin/lives', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+        const json = (await res.json()) as any
+        if (res.ok) {
+          alert('Transmisión creada correctamente')
+          window.location.href = '/admin/en-vivo'
+        } else {
+          alert(json.error || 'Error al crear transmisión')
+        }
       })
-      const json = (await res.json()) as any
-      if (res.ok) {
-        alert('Transmisión creada correctamente')
-        window.location.href = '/admin/en-vivo'
-      } else {
-        alert(json.error || 'Error al crear transmisión')
-      }
     })
   </script>
 </AdminLayout>

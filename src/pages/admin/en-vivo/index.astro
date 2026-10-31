@@ -29,6 +29,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
 
   <script>
     import { adminFetch } from '../../../lib/admin-fetch'
+    import { onAppReady } from '../../../utils/app-ready'
     import { escapeHtml } from '../../../utils/escape-html'
     const statusColors: any = {
       programado: 'bg-amber-100 text-amber-700',
@@ -38,7 +39,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
     }
     async function load() {
       const res = await adminFetch('/api/admin/lives')
-      const json = (await res.json()) as any
+      const json = (await res.json().catch(() => ({}))) as any
+      if (!res.ok) alert(json.error || 'No se pudo cargar la información')
       const list = document.getElementById('lives-list')
       const empty = document.getElementById('lives-empty')
       if (!json.data || json.data.length === 0) {
@@ -90,6 +92,6 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         })
       })
     }
-    load()
+    onAppReady(load)
   </script>
 </AdminLayout>
