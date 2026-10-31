@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro'
 import Badge from '../../../components/ui/Badge.astro'
 import Button from '../../../components/ui/Button.astro'
 import { getEvent } from '../../../lib/catalog'
+import EventAgenda from '../../../components/events/EventAgenda'
 import { formatPrice, formatDateRange, daysUntil } from '../../../utils/format'
 
 export const prerender = false
@@ -19,7 +20,7 @@ const BENEFITS = [
   { icon: 'coffee', label: 'Coffee breaks y networking' },
 ]
 ---
-<BaseLayout title={event.title}>
+<BaseLayout title={event.title} description={event.description.slice(0, 160)} image={event.image_url}>
   <div class="min-h-screen bg-background pb-28">
     <!-- Header fijo -->
     <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-surface-variant shadow-card" style="padding-top: env(safe-area-inset-top, 0px);">
@@ -93,6 +94,20 @@ const BENEFITS = [
       <section>
         <h2 class="text-[17px] font-bold text-primary mb-2">Acerca del evento</h2>
         <p class="text-sm text-on-surface-variant leading-relaxed">{event.description}</p>
+      </section>
+
+      <EventAgenda client:only="react" eventId={event.id} />
+
+      <!-- Compartir -->
+      <section class="flex flex-wrap gap-2" aria-label="Compartir y guardar">
+        <a id="share-whatsapp" href={`https://wa.me/?text=${encodeURIComponent(`${event.title} ${Astro.url.href}`)}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-surface-variant text-sm font-semibold text-primary min-h-[44px]">
+          <span class="material-symbols-outlined text-[20px]">share</span>
+          Compartir por WhatsApp
+        </a>
+        <a id="add-calendar" href={`/api/events/${event.id}/calendar.ics`} class="inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-surface-variant text-sm font-semibold text-primary min-h-[44px]">
+          <span class="material-symbols-outlined text-[20px]">event</span>
+          Agregar a mi calendario
+        </a>
       </section>
 
       <!-- Beneficios -->

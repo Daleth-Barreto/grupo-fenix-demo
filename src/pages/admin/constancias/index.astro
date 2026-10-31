@@ -1,13 +1,15 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro'
 import CrudManager from '../../../components/admin/CrudManager'
+import IssueCertificates from '../../../components/admin/IssueCertificates'
 ---
 <AdminLayout title="Constancias" section="Constancias">
   <div class="flex flex-col gap-6">
     <div>
       <h1 class="text-[28px] font-bold text-primary">Constancias</h1>
-      <p class="text-sm text-on-surface-variant mt-1">Registra constancias. El alumno las ve en su cuenta. El PDF todavía no se genera.</p>
+      <p class="text-sm text-on-surface-variant mt-1">Emite y registra constancias. El alumno las ve e imprime desde su cuenta, y cualquiera puede validar el folio.</p>
     </div>
+    <IssueCertificates client:only="react" />
     <CrudManager client:only="react" section="certificates" />
   </div>
 </AdminLayout>

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
+import { adminFetch } from '../../lib/admin-fetch'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -18,7 +19,15 @@ export default function LoginForm() {
     else {
       // Solo rutas internas: un enlace ?next= no debe poder sacar al usuario del sitio.
       const next = new URLSearchParams(window.location.search).get('next') ?? ''
-      window.location.href = /^\/app\/[\w/-]*$/.test(next) ? next : '/app/inicio'
+      if (/^\/app\/[\w/-]*$/.test(next)) {
+        window.location.href = next
+        return
+      }
+      // Sin destino pedido, el staff entra a su panel. Si esto falla, va a Inicio.
+      const role = await adminFetch('/api/admin/me')
+        .then(async (res) => (res.ok ? ((await res.json()) as { role?: string }).role : null))
+        .catch(() => null)
+      window.location.href = role === 'admin' || role === 'instructor' ? '/admin' : '/app/inicio'
     }
   }
 

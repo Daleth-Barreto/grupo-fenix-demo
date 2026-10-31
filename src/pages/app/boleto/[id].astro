@@ -1,0 +1,14 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import TicketView from '../../../components/account/TicketView'
+
+export const prerender = false
+
+const { id } = Astro.params
+if (!id) return Astro.redirect('/app/mis-eventos')
+---
+<AppLayout title="Mi boleto" section="Mi boleto" showBack active="/app/perfil">
+  <div class="pt-5 pb-10 max-w-md mx-auto">
+    <TicketView client:only="react" eventId={id} />
+  </div>
+</AppLayout>
