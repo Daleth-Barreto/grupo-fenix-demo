@@ -167,8 +167,7 @@ const INTERESTS = ['Congreso', 'Capacitación a medida', 'Curso o taller', 'Even
 
   form.addEventListener('submit', (e) => {
     e.preventDefault()
-    // Submit logical mockup
-    const success = document.getElementById('success-screen') as HTMLElement
-    success.classList.remove('opacity-0', 'pointer-events-none')
+    // Sin backend todavía: no se envía nada, así que no mostramos "Solicitud enviada" (auditoría A6)
+    alert('Esta solicitud todavía no se envía desde la app. Comunícate con nosotros para tu reservación.')
   })
 </script>

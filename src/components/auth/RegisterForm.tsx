@@ -76,7 +76,7 @@ export default function RegisterForm() {
       <label className="flex items-start gap-3 cursor-pointer mt-1">
         <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 w-5 h-5 rounded-md accent-[#fe9511] cursor-pointer" />
         <span className="text-xs text-on-surface-variant leading-relaxed">
-          Acepto los <a href="/terminos" className="text-secondary font-semibold hover:underline">Términos y Condiciones</a> y el Aviso de Privacidad.
+          Acepto los <span className="text-secondary font-semibold">Términos y Condiciones</span> y el Aviso de Privacidad.
         </span>
       </label>
       {errors.terms && <p className="text-xs text-error ml-1 -mt-2">{errors.terms}</p>}

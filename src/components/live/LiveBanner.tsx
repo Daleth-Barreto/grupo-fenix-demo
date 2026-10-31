@@ -11,16 +11,8 @@ export default function LiveBanner() {
   const [liveStreams, setLiveStreams] = useState<LiveStream[]>([])
 
   useEffect(() => {
-    // TODO: Obtener desde Supabase
-    // Mock data
-    setLiveStreams([
-      {
-        id: 'live-1',
-        title: 'Congreso Internacional de Medicina 2026',
-        presenter: 'Dr. Carlos Mendoza',
-        status: 'live'
-      }
-    ])
+    // TODO: Obtener desde Supabase. Hasta entonces no se muestra ningún "EN VIVO" falso (auditoría A3).
+    setLiveStreams([])
   }, [])
 
   const liveStreamsFiltered = liveStreams.filter(s => s.status === 'live')
