@@ -6,6 +6,7 @@ import UpcomingEvents from '../../components/sections/UpcomingEvents.astro'
 import UserGreeting from '../../components/auth/UserGreeting'
 import LiveBanner from '../../components/live/LiveBanner'
 import DashboardStats from '../../components/account/DashboardStats'
+import AdminPanelLink from '../../components/admin/AdminPanelLink'
 import { listEvents, upcomingEvents, featuredEvent } from '../../lib/catalog'
 import { formatDateRange } from '../../utils/format'
 
@@ -29,6 +30,8 @@ const QUICK_ACCESS = [
       <h1 class="text-[22px] font-bold text-primary leading-tight">¡Hola, <UserGreeting client:load fallback="" /> </h1>
       <p class="text-sm text-on-surface-variant mt-1">¿Qué quieres aprender hoy?</p>
     </section>
+
+    <AdminPanelLink client:only="react" />
 
     <!-- Live Banner -->
     <LiveBanner client:load />
