@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro'
 
 export const prerender = false
 import { requireRole, json } from '../../lib/admin-auth'
+import { hasCourseAccess } from '../../lib/course-access'
 
 const ROLES = ['student', 'instructor', 'admin'] as const
 
@@ -37,6 +38,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const completed = body?.completed === true
 
     if (!courseId || !lessonId) return json({ error: 'course_id y lesson_id requeridos' }, 400)
+    if (!(await hasCourseAccess(auth.db, auth.userId, auth.role, courseId))) {
+      return json({ error: 'No estás inscrito en este curso.' }, 403)
+    }
 
     if (completed) {
       const { error } = await auth.db

@@ -88,6 +88,10 @@ STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 ```
 
+Para correos automáticos también se necesitan `RESEND_API_KEY`, `EMAIL_FROM` y `CRON_SECRET`. Sin ellas la app funciona, pero no envía correos.
+
+OXXO y meses sin intereses se activan en el panel de Stripe, en Payment Methods. El checkout ya los ofrece cuando están activos. Una orden con OXXO queda pendiente hasta que el webhook confirma el pago.
+
 Sin `SUPABASE_SERVICE_ROLE_KEY`, las APIs usan el token del usuario y las reglas RLS de Supabase. Sin las variables de Stripe, el checkout avisa que el pago no está disponible: no se simula ningún pago.
 
 ## 🗄️ Base de datos
@@ -97,18 +101,21 @@ Correr en Supabase → SQL Editor, además del esquema base:
 - `docs/sql/user_progress.sql`: progreso de lecciones
 - `docs/sql/reservation_requests.sql`: solicitudes de cotización
 - `docs/sql/avatars.sql`: fotos de perfil
+- `docs/sql/contenido_y_admin.sql`: permisos del panel, bucket de medios y eventos iniciales
+
+En Authentication → URL Configuration, `Site URL` debe ser la dirección pública de la app y `Redirect URLs` debe incluir `https://TU-DOMINIO/**`. Si no, los correos de confirmación llevan a `localhost`.
 
 ## 💳 Webhook de Stripe
 
-Registrar `https://TU-DOMINIO/api/stripe/webhook` con los eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` y `checkout.session.expired`.
+El webhook necesita `SUPABASE_SERVICE_ROLE_KEY`. Registrar `https://TU-DOMINIO/api/stripe/webhook` con los eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` y `checkout.session.expired`.
 
 ## 📌 Estado
 
 - **Funciona con servidor:** autenticación y roles, panel de admin, pago con Stripe Checkout, webhook, comprobantes, constancias, progreso, reservaciones, control de acceso a transmisiones.
 - **Despliegue:** Vercel con `@astrojs/vercel`; las rutas `/api/*` y `/app/en-vivo/*` corren como funciones de servidor.
 - **Stripe:** pendiente de configurar.
-- **Catálogo de ejemplo:** eventos, cursos y galería de la app salen de `src/data/mock.ts`, no de Supabase. Lo creado en el panel de admin todavía no aparece en la app.
-- **Próximamente:** constructor de cursos, biblioteca de medios, generación de constancias en PDF, URL firmada para transmisiones.
+- **Contenido:** eventos y cursos salen de Supabase y se administran desde `/admin`. Solo la galería sigue en `src/data/mock.ts`.
+- **Próximamente:** generación de constancias en PDF y URL firmada para transmisiones.
 
 ## 🌿 Ramas
 

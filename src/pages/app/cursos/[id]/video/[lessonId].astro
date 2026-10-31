@@ -1,44 +1,15 @@
 ---
 import BaseLayout from '../../../../../layouts/BaseLayout.astro'
-import VideoPlayer from '../../../../../components/courses/VideoPlayer'
-import MarkCompleteButton from '../../../../../components/courses/MarkCompleteButton'
 import AuthGuard from '../../../../../components/auth/AuthGuard'
-import { getCourseById, MOCK_COURSES } from '../../../../../data/mock'
+import LessonView from '../../../../../components/courses/LessonView'
 
-export function getStaticPaths() {
-  return MOCK_COURSES.flatMap((c) =>
-    c.modules.flatMap((m) =>
-      m.lessons.map((l) => ({
-        params: { id: c.id, lessonId: l.id }
-      }))
-    )
-  )
-}
+export const prerender = false
 
 const { id, lessonId } = Astro.params
-const course = getCourseById(id!)
-if (!course) return Astro.redirect('/app/cursos')
-
-const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId)
-if (!lesson) return Astro.redirect(`/app/cursos/${course.id}`)
+if (!id || !lessonId) return Astro.redirect('/app/cursos')
 ---
-<BaseLayout title={lesson.title}>
+<BaseLayout title="Lección">
   <AuthGuard client:load>
-    <div class="min-h-screen flex flex-col">
-      <VideoPlayer
-        client:load
-        backHref={`/app/cursos/${course.id}`}
-        instructor={course.instructor}
-        courseTitle={course.title}
-        lessonTitle={lesson.title}
-        duration={lesson.duration}
-        videoUrl={lesson.video_url}
-      />
-      <div class="px-4 sm:px-5 py-4 bg-white border-t border-[#dce2f3]" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">
-        <div class="max-w-2xl mx-auto">
-          <MarkCompleteButton client:load lessonId={lessonId!} courseId={id!} />
-        </div>
-      </div>
-    </div>
+    <LessonView client:only="react" courseId={id} lessonId={lessonId} />
   </AuthGuard>
 </BaseLayout>

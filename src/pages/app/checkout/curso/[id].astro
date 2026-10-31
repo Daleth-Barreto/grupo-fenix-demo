@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro'
+import CheckoutForm from '../../../../components/checkout/CheckoutForm'
+import { getCourse } from '../../../../lib/catalog'
+import { formatPrice } from '../../../../utils/format'
+
+export const prerender = false
+
+const { id } = Astro.params
+const course = await getCourse(id!)
+if (!course) return Astro.redirect('/app/cursos/catalogo')
+---
+<BaseLayout title={`Inscripción: ${course.title}`}>
+  <div class="min-h-screen bg-background flex flex-col">
+    <header class="sticky top-0 z-50 bg-surface/98 backdrop-blur-lg border-b border-surface-variant shadow-sm flex items-center px-4 sm:px-5" style="padding-top: env(safe-area-inset-top, 0px); height: calc(4rem + env(safe-area-inset-top, 0px));">
+      <a href="/app/cursos/catalogo" aria-label="Volver a cursos" class="p-2.5 -ml-2 rounded-full text-primary hover:bg-surface-container transition-colors active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center">
+        <span class="material-symbols-outlined">close</span>
+      </a>
+      <span class="font-bold text-primary ml-2">Inscripción</span>
+    </header>
+
+    <main class="flex-1 max-w-md w-full mx-auto px-4 sm:px-5 py-6">
+      <section class="bg-surface rounded-3xl p-4 shadow-sm border border-surface-variant/70 flex flex-col gap-1 mb-6">
+        <h1 class="text-sm font-semibold text-primary leading-snug">{course.title}</h1>
+        <p class="text-[18px] font-bold text-primary leading-none mt-1">{formatPrice(course.price)}</p>
+      </section>
+      <CheckoutForm client:load courseId={course.id} />
+    </main>
+  </div>
+</BaseLayout>

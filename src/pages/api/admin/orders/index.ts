@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import { requireRole, json } from '../../../lib/admin-auth'
+import { requireRole, json } from '../../../../lib/admin-auth'
 
 export const prerender = false
 

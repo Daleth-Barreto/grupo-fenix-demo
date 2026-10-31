@@ -70,13 +70,23 @@ export async function requireRole(
     .from('user_profiles')
     .select('role')
     .eq('id', userData.user.id)
-    .single()
+    .maybeSingle()
 
-  if (profileError || !profile) {
-    return { ok: false, response: json({ error: 'Perfil no encontrado' }, 403) }
+  if (profileError) {
+    console.error('[auth] No se pudo leer el perfil', profileError.message)
+    return { ok: false, response: json({ error: 'No se pudo leer tu perfil.' }, 500) }
   }
 
-  const role = profile.role as AppRole
+  // Sin perfil se trata como alumno, el rol con menos permisos. Nunca se lee de user_metadata.
+  if (!profile) {
+    const fullName = userData.user.user_metadata?.full_name
+    const { error: insertError } = await db
+      .from('user_profiles')
+      .insert({ id: userData.user.id, full_name: typeof fullName === 'string' ? fullName : null })
+    if (insertError) console.error('[auth] No se pudo crear el perfil', insertError.message)
+  }
+
+  const role = (profile?.role ?? 'student') as AppRole
   if (!allowed.includes(role)) {
     return { ok: false, response: json({ error: 'Sin permiso' }, 403) }
   }

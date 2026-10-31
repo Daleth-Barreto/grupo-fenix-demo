@@ -6,11 +6,14 @@ import UpcomingEvents from '../../components/sections/UpcomingEvents.astro'
 import UserGreeting from '../../components/auth/UserGreeting'
 import LiveBanner from '../../components/live/LiveBanner'
 import DashboardStats from '../../components/account/DashboardStats'
-import { getUpcomingEvents, getFeaturedEvent } from '../../data/mock'
+import { listEvents, upcomingEvents, featuredEvent } from '../../lib/catalog'
 import { formatDateRange } from '../../utils/format'
 
-const featured = getFeaturedEvent()
-const upcoming = getUpcomingEvents().filter((e) => e.id !== featured?.id).slice(0, 3)
+export const prerender = false
+
+const { events } = await listEvents()
+const featured = featuredEvent(events)
+const upcoming = upcomingEvents(events).filter((e) => e.id !== featured?.id).slice(0, 3)
 
 const QUICK_ACCESS = [
   { icon: 'local_activity', label: 'Congresos', path: '/app/congresos' },

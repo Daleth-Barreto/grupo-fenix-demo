@@ -15,7 +15,11 @@ export default function LoginForm() {
     const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     setLoading(false)
     if (err) setError(err.message)
-    else window.location.href = '/app/inicio'
+    else {
+      // Solo rutas internas: un enlace ?next= no debe poder sacar al usuario del sitio.
+      const next = new URLSearchParams(window.location.search).get('next') ?? ''
+      window.location.href = /^\/app\/[\w/-]*$/.test(next) ? next : '/app/inicio'
+    }
   }
 
   return (

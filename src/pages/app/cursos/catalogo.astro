@@ -1,0 +1,41 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro'
+import { listCourses } from '../../../lib/catalog'
+import { formatPrice } from '../../../utils/format'
+
+export const prerender = false
+
+const { courses, failed } = await listCourses()
+---
+<AppLayout title="Cursos disponibles" section="Cursos disponibles" showBack active="/app/cursos" requireAuth={false}>
+  <div class="flex flex-col gap-5 pt-5 pb-10">
+    <section class="text-center">
+      <h1 class="text-[28px] font-bold text-primary">Cursos disponibles</h1>
+      <p class="text-sm text-on-surface-variant mt-1.5">Inscríbete para acceder a las lecciones</p>
+    </section>
+
+    <div class="flex flex-col gap-4">
+      {courses.map((course) => (
+        <article class="catalog-course bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
+          <div class="w-full h-36 bg-primary overflow-hidden">
+            {course.image_url ? <img src={course.image_url} alt="" loading="lazy" class="w-full h-full object-cover" /> : <div class="w-full h-full bg-navy-gradient"></div>}
+          </div>
+          <div class="p-4 flex flex-col gap-2">
+            <h2 class="text-[15px] font-semibold text-primary leading-snug">{course.title}</h2>
+            {course.instructor && <p class="text-xs text-on-surface-variant">{course.instructor}</p>}
+            {course.description && <p class="text-[13px] text-on-surface-variant leading-relaxed">{course.description}</p>}
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <p class="text-[18px] font-bold text-primary">{formatPrice(course.price)}</p>
+              <a href={`/app/checkout/curso/${course.id}`} class="bg-secondary text-on-secondary text-sm font-semibold px-6 py-3 rounded-2xl shadow-card">Inscribirme</a>
+            </div>
+          </div>
+        </article>
+      ))}
+      {courses.length === 0 && (
+        <p class="text-sm text-on-surface-variant text-center py-12">
+          {failed ? 'No pudimos cargar los cursos. Intenta de nuevo en un momento.' : 'Pronto publicaremos nuevos cursos.'}
+        </p>
+      )}
+    </div>
+  </div>
+</AppLayout>

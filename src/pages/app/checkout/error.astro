@@ -22,7 +22,7 @@ import AppLayout from '../../../layouts/AppLayout.astro'
 </AppLayout>
 
 <script>
-  const eventId = new URLSearchParams(window.location.search).get('event')
+  const back = new URLSearchParams(window.location.search).get('volver')
   const retry = document.getElementById('retry-payment') as HTMLAnchorElement | null
-  if (retry && eventId) retry.href = `/app/checkout/${encodeURIComponent(eventId)}`
+  if (retry && back && /^\/app\/checkout\/[\w/-]+$/.test(back)) retry.href = back
 </script>
