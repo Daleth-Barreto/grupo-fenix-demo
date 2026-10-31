@@ -97,6 +97,9 @@ Correr en Supabase → SQL Editor, además del esquema base:
 - `docs/sql/user_progress.sql`: progreso de lecciones
 - `docs/sql/reservation_requests.sql`: solicitudes de cotización
 - `docs/sql/avatars.sql`: fotos de perfil
+- `docs/sql/contenido_y_admin.sql`: permisos del panel, bucket de medios y eventos iniciales
+
+En Authentication → URL Configuration, `Site URL` debe ser la dirección pública de la app y `Redirect URLs` debe incluir `https://TU-DOMINIO/**`. Si no, los correos de confirmación llevan a `localhost`.
 
 ## 💳 Webhook de Stripe
 
@@ -107,8 +110,8 @@ Registrar `https://TU-DOMINIO/api/stripe/webhook` con los eventos `checkout.sess
 - **Funciona con servidor:** autenticación y roles, panel de admin, pago con Stripe Checkout, webhook, comprobantes, constancias, progreso, reservaciones, control de acceso a transmisiones.
 - **Despliegue:** Vercel con `@astrojs/vercel`; las rutas `/api/*` y `/app/en-vivo/*` corren como funciones de servidor.
 - **Stripe:** pendiente de configurar.
-- **Catálogo de ejemplo:** eventos, cursos y galería de la app salen de `src/data/mock.ts`, no de Supabase. Lo creado en el panel de admin todavía no aparece en la app.
-- **Próximamente:** constructor de cursos, biblioteca de medios, generación de constancias en PDF, URL firmada para transmisiones.
+- **Contenido:** eventos y cursos salen de Supabase y se administran desde `/admin`. Solo la galería sigue en `src/data/mock.ts`.
+- **Próximamente:** generación de constancias en PDF y URL firmada para transmisiones.
 
 ## 🌿 Ramas
 

@@ -37,6 +37,7 @@ const labelClass = 'text-[13px] font-semibold text-primary ml-1'
   import { supabase } from '../../../lib/supabase'
   import { onAppReady } from '../../../utils/app-ready'
   import { adminFetch } from '../../../lib/admin-fetch'
+  import { siteUrl } from '../../../lib/site-url'
 
   onAppReady(async () => {
     const form = document.getElementById('datos-form') as HTMLFormElement | null
@@ -94,7 +95,7 @@ const labelClass = 'text-[13px] font-semibold text-primary ml-1'
         const { error } = await supabase.auth.updateUser({
           data: { full_name: fullName },
           ...(emailChanged ? { email } : {}),
-        })
+        }, emailChanged ? { emailRedirectTo: siteUrl('/app/configuracion/datos') } : undefined)
         if (error) throw new Error(emailChanged ? 'Se guardaron tus datos, pero no se pudo cambiar el correo.' : 'No se pudieron guardar tus datos.')
 
         say(emailChanged ? 'Datos guardados. Revisa tu correo para confirmar el cambio.' : 'Datos actualizados.', true)

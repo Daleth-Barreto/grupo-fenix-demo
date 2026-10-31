@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro'
 import { requireRole, json } from '../../../lib/admin-auth'
 import { getStripe } from '../../../lib/stripe-server'
-import { getEventById } from '../../../data/mock'
+import { getEvent } from '../../../lib/catalog'
 import { isEventPast } from '../../../utils/format'
 
 export const prerender = false
@@ -15,7 +15,7 @@ export const POST: APIRoute = async ({ request, locals, url }) => {
   if (!stripe) return json({ error: 'El pago en línea todavía no está disponible.' }, 503)
 
   const body = (await request.json().catch(() => null)) as { event_id?: unknown } | null
-  const event = typeof body?.event_id === 'string' ? getEventById(body.event_id) : undefined
+  const event = typeof body?.event_id === 'string' ? await getEvent(body.event_id) : null
   if (!event) return json({ error: 'Evento no encontrado.' }, 404)
   if (isEventPast(event.date_end)) return json({ error: 'Este evento ya finalizó.' }, 409)
   if (!(event.price > 0)) return json({ error: 'Este evento no tiene precio válido.' }, 409)

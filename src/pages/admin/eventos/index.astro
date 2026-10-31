@@ -1,79 +1,13 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CrudManager from '../../../components/admin/CrudManager'
 ---
-<AdminLayout title="Eventos" section="Eventos / Congresos">
+<AdminLayout title="Eventos" section="Eventos">
   <div class="flex flex-col gap-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-[28px] font-bold text-primary">Eventos / Congresos</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Gestiona congresos, capacitaciones, talleres</p>
-      </div>
-      <a href="/admin/eventos/nuevo" class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-secondary-deep transition-colors min-h-[44px]">
-        <span class="material-symbols-outlined text-[20px]">add</span>
-        Nuevo Evento
-      </a>
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Eventos y congresos</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Lo que guardes aquí aparece en la app de inmediato.</p>
     </div>
-
-    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
-      <div class="px-6 py-4 border-b border-[#dce2f3]">
-        <p class="text-sm text-on-surface-variant">Listado de eventos</p>
-      </div>
-      <div id="events-list" class="divide-y divide-[#dce2f3]"></div>
-      <div id="events-empty" class="p-8 text-center text-on-surface-variant hidden">
-        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">event</span>
-        <p class="font-medium">Sin eventos creados</p>
-        <p class="text-sm mt-1">Crea tu primer evento para empezar</p>
-      </div>
-    </div>
+    <CrudManager client:only="react" section="events" />
   </div>
-
-  <script>
-    import { adminFetch } from '../../../lib/admin-fetch'
-    import { onAppReady } from '../../../utils/app-ready'
-    import { escapeHtml } from '../../../utils/escape-html'
-    async function load() {
-      const res = await adminFetch('/api/admin/events')
-      const json = (await res.json().catch(() => ({}))) as any
-      if (!res.ok) alert(json.error || 'No se pudo cargar la información')
-      const list = document.getElementById('events-list')
-      const empty = document.getElementById('events-empty')
-      if (!json.data || json.data.length === 0) {
-        list!.innerHTML = ''
-        empty?.classList.remove('hidden')
-        return
-      }
-      empty?.classList.add('hidden')
-      list!.innerHTML = json.data.map((ev: any) => `
-        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-low/50 transition-colors">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <h3 class="font-semibold text-primary truncate">${escapeHtml(ev.title)}</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">${escapeHtml(ev.category || '-')}</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">${escapeHtml(ev.modality || '-')}</span>
-            </div>
-            <p class="text-sm text-on-surface-variant line-clamp-1">${escapeHtml(ev.description || '')}</p>
-            <div class="flex items-center gap-4 mt-2 text-xs text-outline">
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_month</span>${escapeHtml(ev.start_date || '-')}${ev.end_date ? ' - ' + escapeHtml(ev.end_date) : ''}</span>
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span>${escapeHtml(ev.location || '-')}</span>
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">payments</span>$${escapeHtml(ev.price || 0)} MXN</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button data-id="${escapeHtml(ev.id)}" class="delete-btn p-2 rounded-xl hover:bg-red-50 text-red-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center">
-              <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
-          </div>
-        </div>
-      `).join('')
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id')
-          if (!confirm('¿Eliminar este evento?')) return
-          await adminFetch(`/api/admin/events/${id}`, { method: 'DELETE' })
-          load()
-        })
-      })
-    }
-    onAppReady(load)
-  </script>
 </AdminLayout>

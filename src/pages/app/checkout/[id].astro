@@ -1,15 +1,13 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 import CheckoutForm from '../../../components/checkout/CheckoutForm'
-import { getEventById, MOCK_EVENTS } from '../../../data/mock'
+import { getEvent } from '../../../lib/catalog'
 import { formatPrice } from '../../../utils/format'
 
-export function getStaticPaths() {
-  return MOCK_EVENTS.map((e) => ({ params: { id: e.id } }))
-}
+export const prerender = false
 
 const { id } = Astro.params
-const event = getEventById(id!)
+const event = await getEvent(id!)
 if (!event) return Astro.redirect('/app/congresos')
 ---
 <BaseLayout title={`Checkout: ${event.title}`}>
