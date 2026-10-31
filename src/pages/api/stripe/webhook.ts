@@ -15,7 +15,8 @@ async function markPaid(db: SupabaseClient, session: Stripe.Checkout.Session, or
 
   const { data: updated, error } = await db
     .from('orders')
-    .update({ status: 'pagado' })
+    // Con cupón, el monto real es el que cobró Stripe, no el precio de lista.
+    .update({ status: 'pagado', ...(session.amount_total === null ? {} : { amount: session.amount_total / 100 }) })
     .eq('stripe_session_id', session.id)
     .select('id')
   if (error) throw error
