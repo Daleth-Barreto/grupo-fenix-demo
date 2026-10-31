@@ -269,3 +269,15 @@ export function getFeaturedEvent(): Event | undefined {
 export function getCourseById(id: string): Course | undefined {
   return MOCK_COURSES.find((c) => c.id === id)
 }
+
+/**
+ * Progreso calculado por lecciones completadas. Se usa tanto en la lista de cursos
+ * como en el detalle, para que ambos muestren el mismo porcentaje.
+ */
+export function getCourseProgress(course: Course): { completed: number; total: number; percent: number } {
+  const lessons = course.modules.flatMap((m) => m.lessons)
+  const completed = lessons.filter((l) => l.is_completed).length
+  const total = lessons.length
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0
+  return { completed, total, percent }
+}

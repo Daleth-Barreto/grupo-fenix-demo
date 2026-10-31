@@ -103,6 +103,9 @@ const INTERESTS = ['Congreso', 'Capacitación a medida', 'Curso o taller', 'Even
 </AppLayout>
 
 <script>
+  import { onAppReady } from '../../utils/app-ready'
+
+  onAppReady(() => {
   let currentStep = 1
   const totalSteps = 3
   const form = document.getElementById('reservation-form') as HTMLFormElement
@@ -169,5 +172,6 @@ const INTERESTS = ['Congreso', 'Capacitación a medida', 'Curso o taller', 'Even
     e.preventDefault()
     // Sin backend todavía: no se envía nada, así que no mostramos "Solicitud enviada" (auditoría A6)
     alert('Esta solicitud todavía no se envía desde la app. Comunícate con nosotros para tu reservación.')
+  })
   })
 </script>

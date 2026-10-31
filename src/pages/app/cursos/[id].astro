@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 import AuthGuard from '../../../components/auth/AuthGuard'
-import { getCourseById, MOCK_COURSES } from '../../../data/mock'
+import { getCourseById, getCourseProgress, MOCK_COURSES } from '../../../data/mock'
 
 export function getStaticPaths() {
   return MOCK_COURSES.map((c) => ({ params: { id: c.id } }))
@@ -11,9 +11,7 @@ const { id } = Astro.params
 const course = getCourseById(id!)
 if (!course) return Astro.redirect('/app/cursos')
 
-const totalLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || course.total_lessons || 0
-const completedLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.filter(l => l.is_completed).length || 0), 0) || 0
-const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : (course.progress ?? 0)
+const { completed: completedLessons, total: totalLessons, percent: progress } = getCourseProgress(course)
 ---
 <BaseLayout title={course.title}>
   <AuthGuard client:load>
@@ -51,7 +49,7 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
         <h2 class="text-[17px] font-bold text-primary">Contenido del curso</h2>
         {course.modules.map((mod) => (
           <div class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden">
-            <button class="w-full flex items-center justify-between p-4 text-left accordion-trigger active:scale-[0.99] duration-150 transition-transform" data-open="false">
+            <button class="w-full flex items-center justify-between p-4 text-left accordion-trigger active:scale-[0.99] duration-150 transition-transform" data-open="false" aria-expanded="false">
               <div class="flex items-center gap-3">
                 {mod.is_locked ? (
                   <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
@@ -110,14 +108,19 @@ const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons)
 </BaseLayout>
 
 <script>
-  document.querySelectorAll('.accordion-trigger').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const content = trigger.nextElementSibling as HTMLElement
-      const arrow = trigger.querySelector('.accordion-arrow') as HTMLElement
-      const isOpen = trigger.getAttribute('data-open') === 'true'
-      trigger.setAttribute('data-open', String(!isOpen))
-      content.classList.toggle('hidden', isOpen)
-      arrow.style.transform = isOpen ? '' : 'rotate(180deg)'
+  import { onAppReady } from '../../../utils/app-ready'
+
+  onAppReady(() => {
+    document.querySelectorAll<HTMLButtonElement>('.accordion-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const content = trigger.nextElementSibling as HTMLElement | null
+        const arrow = trigger.querySelector('.accordion-arrow') as HTMLElement | null
+        const isOpen = trigger.getAttribute('data-open') === 'true'
+        trigger.setAttribute('data-open', String(!isOpen))
+        trigger.setAttribute('aria-expanded', String(!isOpen))
+        content?.classList.toggle('hidden', isOpen)
+        if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)'
+      })
     })
   })
 </script>

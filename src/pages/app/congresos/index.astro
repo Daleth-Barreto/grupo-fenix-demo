@@ -63,27 +63,31 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller']
 </AppLayout>
 
 <script>
-  const chips = document.querySelectorAll('.filter-chip')
-  const cards = document.querySelectorAll('#events-grid > div')
-  const count = document.getElementById('results-count')
+  import { onAppReady } from '../../../utils/app-ready'
 
-  chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      chips.forEach((c) => {
-        c.classList.remove('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
-        c.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
-      })
-      chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
-      chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+  onAppReady(() => {
+    const chips = document.querySelectorAll('.filter-chip')
+    const cards = document.querySelectorAll<HTMLElement>('#events-grid > div')
+    const count = document.getElementById('results-count')
 
-      const cat = (chip as HTMLElement).dataset.category
-      let visible = 0
-      cards.forEach((card) => {
-        const show = cat === 'Todos' || (card as HTMLElement).dataset.category === cat
-        ;(card as HTMLElement).style.display = show ? '' : 'none'
-        if (show) visible++
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chips.forEach((c) => {
+          c.classList.remove('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
+          c.classList.add('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+        })
+        chip.classList.add('bg-secondary', 'text-on-secondary', 'shadow-card', 'active-chip')
+        chip.classList.remove('bg-surface', 'border', 'border-surface-variant', 'text-on-surface-variant')
+
+        const cat = (chip as HTMLElement).dataset.category
+        let visible = 0
+        cards.forEach((card) => {
+          const show = cat === 'Todos' || card.dataset.category === cat
+          card.style.display = show ? '' : 'none'
+          if (show) visible++
+        })
+        if (count) count.textContent = `${visible} evento${visible !== 1 ? 's' : ''}${cat !== 'Todos' ? ` · ${cat}` : ''}`
       })
-      if (count) count.textContent = `${visible} evento${visible !== 1 ? 's' : ''}${cat !== 'Todos' ? ` · ${cat}` : ''}`
     })
   })
 </script>
