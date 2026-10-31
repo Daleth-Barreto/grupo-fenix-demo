@@ -17,8 +17,11 @@ async function send(url: string, method: string, body?: Row): Promise<any> {
 }
 
 /** Lista con buscar, crear, editar y eliminar para cualquier sección de crud-config. */
-export default function CrudManager({ section: name }: { section: SectionName }) {
+// `scope` limita la lista a un registro padre indicado en la URL, por ejemplo ?id=<sesión>.
+export default function CrudManager({ section: name, scope }: { section: SectionName; scope?: { column: string; param: string } }) {
   const section: Section = SECTIONS[name]
+  const scopeValue = useMemo(() => (scope ? new URLSearchParams(window.location.search).get(scope.param) ?? '' : ''), [scope])
+  const listUrl = scope ? `${section.endpoint}?${scope.column}=${encodeURIComponent(scopeValue)}` : section.endpoint
   const [rows, setRows] = useState<Row[] | null>(null)
   const [lookups, setLookups] = useState<Lookups>({})
   const [error, setError] = useState<string | null>(null)
@@ -31,12 +34,12 @@ export default function CrudManager({ section: name }: { section: SectionName })
 
   const load = useCallback(async () => {
     try {
-      setRows((await send(section.endpoint, 'GET')).data ?? [])
+      setRows((await send(listUrl, 'GET')).data ?? [])
     } catch (err) {
       setRows([])
       setError(err instanceof Error ? err.message : 'No se pudo cargar la información.')
     }
-  }, [section])
+  }, [listUrl])
 
   useEffect(() => {
     load()
@@ -79,12 +82,13 @@ export default function CrudManager({ section: name }: { section: SectionName })
       <AdminForm
         title={`${isNew ? 'Nuevo' : 'Editar'}: ${section.singular}`}
         fields={section.fields}
-        initial={isNew ? section.defaults?.() : editing}
+        initial={isNew ? section.defaults?.() : section.toForm ? section.toForm(editing as Row) : (editing as Row)}
         options={options}
         validate={section.validate}
         onCancel={() => setEditing(null)}
         onSubmit={async (values) => {
-          await send(isNew ? section.endpoint : `${section.endpoint}/${(editing as Row).id}`, isNew ? 'POST' : 'PUT', values)
+          const body = { ...(section.fromForm ? section.fromForm(values) : values), ...(scope ? { [scope.column]: scopeValue } : {}) }
+          await send(isNew ? section.endpoint : `${section.endpoint}/${(editing as Row).id}`, isNew ? 'POST' : 'PUT', body)
           setEditing(null)
           await load()
         }}
@@ -125,7 +129,7 @@ export default function CrudManager({ section: name }: { section: SectionName })
               {section.actions?.filter((a) => a.visible?.(row) ?? true).map((action) => (
                 <button key={action.label} type="button" onClick={() => run(() => send(`${section.endpoint}/${row.id}`, 'PUT', action.patch(row)))} className="px-3 py-2 rounded-lg text-sm font-semibold bg-surface-container-low text-primary min-h-[40px]">{action.label}</button>
               ))}
-              <button type="button" data-action="edit" onClick={() => setEditing(row)} className="px-3 py-2 rounded-lg text-sm font-semibold border border-[#dce2f3] text-primary min-h-[40px]">Editar</button>
+              {section.canEdit !== false && <button type="button" data-action="edit" onClick={() => setEditing(row)} className="px-3 py-2 rounded-lg text-sm font-semibold border border-[#dce2f3] text-primary min-h-[40px]">Editar</button>}
               {section.canDelete && (confirming === row.id ? (
                 <>
                   <button type="button" data-action="confirm-delete" onClick={() => { setConfirming(null); run(() => send(`${section.endpoint}/${row.id}`, 'DELETE')) }} className="px-3 py-2 rounded-lg text-sm font-semibold bg-error text-white min-h-[40px]">Sí, eliminar</button>

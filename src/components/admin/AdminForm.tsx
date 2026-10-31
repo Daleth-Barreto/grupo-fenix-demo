@@ -17,6 +17,7 @@ export async function uploadToMedia(file: File): Promise<{ url: string; path: st
 
 function toInput(field: Field, value: unknown): string {
   if (value === null || value === undefined) return ''
+  if (field.type === 'lines') return Array.isArray(value) ? value.join('\n') : String(value)
   if (field.type === 'date') return String(value).slice(0, 10)
   if (field.type === 'datetime') {
     const d = new Date(String(value))
@@ -27,6 +28,7 @@ function toInput(field: Field, value: unknown): string {
 
 function fromInput(field: Field, value: unknown): unknown {
   if (field.type === 'checkbox') return Boolean(value)
+  if (field.type === 'lines') return String(value ?? '').split('\n').map((line) => line.trim()).filter(Boolean)
   if (value === '' || value === undefined) return null
   if (field.type === 'number') return Number(value)
   if (field.type === 'datetime') return new Date(String(value)).toISOString()
@@ -94,7 +96,7 @@ export default function AdminForm({ title, fields, initial = {}, options = {}, v
         return (
           <div key={field.name} className="flex flex-col gap-2">
             <label htmlFor={id} className="text-sm font-semibold text-primary">{field.label}{field.required ? ' *' : ''}</label>
-            {field.type === 'textarea' ? (
+            {field.type === 'textarea' || field.type === 'lines' ? (
               <textarea id={id} name={field.name} rows={4} required={field.required} value={value} onChange={(e) => set(field.name, e.target.value)} className={`${inputClass} resize-y`} />
             ) : field.type === 'select' ? (
               <select id={id} name={field.name} required={field.required} value={value} onChange={(e) => set(field.name, e.target.value)} className={inputClass}>
