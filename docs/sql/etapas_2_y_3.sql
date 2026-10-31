@@ -303,7 +303,7 @@ as $$
     left join public.user_profiles p on p.id = c.user_id
     left join public.events e on e.id = c.event_id
     left join public.courses cu on cu.id = c.course_id
-    where c.certificate_number = p_folio and c.issued_at is not null
+    where upper(c.certificate_number) = upper(trim(p_folio)) and c.issued_at is not null
     limit 1
   ), jsonb_build_object('valid', false));
 $$;
