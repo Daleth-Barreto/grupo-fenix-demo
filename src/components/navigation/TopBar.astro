@@ -10,21 +10,21 @@ interface Props {
 const { title, showBack = false, showSettings = false, showLogout = false } = Astro.props
 const section = title && title !== 'Grupo FÉNIX' ? title : null
 ---
-<header class="sticky top-0 z-40 bg-white/98 backdrop-blur-lg border-b border-[#dce2f3] flex items-center justify-between px-4 sm:px-5 h-16 shadow-sm" style="padding-top: env(safe-area-inset-top, 0px); height: calc(4rem + env(safe-area-inset-top, 0px));">
+<header class="sticky top-0 z-40 bg-surface/98 backdrop-blur-lg border-b border-surface-variant flex items-center justify-between px-4 sm:px-5 h-16 shadow-sm" style="padding-top: env(safe-area-inset-top, 0px); height: calc(4rem + env(safe-area-inset-top, 0px));">
   <div class="w-11 flex items-center">
     {showBack && (
-      <button type="button" onclick="history.back()" class="text-[#0f2a44] hover:opacity-70 p-2.5 -ml-2 rounded-full transition-opacity active:scale-95 duration-150 min-w-[44px] min-h-[44px] flex items-center justify-center">
+      <button type="button" onclick="history.back()" class="text-primary hover:opacity-70 p-2.5 -ml-2 rounded-full transition-opacity active:scale-95 duration-150 min-w-[44px] min-h-[44px] flex items-center justify-center">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
     )}
   </div>
 
   <div class="flex flex-col items-center leading-tight flex-1">
-    <span class="font-bold text-[#0f2a44] text-[16px] tracking-tight">
-      Grupo <span class="text-[#fe9511]">FÉNIX</span>
+    <span class="font-bold text-primary text-[16px] tracking-tight">
+      Grupo <span class="text-secondary">FÉNIX</span>
     </span>
     {section && (
-      <span class="text-[11px] font-medium text-[#75777e] -mt-0.5 max-w-[50vw] truncate">
+      <span class="text-[11px] font-medium text-outline -mt-0.5 max-w-[50vw] truncate">
         {section}
       </span>
     )}
@@ -32,7 +32,7 @@ const section = title && title !== 'Grupo FÉNIX' ? title : null
 
   <div class="w-11 flex justify-end">
     {showSettings && !showLogout && (
-      <a href="/app/configuracion" class="text-[#0f2a44] hover:opacity-70 p-2.5 -mr-2 rounded-full transition-opacity active:scale-95 duration-150 min-w-[44px] min-h-[44px] flex items-center justify-center">
+      <a href="/app/configuracion" class="text-primary hover:opacity-70 p-2.5 -mr-2 rounded-full transition-opacity active:scale-95 duration-150 min-w-[44px] min-h-[44px] flex items-center justify-center">
         <span class="material-symbols-outlined">settings</span>
       </a>
     )}
