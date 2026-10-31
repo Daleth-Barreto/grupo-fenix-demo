@@ -21,7 +21,7 @@ export default function LoginForm() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-[22px] font-bold text-primary">Bienvenido de nuevo</h2>
+        <h2 className="text-[22px] font-bold text-primary">Acceso a tu cuenta</h2>
         <p className="text-sm text-on-surface-variant mt-1">Ingresa para continuar tu formación.</p>
       </div>
 
