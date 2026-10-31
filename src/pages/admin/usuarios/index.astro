@@ -37,9 +37,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
   </div>
 
   <script>
+    import { adminFetch } from '../../../lib/admin-fetch'
     let users: any[] = []
     async function load() {
-      const res = await fetch('/api/admin/users')
+      const res = await adminFetch('/api/admin/users')
       const json = await res.json()
       users = json.data || []
       render()
@@ -87,7 +88,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         sel.addEventListener('change', async () => {
           const id = sel.getAttribute('data-id')
           const role = (sel as HTMLSelectElement).value
-          await fetch(`/api/admin/users/${id}`, {
+          await adminFetch(`/api/admin/users/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ role })

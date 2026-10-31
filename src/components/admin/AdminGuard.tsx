@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../store/auth.store'
 
+// El rol se verifica en el servidor (/api/admin/me) contra user_profiles.
+// Ya no se usa user_metadata: el usuario puede editarlo desde el navegador.
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { user, setUser } = useAuthStore()
+  const { setUser } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState(false)
 
@@ -14,16 +16,25 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
         window.location.href = '/app/login'
         return
       }
-      const role = session.user.user_metadata?.role || 'student'
+
+      const res = await fetch('/api/admin/me', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (!res.ok) {
+        window.location.href = '/app/inicio'
+        return
+      }
+      const { role } = (await res.json()) as { role: string }
       if (role !== 'admin' && role !== 'instructor') {
         window.location.href = '/app/inicio'
         return
       }
+
       setUser({
         id: session.user.id,
         email: session.user.email || '',
         full_name: session.user.user_metadata?.full_name || '',
-        role: role,
+        role,
       } as any)
       setAuthorized(true)
       setLoading(false)

@@ -90,6 +90,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
   </div>
 
   <script>
+    import { adminFetch } from '../../../lib/admin-fetch'
     const form = document.getElementById('event-form') as HTMLFormElement
     form?.addEventListener('submit', async (e) => {
       e.preventDefault()
@@ -99,7 +100,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         if (k === 'price' || k === 'hours') body[k] = v === '' ? null : Number(v)
         else body[k] = v
       })
-      const res = await fetch('/api/admin/events', {
+      const res = await adminFetch('/api/admin/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)

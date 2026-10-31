@@ -28,6 +28,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
   </div>
 
   <script>
+    import { adminFetch } from '../../../lib/admin-fetch'
     const statusColors: any = {
       programado: 'bg-amber-100 text-amber-700',
       en_vivo: 'bg-red-100 text-red-700',
@@ -35,7 +36,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
       cancelado: 'bg-gray-100 text-gray-500'
     }
     async function load() {
-      const res = await fetch('/api/admin/lives')
+      const res = await adminFetch('/api/admin/lives')
       const json = await res.json()
       const list = document.getElementById('lives-list')
       const empty = document.getElementById('lives-empty')
@@ -70,7 +71,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id')
           const status = btn.getAttribute('data-status')
-          await fetch(`/api/admin/lives/${id}`, {
+          await adminFetch(`/api/admin/lives/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status, started_at: status === 'en_vivo' ? new Date().toISOString() : undefined, ended_at: status === 'finalizado' ? new Date().toISOString() : undefined })
@@ -82,7 +83,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id')
           if (!confirm('¿Eliminar esta transmisión?')) return
-          await fetch(`/api/admin/lives/${id}`, { method: 'DELETE' })
+          await adminFetch(`/api/admin/lives/${id}`, { method: 'DELETE' })
           load()
         })
       })
