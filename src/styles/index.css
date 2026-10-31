@@ -17,7 +17,7 @@
   --color-secondary: #fe9511;
   --color-secondary-deep: #9d4300;
   --color-secondary-container: #fe9511;
-  --color-on-secondary: #ffffff;
+  --color-on-secondary: #0f2a44; /* navy sobre naranja: 6.64:1 (auditoría A9) */
   --color-secondary-fixed-dim: #ffb690;
 
   /* Acento dorado premium */

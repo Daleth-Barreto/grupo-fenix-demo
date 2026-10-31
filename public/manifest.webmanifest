@@ -1,0 +1,16 @@
+{
+  "name": "Grupo FÉNIX",
+  "short_name": "FÉNIX",
+  "description": "Congresos, capacitaciones, cursos y constancias profesionales de Grupo Fénix.",
+  "start_url": "/app/inicio",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es-MX",
+  "background_color": "#f9f9ff",
+  "theme_color": "#0f2a44",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

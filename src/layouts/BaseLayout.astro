@@ -17,6 +17,7 @@ const { title, description = 'Congresos, capacitaciones, cursos y constancias pr
     <meta name="apple-mobile-web-app-title" content="Grupo Fénix" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -25,6 +26,13 @@ const { title, description = 'Congresos, capacitaciones, cursos y constancias pr
   </head>
   <body class="min-h-svh">
     <slot />
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {})
+        })
+      }
+    </script>
   </body>
 </html>
 

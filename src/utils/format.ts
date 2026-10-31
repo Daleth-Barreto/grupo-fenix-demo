@@ -7,10 +7,21 @@ export function formatPrice(amount: number): string {
   }).format(amount)
 }
 
+/**
+ * Convierte una fecha a Date.
+ * Las fechas solo-día ("YYYY-MM-DD") se leen como medianoche LOCAL.
+ * Con new Date("YYYY-MM-DD") se leen como UTC y en México salen un día antes (auditoría A1).
+ */
+export function parseDate(value: string): Date {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  return new Date(value)
+}
+
 /** Formatea un rango de fechas de forma legible y compacta. */
 export function formatDateRange(start: string, end: string): string {
-  const s = new Date(start)
-  const e = new Date(end)
+  const s = parseDate(start)
+  const e = parseDate(end)
   const sameDay = s.toDateString() === e.toDateString()
   const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()
 
@@ -25,7 +36,7 @@ export function formatDateRange(start: string, end: string): string {
 
 /** Devuelve el día y mes corto para el "date chip" de las tarjetas. */
 export function getDateChip(date: string): { day: string; month: string } {
-  const d = new Date(date)
+  const d = parseDate(date)
   return {
     day: String(d.getDate()).padStart(2, '0'),
     month: d.toLocaleDateString('es-MX', { month: 'short' }).replace('.', '').toUpperCase(),
@@ -34,6 +45,6 @@ export function getDateChip(date: string): { day: string; month: string } {
 
 /** Calcula los días restantes hasta una fecha (>= 0). */
 export function daysUntil(date: string): number {
-  const diff = new Date(date).getTime() - Date.now()
+  const diff = parseDate(date).getTime() - Date.now()
   return Math.max(0, Math.ceil(diff / 86400000))
 }

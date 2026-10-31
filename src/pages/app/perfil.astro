@@ -6,7 +6,7 @@ const MENU_ITEMS = [
   { icon: 'workspace_premium', label: 'Mis constancias', sub: 'Descarga tus certificados', path: '/app/constancias' },
   { icon: 'event_available', label: 'Reservaciones y cotización', sub: 'Solicita un evento a tu medida', path: '/app/reservaciones' },
   { icon: 'receipt_long', label: 'Mis comprobantes', sub: 'Historial de pagos y facturas', path: '/app/comprobantes' },
-  { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion' },
+  { icon: 'person', label: 'Datos personales', sub: 'Actualiza tu información', path: '/app/configuracion/datos' },
 ]
 ---
 <AppLayout title="Perfil" section="Perfil" showSettings showLogout={true} active="/app/perfil">
@@ -67,10 +67,12 @@ const MENU_ITEMS = [
 
 <script>
   import { supabase } from '../../lib/supabase'
+  import { onAppReady } from '../../utils/app-ready'
 
-  // Update profile data from supabase session if available
-  supabase.auth.getSession().then(({ data }) => {
-    if (data.session?.user) {
+  // Muestra nombre, correo e inicial de la sesión una vez que la página está lista
+  onAppReady(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session?.user) return
       const { email, user_metadata } = data.session.user
       const nameEl = document.getElementById('profile-name')
       const emailEl = document.getElementById('profile-email')
@@ -79,6 +81,6 @@ const MENU_ITEMS = [
       if (nameEl) nameEl.textContent = fullName
       if (emailEl && email) emailEl.textContent = email
       if (initialEl) initialEl.textContent = fullName.charAt(0).toUpperCase()
-    }
+    })
   })
 </script>
