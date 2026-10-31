@@ -45,12 +45,20 @@ export default function MyEvents() {
         const end = event.end_date ?? start
         const finished = Boolean(end) && isEventPast(end)
         return (
-          <a key={event.id} href={`/app/congresos/${event.id}`} className="my-event bg-surface rounded-3xl p-5 shadow-card border border-surface-variant/70 flex flex-col gap-1 hover:shadow-elevated transition-all">
+          <article key={event.id} className="my-event bg-surface rounded-3xl p-5 shadow-card border border-surface-variant/70 flex flex-col gap-1">
             <span className="text-xs font-semibold text-on-surface-variant">{finished ? 'Finalizado' : 'Próximo'}</span>
-            <h2 className="text-[15px] font-semibold text-primary leading-snug">{event.title}</h2>
+            <h2 className="text-[15px] font-semibold text-primary leading-snug">
+              <a href={`/app/congresos/${event.id}`} className="hover:underline">{event.title}</a>
+            </h2>
             {start && <p className="text-sm text-on-surface-variant">{formatDateRange(start, end)}</p>}
             {event.location && <p className="text-sm text-on-surface-variant">{event.location}</p>}
-          </a>
+            {!finished && (
+              <a href={`/app/boleto/${event.id}`} data-action="ticket" className="mt-3 self-start inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-3 rounded-2xl font-semibold text-sm min-h-[44px]">
+                <span className="material-symbols-outlined text-[20px]">qr_code_2</span>
+                Ver boleto
+              </a>
+            )}
+          </article>
         )
       })}
     </div>
