@@ -2,10 +2,10 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { adminFetch } from '../../lib/admin-fetch'
 
-interface Props { eventId: string }
+type Props = { eventId: string; courseId?: undefined } | { courseId: string; eventId?: undefined }
 
 // La tarjeta se captura en la página de Stripe: la app nunca recibe esos datos.
-export default function CheckoutForm({ eventId }: Props) {
+export default function CheckoutForm({ eventId, courseId }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -16,10 +16,10 @@ export default function CheckoutForm({ eventId }: Props) {
     try {
       const res = await adminFetch('/api/checkout/session', {
         method: 'POST',
-        body: JSON.stringify({ event_id: eventId }),
+        body: JSON.stringify(eventId ? { event_id: eventId } : { course_id: courseId }),
       })
       if (res.status === 401) {
-        window.location.href = '/app/login'
+        window.location.href = `/app/login?next=${encodeURIComponent(window.location.pathname)}`
         return
       }
       const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string }

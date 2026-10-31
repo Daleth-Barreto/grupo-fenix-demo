@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
+import { siteUrl } from '../../lib/site-url'
 
 // Definido fuera del componente: si se define dentro, React lo recrea en cada
 // render y el input pierde el foco al escribir (auditoría A5).
@@ -48,7 +49,7 @@ export default function RegisterForm() {
       email: email.trim(), password,
       options: {
         data: { full_name: fullName.trim() },
-        emailRedirectTo: `${window.location.origin}/app/login`,
+        emailRedirectTo: siteUrl('/app/login'),
       },
     })
     setLoading(false)

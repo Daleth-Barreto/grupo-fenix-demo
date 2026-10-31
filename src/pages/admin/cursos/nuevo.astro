@@ -1,22 +1,4 @@
 ---
-import AdminLayout from '../../../layouts/AdminLayout.astro'
+// Los formularios viven ahora en la lista de cada sección.
+return Astro.redirect('/admin/cursos?nuevo=1')
 ---
-<AdminLayout title="Nuevo Curso" section="Cursos / Nuevo">
-  <div class="flex flex-col gap-6">
-    <div class="flex items-center gap-4">
-      <a href="/admin/cursos" class="p-2 rounded-xl hover:bg-surface-container-low transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </a>
-      <div>
-        <h1 class="text-[28px] font-bold text-primary">Crear Nuevo Curso</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Próximamente</p>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm p-8 text-center text-on-surface-variant">
-      <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">construction</span>
-      <p class="font-medium">Constructor de cursos en construcción</p>
-      <p class="text-sm mt-1">Todavía no se pueden crear cursos desde el panel.</p>
-    </div>
-  </div>
-</AdminLayout>

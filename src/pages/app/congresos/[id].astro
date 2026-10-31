@@ -2,21 +2,18 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 import Badge from '../../../components/ui/Badge.astro'
 import Button from '../../../components/ui/Button.astro'
-import { getEventById, MOCK_EVENTS } from '../../../data/mock'
+import { getEvent } from '../../../lib/catalog'
 import { formatPrice, formatDateRange, daysUntil } from '../../../utils/format'
 
-export function getStaticPaths() {
-  return MOCK_EVENTS.map((e) => ({ params: { id: e.id } }))
-}
+export const prerender = false
 
 const { id } = Astro.params
-const event = getEventById(id!)
+const event = await getEvent(id!)
 
 if (!event) return Astro.redirect('/app/congresos')
 
 const days = daysUntil(event.date_start)
 const BENEFITS = [
-  { icon: 'verified', label: 'Constancia con valor curricular' },
   { icon: 'group', label: 'Acceso a todas las ponencias' },
   { icon: 'description', label: 'Material y recursos digitales' },
   { icon: 'coffee', label: 'Coffee breaks y networking' },
@@ -79,7 +76,6 @@ const BENEFITS = [
           </div>
           <div>
             <p class="text-sm font-semibold text-primary">{formatDateRange(event.date_start, event.date_end)}</p>
-            <p class="text-xs text-on-surface-variant">Agenda completa disponible al inscribirte</p>
           </div>
         </div>
         <div class="flex items-start gap-3">

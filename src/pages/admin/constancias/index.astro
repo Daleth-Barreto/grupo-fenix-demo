@@ -1,61 +1,13 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CrudManager from '../../../components/admin/CrudManager'
 ---
 <AdminLayout title="Constancias" section="Constancias">
   <div class="flex flex-col gap-6">
-    <div class="flex flex-wrap gap-3 items-center justify-between">
-      <div>
-        <h1 class="text-[28px] font-bold text-primary">Constancias</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Constancias registradas en la plataforma</p>
-      </div>
-      <button type="button" disabled class="inline-flex items-center gap-2 bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] cursor-not-allowed">
-        Generar constancias (próximamente)
-      </button>
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Constancias</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Registra constancias. El alumno las ve en su cuenta. El PDF todavía no se genera.</p>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white rounded-2xl p-5 border border-[#dce2f3] shadow-sm">
-        <p class="text-sm text-on-surface-variant">Emitidas</p>
-        <p id="cert-issued" class="text-2xl font-bold text-primary mt-1">—</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 border border-[#dce2f3] shadow-sm">
-        <p class="text-sm text-on-surface-variant">Enviadas</p>
-        <p id="cert-sent" class="text-2xl font-bold text-primary mt-1">—</p>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
-      <div class="px-6 py-4 border-b border-[#dce2f3]">
-        <p class="text-sm text-on-surface-variant">Historial de constancias</p>
-      </div>
-      <div id="cert-list" class="divide-y divide-[#dce2f3]"></div>
-      <p id="cert-message" role="status" class="p-8 text-center text-sm text-on-surface-variant">Cargando constancias…</p>
-    </div>
+    <CrudManager client:only="react" section="certificates" />
   </div>
-
-  <script>
-    import { adminFetch } from '../../../lib/admin-fetch'
-    import { onAppReady } from '../../../utils/app-ready'
-    import { escapeHtml } from '../../../utils/escape-html'
-
-    onAppReady(async () => {
-      const message = document.getElementById('cert-message')!
-      const res = await adminFetch('/api/admin/certificates')
-      const body = (await res.json().catch(() => ({}))) as any
-      if (!res.ok) {
-        message.textContent = body.error || 'No se pudieron cargar las constancias.'
-        return
-      }
-      const rows: any[] = body.data ?? []
-      document.getElementById('cert-issued')!.textContent = String(rows.filter((c) => c.issued_at).length)
-      document.getElementById('cert-sent')!.textContent = String(rows.filter((c) => c.sent_at).length)
-      message.textContent = rows.length ? '' : 'Sin constancias registradas.'
-      message.classList.toggle('hidden', rows.length > 0)
-      document.getElementById('cert-list')!.innerHTML = rows.map((c) => `
-        <div class="p-4 sm:p-6">
-          <p class="font-semibold text-primary">${escapeHtml(c.events?.title || c.courses?.title || 'Constancia')}</p>
-          <p class="text-sm text-on-surface-variant">Folio: ${escapeHtml(c.certificate_number || 'sin folio')}${c.sent_at ? ' · Enviada' : ''}</p>
-        </div>`).join('')
-    })
-  </script>
 </AdminLayout>

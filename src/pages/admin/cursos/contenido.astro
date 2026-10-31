@@ -1,0 +1,10 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CourseContent from '../../../components/admin/CourseContent'
+---
+<AdminLayout title="Contenido del curso" section="Cursos / Contenido">
+  <div class="flex flex-col gap-4">
+    <a href="/admin/cursos" class="text-sm font-semibold text-primary underline self-start">Volver a cursos</a>
+    <CourseContent client:only="react" />
+  </div>
+</AdminLayout>

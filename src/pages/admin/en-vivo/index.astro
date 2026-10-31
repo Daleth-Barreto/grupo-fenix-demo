@@ -1,97 +1,13 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro'
+import CrudManager from '../../../components/admin/CrudManager'
 ---
-<AdminLayout title="Transmisiones en Vivo" section="Transmisiones en Vivo">
+<AdminLayout title="Transmisiones" section="Transmisiones">
   <div class="flex flex-col gap-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-[28px] font-bold text-primary">Transmisiones en Vivo</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Gestiona streams con Owncast (100% gratis)</p>
-      </div>
-      <a href="/admin/en-vivo/nuevo" class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-secondary-deep transition-colors min-h-[44px]">
-        <span class="material-symbols-outlined text-[20px]">podcasts</span>
-        Nueva Transmisión
-      </a>
+    <div>
+      <h1 class="text-[28px] font-bold text-primary">Transmisiones en vivo</h1>
+      <p class="text-sm text-on-surface-variant mt-1">Crea, edita y pon en vivo tus transmisiones.</p>
     </div>
-
-    <div class="bg-white rounded-2xl border border-[#dce2f3] shadow-sm overflow-hidden">
-      <div class="px-6 py-4 border-b border-[#dce2f3]">
-        <p class="text-sm text-on-surface-variant">Transmisiones</p>
-      </div>
-      <div id="lives-list" class="divide-y divide-[#dce2f3]"></div>
-      <div id="lives-empty" class="p-8 text-center text-on-surface-variant hidden">
-        <span class="material-symbols-outlined text-[48px] block mb-3 text-outline">sensors</span>
-        <p class="font-medium">Sin transmisiones configuradas</p>
-        <p class="text-sm mt-1">Conecta tu instancia Owncast y crea una transmisión</p>
-      </div>
-    </div>
+    <CrudManager client:only="react" section="lives" />
   </div>
-
-  <script>
-    import { adminFetch } from '../../../lib/admin-fetch'
-    import { onAppReady } from '../../../utils/app-ready'
-    import { escapeHtml } from '../../../utils/escape-html'
-    const statusColors: any = {
-      programado: 'bg-amber-100 text-amber-700',
-      en_vivo: 'bg-red-100 text-red-700',
-      finalizado: 'bg-gray-100 text-gray-700',
-      cancelado: 'bg-gray-100 text-gray-500'
-    }
-    async function load() {
-      const res = await adminFetch('/api/admin/lives')
-      const json = (await res.json().catch(() => ({}))) as any
-      if (!res.ok) alert(json.error || 'No se pudo cargar la información')
-      const list = document.getElementById('lives-list')
-      const empty = document.getElementById('lives-empty')
-      if (!json.data || json.data.length === 0) {
-        list!.innerHTML = ''
-        empty?.classList.remove('hidden')
-        return
-      }
-      empty?.classList.add('hidden')
-      list!.innerHTML = json.data.map((live: any) => `
-        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-low/50 transition-colors">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <h3 class="font-semibold text-primary truncate">${escapeHtml(live.title)}</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full ${statusColors[live.status] || ''}">${escapeHtml(String(live.status).replace('_', ' '))}</span>
-            </div>
-            <p class="text-sm text-on-surface-variant">Ponente: ${escapeHtml(live.speaker || '-')}</p>
-            <div class="flex items-center gap-4 mt-2 text-xs text-outline flex-wrap">
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span>${live.scheduled_at ? new Date(live.scheduled_at).toLocaleString() : '-'}</span>
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">link</span>${live.hls_url ? 'HLS configurado' : 'Sin HLS'}</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button data-id="${escapeHtml(live.id)}" data-status="en_vivo" class="status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition-colors">Poner en vivo</button>
-            <button data-id="${escapeHtml(live.id)}" data-status="finalizado" class="status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">Finalizar</button>
-            <button data-id="${escapeHtml(live.id)}" class="delete-btn p-2 rounded-xl hover:bg-red-50 text-red-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center">
-              <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
-          </div>
-        </div>
-      `).join('')
-      document.querySelectorAll('.status-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id')
-          const status = btn.getAttribute('data-status')
-          await adminFetch(`/api/admin/lives/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status, started_at: status === 'en_vivo' ? new Date().toISOString() : undefined, ended_at: status === 'finalizado' ? new Date().toISOString() : undefined })
-          })
-          load()
-        })
-      })
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id')
-          if (!confirm('¿Eliminar esta transmisión?')) return
-          await adminFetch(`/api/admin/lives/${id}`, { method: 'DELETE' })
-          load()
-        })
-      })
-    }
-    onAppReady(load)
-  </script>
 </AdminLayout>

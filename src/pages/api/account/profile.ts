@@ -11,7 +11,8 @@ const PROFILE_FIELDS = ['full_name', 'phone', 'avatar_url']
 function isOwnAvatar(value: unknown, userId: string): boolean {
   if (value === null) return true
   if (typeof value !== 'string') return false
-  const prefix = `${getEnv('PUBLIC_SUPABASE_URL')}/storage/v1/object/public/avatars/${userId}/`
+  const base = getEnv('PUBLIC_SUPABASE_URL').replace(/\/$/, '')
+  const prefix = `${base}/storage/v1/object/public/avatars/${userId}/`
   return value.startsWith(prefix) && !value.slice(prefix.length).includes('..')
 }
 
@@ -47,14 +48,21 @@ export const PUT: APIRoute = async ({ request, locals }) => {
       return json({ error: 'La foto no es válida.' }, 400)
     }
 
-    const { data, error } = await auth.db
-      .from('user_profiles')
-      .upsert({ id: auth.userId, ...update }, { onConflict: 'id' })
-      .select('full_name, phone, avatar_url')
-      .single()
+    // Primero intenta actualizar, y crea la fila solo si no existe. Nunca envía el rol.
+    const columns = 'full_name, phone, avatar_url'
+    const updated = await auth.db.from('user_profiles').update(update).eq('id', auth.userId).select(columns).maybeSingle()
+    if (updated.error) {
+      console.error('[perfil] No se pudo actualizar', updated.error.message)
+      return json({ error: 'No se pudieron guardar tus datos.' }, 500)
+    }
+    if (updated.data) return json({ data: updated.data })
 
-    if (error) return json({ error: error.message }, 500)
-    return json({ data })
+    const created = await auth.db.from('user_profiles').insert({ id: auth.userId, ...update }).select(columns).maybeSingle()
+    if (created.error || !created.data) {
+      console.error('[perfil] No se pudo crear', created.error?.message)
+      return json({ error: 'No encontramos tu perfil y no se pudo crear. Avísanos para ayudarte.' }, 500)
+    }
+    return json({ data: created.data })
   } catch (e: any) {
     return json({ error: e.message }, 400)
   }
