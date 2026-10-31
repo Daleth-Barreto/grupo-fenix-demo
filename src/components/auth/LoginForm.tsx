@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
-import { adminFetch } from '../../lib/admin-fetch'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -23,11 +22,8 @@ export default function LoginForm() {
         window.location.href = next
         return
       }
-      // Sin destino pedido, el staff entra a su panel. Si esto falla, va a Inicio.
-      const role = await adminFetch('/api/admin/me')
-        .then(async (res) => (res.ok ? ((await res.json()) as { role?: string }).role : null))
-        .catch(() => null)
-      window.location.href = role === 'admin' || role === 'instructor' ? '/admin' : '/app/inicio'
+      // Todos entran a la app móvil. El staff abre su panel desde Inicio o Perfil.
+      window.location.href = '/app/inicio'
     }
   }
 
