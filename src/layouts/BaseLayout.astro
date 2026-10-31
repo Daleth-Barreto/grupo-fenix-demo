@@ -13,6 +13,28 @@ const imageUrl = new URL(image, Astro.url).href
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0f2a44" />
+    <script is:inline>
+      // Corre antes de pintar para que el modo oscuro no parpadee en blanco. Por defecto es claro.
+      (function () {
+        var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null
+        function read() { try { return localStorage.getItem('fenix-theme') || 'light' } catch (e) { return 'light' } }
+        function apply() {
+          if (location.pathname === '/admin' || location.pathname.indexOf('/admin/') === 0) return
+          var choice = read()
+          var dark = choice === 'dark' || (choice === 'auto' && media && media.matches)
+          if (dark) document.documentElement.setAttribute('data-theme', 'dark')
+          else document.documentElement.removeAttribute('data-theme')
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', dark ? '#0b1622' : '#0f2a44')
+        }
+        window.fenixTheme = {
+          read: read,
+          set: function (choice) { try { localStorage.setItem('fenix-theme', choice) } catch (e) {} apply() },
+        }
+        apply()
+        if (media && media.addEventListener) media.addEventListener('change', apply)
+      })()
+    </script>
     <meta name="description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Grupo Fénix" />
