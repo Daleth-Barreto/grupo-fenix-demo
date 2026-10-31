@@ -45,14 +45,20 @@ export default function LivePlayer({ hlsUrl, title, presenter }: LivePlayerProps
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // Safari nativo
       video.src = hlsUrl
-      video.addEventListener('loadedmetadata', () => {
+      const onLoaded = () => {
         setLoading(false)
         video.play().catch(() => {})
-      })
-      video.addEventListener('error', () => {
+      }
+      const onError = () => {
         setError('Error al cargar la transmisión en vivo')
         setLoading(false)
-      })
+      }
+      video.addEventListener('loadedmetadata', onLoaded)
+      video.addEventListener('error', onError)
+      return () => {
+        video.removeEventListener('loadedmetadata', onLoaded)
+        video.removeEventListener('error', onError)
+      }
     } else {
       setError('Tu navegador no soporta reproducción HLS')
       setLoading(false)

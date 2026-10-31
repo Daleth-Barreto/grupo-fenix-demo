@@ -26,6 +26,9 @@ const { title, description = 'Congresos, capacitaciones, cursos y constancias pr
   </head>
   <body class="min-h-svh">
     <slot />
+    <script>
+      import '../utils/event-status'
+    </script>
     <script is:inline>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

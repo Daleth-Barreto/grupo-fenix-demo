@@ -6,12 +6,12 @@ import AppLayout from '../../../layouts/AppLayout.astro'
     <div class="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-6">
       <span class="material-symbols-outlined text-red-600 text-[48px] filled">error</span>
     </div>
-    <h1 class="text-[28px] font-bold text-primary mb-2">Error en el pago</h1>
+    <h1 class="text-[28px] font-bold text-primary mb-2">Pago no completado</h1>
     <p class="text-sm text-on-surface-variant mb-8 max-w-xs leading-relaxed">
-      Hubo un problema al procesar tu pago. No se ha realizado ningún cargo a tu tarjeta.
+      No completaste el pago, así que no se realizó ningún cargo. Puedes intentarlo de nuevo cuando quieras.
     </p>
     <div class="flex flex-col gap-3 w-full max-w-sm">
-      <a href="javascript:history.back()" class="w-full bg-secondary hover:bg-secondary-deep text-on-secondary font-semibold text-[15px] py-4 rounded-2xl shadow-card transition-all active:scale-[0.98]">
+      <a id="retry-payment" href="/app/congresos" class="w-full bg-secondary hover:bg-secondary-deep text-on-secondary font-semibold text-[15px] py-4 rounded-2xl shadow-card transition-all active:scale-[0.98]">
         Intentar nuevamente
       </a>
       <a href="/app/congresos" class="w-full bg-surface-soft text-primary font-semibold text-[15px] py-4 rounded-2xl border border-surface-variant transition-all active:scale-[0.98]">
@@ -20,3 +20,9 @@ import AppLayout from '../../../layouts/AppLayout.astro'
     </div>
   </div>
 </AppLayout>
+
+<script>
+  const eventId = new URLSearchParams(window.location.search).get('event')
+  const retry = document.getElementById('retry-payment') as HTMLAnchorElement | null
+  if (retry && eventId) retry.href = `/app/checkout/${encodeURIComponent(eventId)}`
+</script>

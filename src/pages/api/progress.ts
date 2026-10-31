@@ -5,22 +5,24 @@ import { requireRole, json } from '../../lib/admin-auth'
 
 const ROLES = ['student', 'instructor', 'admin'] as const
 
-// Lista las lecciones completadas del usuario en un curso.
+// Lista las lecciones completadas del usuario, en un curso o en todos.
 export const GET: APIRoute = async ({ request, locals, url }) => {
   const auth = await requireRole(request, locals, [...ROLES])
   if (!auth.ok) return auth.response
 
-  const courseId = url.searchParams.get('course_id')
-  if (!courseId) return json({ error: 'course_id requerido' }, 400)
-
-  const { data, error } = await auth.db
+  let query = auth.db
     .from('user_progress')
-    .select('lesson_id')
+    .select('course_id, lesson_id')
     .eq('user_id', auth.userId)
-    .eq('course_id', courseId)
 
+  const courseId = url.searchParams.get('course_id')
+  if (courseId) query = query.eq('course_id', courseId)
+
+  const { data, error } = await query
   if (error) return json({ error: error.message }, 500)
-  return json({ lesson_ids: (data ?? []).map((r: { lesson_id: string }) => r.lesson_id) })
+
+  const rows = (data ?? []) as Array<{ course_id: string; lesson_id: string }>
+  return json({ lesson_ids: rows.map((r) => r.lesson_id), rows })
 }
 
 // Marca o desmarca una lección. El usuario solo puede tocar su propio progreso.

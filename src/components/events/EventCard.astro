@@ -11,6 +11,7 @@ const MODALITY_ICON: Record<string, string> = { Presencial: 'location_on', 'En l
 ---
 <a
   href={`/app/congresos/${event.id}`}
+  data-event-end={event.date_end}
   class={`group bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated hover:border-surface-variant transition-all duration-300 cursor-pointer block animate-fade-in-up delay-${Math.min(index + 1, 4)}`}
 >
   <!-- Imagen -->
@@ -57,12 +58,12 @@ const MODALITY_ICON: Record<string, string> = { Presencial: 'location_on', 'En l
         <span class="material-symbols-outlined text-secondary text-[15px]">location_on</span>
         <span>{event.location}</span>
       </div>
-      {event.speakers_count && (
+      {event.speakers_count ? (
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-secondary text-[15px]">groups</span>
           <span>{event.speakers_count} ponentes{event.curricular_hours ? ` · ${event.curricular_hours} hrs` : ''}</span>
         </div>
-      )}
+      ) : null}
     </div>
 
     <div class="flex items-center justify-between pt-3 mt-1 border-t border-surface-variant/70">
@@ -70,8 +71,11 @@ const MODALITY_ICON: Record<string, string> = { Presencial: 'location_on', 'En l
         <p class="text-[11px] text-outline uppercase tracking-wider font-medium">Inversión</p>
         <p class="text-[19px] font-bold text-primary leading-tight">{formatPrice(event.price)}</p>
       </div>
-      <span class="bg-secondary hover:bg-secondary-deep text-on-secondary text-sm font-semibold px-6 py-3 rounded-2xl shadow-card hover:shadow-elevated transition-all active:scale-[0.97]">
+      <span data-if-upcoming class="bg-secondary hover:bg-secondary-deep text-on-secondary text-sm font-semibold px-6 py-3 rounded-2xl shadow-card hover:shadow-elevated transition-all active:scale-[0.97]">
         Inscribirme
+      </span>
+      <span data-if-past style="display:none" class="bg-surface-container text-on-surface-variant text-sm font-semibold px-6 py-3 rounded-2xl">
+        Finalizado
       </span>
     </div>
   </div>

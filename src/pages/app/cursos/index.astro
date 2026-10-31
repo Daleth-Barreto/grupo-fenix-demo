@@ -1,7 +1,6 @@
 ---
 import AppLayout from '../../../layouts/AppLayout.astro'
-import ProgressBar from '../../../components/ui/ProgressBar.astro'
-import { MOCK_COURSES, getCourseProgress } from '../../../data/mock'
+import { MOCK_COURSES } from '../../../data/mock'
 
 const TABS = [
   { key: 'Todos', icon: 'apps' },
@@ -38,10 +37,9 @@ const TABS = [
     <!-- Course List -->
     <div class="flex flex-col gap-4" id="courses-list">
       {MOCK_COURSES.map((course) => {
-        const { percent } = getCourseProgress(course)
-        const status = percent >= 100 ? 'Finalizado' : 'En Curso'
+        const lessonIds = course.modules.flatMap((m) => m.lessons.map((l) => l.id))
         return (
-          <a href={`/app/cursos/${course.id}`} data-status={status}
+          <a href={`/app/cursos/${course.id}`} data-status="En Curso" data-course-id={course.id} data-lessons={lessonIds.join(',')}
             class="bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated transition-all active:scale-[0.98] duration-150 block course-card animate-fade-in-up">
             
             <!-- Thumbnail -->
@@ -53,18 +51,8 @@ const TABS = [
                   <span class="material-symbols-outlined text-white/30 text-[48px]">school</span>
                 </div>
               )}
-              <!-- Status badge -->
-              <div class:list={[
-                'absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md',
-                status === 'Finalizado'
-                  ? 'bg-success/90 text-white'
-                  : 'bg-secondary/90 text-white',
-              ]}>
-                <span class="flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px] filled">{status === 'Finalizado' ? 'check_circle' : 'play_circle'}</span>
-                  {status}
-                </span>
-              </div>
+              <!-- Status badge: lo actualiza el script con el progreso real -->
+              <div class="course-badge absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md bg-primary/90 text-white">En Curso</div>
             </div>
 
             <!-- Content -->
@@ -74,15 +62,13 @@ const TABS = [
                 <span class="material-symbols-outlined text-[14px]">person</span>
                 {course.instructor}
               </p>
-              <ProgressBar value={percent} showLabel />
-            </div>
-
-            {course.current_lesson && percent < 100 && (
-              <div class="border-t border-surface-variant/70 px-4 py-2.5 flex items-center gap-2 bg-surface-container-low">
-                <span class="material-symbols-outlined text-secondary text-[16px] filled">play_circle</span>
-                <span class="text-xs text-on-surface-variant font-medium truncate">{course.current_lesson}</span>
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+                  <div class="course-bar h-full bg-secondary rounded-full transition-all duration-700" style="width:0%"></div>
+                </div>
+                <span class="course-percent text-xs text-on-surface-variant w-8 text-right font-medium">0%</span>
               </div>
-            )}
+            </div>
           </a>
         )
       })}
@@ -114,8 +100,29 @@ const TABS = [
 
 <script>
   import { onAppReady } from '../../../utils/app-ready'
+  import { adminFetch } from '../../../lib/admin-fetch'
 
   onAppReady(() => {
+    adminFetch('/api/progress')
+      .then(async (res) => {
+        if (!res.ok) return
+        const { lesson_ids } = (await res.json()) as { lesson_ids: string[] }
+        const done = new Set(lesson_ids)
+        document.querySelectorAll<HTMLElement>('.course-card').forEach((card) => {
+          const lessons = (card.dataset.lessons ?? '').split(',').filter(Boolean)
+          const percent = lessons.length ? Math.round((lessons.filter((id) => done.has(id)).length / lessons.length) * 100) : 0
+          const status = percent >= 100 ? 'Finalizado' : 'En Curso'
+          card.dataset.status = status
+          const bar = card.querySelector<HTMLElement>('.course-bar')
+          const label = card.querySelector('.course-percent')
+          const badge = card.querySelector('.course-badge')
+          if (bar) bar.style.width = `${percent}%`
+          if (label) label.textContent = `${percent}%`
+          if (badge) badge.textContent = status
+        })
+      })
+      .catch(() => {})
+
     const tabs = document.querySelectorAll<HTMLButtonElement>('.course-tab')
     const cards = document.querySelectorAll<HTMLElement>('.course-card')
     const emptyState = document.getElementById('empty-state')

@@ -29,12 +29,14 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
 
   <script>
     import { adminFetch } from '../../../lib/admin-fetch'
+    import { escapeHtml } from '../../../utils/escape-html'
     async function load() {
       const res = await adminFetch('/api/admin/events')
-      const json = await res.json()
+      const json = (await res.json()) as any
       const list = document.getElementById('events-list')
       const empty = document.getElementById('events-empty')
       if (!json.data || json.data.length === 0) {
+        list!.innerHTML = ''
         empty?.classList.remove('hidden')
         return
       }
@@ -43,19 +45,19 @@ import AdminLayout from '../../../layouts/AdminLayout.astro'
         <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-low/50 transition-colors">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <h3 class="font-semibold text-primary truncate">${ev.title}</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">${ev.category || '-'}</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">${ev.modality || '-'}</span>
+              <h3 class="font-semibold text-primary truncate">${escapeHtml(ev.title)}</h3>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">${escapeHtml(ev.category || '-')}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">${escapeHtml(ev.modality || '-')}</span>
             </div>
-            <p class="text-sm text-on-surface-variant line-clamp-1">${ev.description || ''}</p>
+            <p class="text-sm text-on-surface-variant line-clamp-1">${escapeHtml(ev.description || '')}</p>
             <div class="flex items-center gap-4 mt-2 text-xs text-outline">
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_month</span>${ev.start_date || '-'}${ev.end_date ? ' - ' + ev.end_date : ''}</span>
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span>${ev.location || '-'}</span>
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">payments</span>$${ev.price || 0} MXN</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_month</span>${escapeHtml(ev.start_date || '-')}${ev.end_date ? ' - ' + escapeHtml(ev.end_date) : ''}</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span>${escapeHtml(ev.location || '-')}</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">payments</span>$${escapeHtml(ev.price || 0)} MXN</span>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button data-id="${ev.id}" class="delete-btn p-2 rounded-xl hover:bg-red-50 text-red-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center">
+            <button data-id="${escapeHtml(ev.id)}" class="delete-btn p-2 rounded-xl hover:bg-red-50 text-red-600 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center">
               <span class="material-symbols-outlined text-[20px]">delete</span>
             </button>
           </div>
