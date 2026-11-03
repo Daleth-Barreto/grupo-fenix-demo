@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
+import { adminFetch } from '../../lib/admin-fetch'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -13,18 +14,31 @@ export default function LoginForm() {
     setError(null)
     setLoading(true)
     const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
-    setLoading(false)
-    if (err) setError(err.message)
-    else {
-      // Solo rutas internas: un enlace ?next= no debe poder sacar al usuario del sitio.
-      const next = new URLSearchParams(window.location.search).get('next') ?? ''
-      if (/^\/app\/[\w/-]*$/.test(next)) {
-        window.location.href = next
-        return
-      }
-      // Todos entran a la app móvil. El staff abre su panel desde Inicio o Perfil.
-      window.location.href = '/app/inicio'
+    if (err) {
+      setLoading(false)
+      setError(err.message)
+      return
     }
+    // Solo rutas internas: un enlace ?next= no debe poder sacar al usuario del sitio.
+    const next = new URLSearchParams(window.location.search).get('next') ?? ''
+    if (/^\/app\/[\w/-]*$/.test(next)) {
+      window.location.href = next
+      return
+    }
+    // El staff entra directo a su panel; los alumnos, a la app. Desde el panel, "Ver la app" regresa.
+    // El rol lo confirma el servidor. Si la consulta falla, entra a la app como siempre.
+    // El botón sigue en "cargando" mientras se consulta, para que no se pueda enviar dos veces.
+    let destino = '/app/inicio'
+    try {
+      const res = await adminFetch('/api/admin/me')
+      if (res.ok) {
+        const { role } = (await res.json()) as { role?: string }
+        if (role === 'admin' || role === 'instructor') destino = '/admin'
+      }
+    } catch {
+      // Sin red o sin servidor: se queda en la app.
+    }
+    window.location.href = destino
   }
 
   return (
