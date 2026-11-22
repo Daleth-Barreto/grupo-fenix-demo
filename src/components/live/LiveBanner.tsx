@@ -23,7 +23,7 @@ export default function LiveBanner() {
   if (liveStreams.length === 0) return null
 
   return (
-    <section className="animate-fade-in-up">
+    <section className="animate-fade-in-up flex flex-col gap-3">
       {liveStreams.map((stream) => (
         <a
           key={stream.id}
