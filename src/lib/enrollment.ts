@@ -44,6 +44,8 @@ export async function enrollFromOrder(db: SupabaseClient, order: OrderTarget): P
   const { error: insertError } = await db
     .from('enrollments')
     .insert({ user_id: order.userId, [target.column]: target.id, order_id: order.orderId, status: 'activo' })
+  // 23505: otro aviso de Stripe inscribió a la persona al mismo tiempo (índice único por persona y curso/evento).
+  if (insertError?.code === '23505') return false
   if (insertError) throw insertError
   return true
 }
