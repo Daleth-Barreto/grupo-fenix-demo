@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { adminFetch } from '../../lib/admin-fetch'
 
@@ -8,9 +8,25 @@ type Props = { eventId: string; courseId?: undefined; ticketId?: string; isReser
 export default function CheckoutForm({ eventId, courseId, ticketId, isReservation }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Candado inmediato contra el doble clic: el estado de React tarda un render en desactivar el botón.
+  const enviando = useRef(false)
+
+  // Si la persona regresa desde Stripe con el botón "atrás", el navegador restaura la página
+  // tal como quedó ("Conectando con Stripe…"). Se reactiva el botón para que pueda intentar de nuevo.
+  useEffect(() => {
+    const reactivar = (e: PageTransitionEvent) => {
+      if (!e.persisted) return
+      enviando.current = false
+      setLoading(false)
+    }
+    window.addEventListener('pageshow', reactivar)
+    return () => window.removeEventListener('pageshow', reactivar)
+  }, [])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (enviando.current) return
+    enviando.current = true
     setLoading(true)
     setError(null)
     try {
@@ -22,11 +38,13 @@ export default function CheckoutForm({ eventId, courseId, ticketId, isReservatio
         window.location.href = `/app/login?next=${encodeURIComponent(window.location.pathname)}`
         return
       }
+      if (res.status === 429) throw new Error('Hiciste muchos intentos seguidos. Espera unos minutos y vuelve a intentarlo.')
       const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string }
       if (!res.ok || !body.url) throw new Error(body.error || 'No se pudo iniciar el pago.')
       window.location.href = body.url
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo iniciar el pago.')
+      enviando.current = false
       setLoading(false)
     }
   }
