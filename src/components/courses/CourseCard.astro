@@ -1,0 +1,53 @@
+---
+import Badge from '../ui/Badge.astro'
+import { formatPrice } from '../../utils/format'
+import type { PublicCourse } from '../../lib/catalog'
+
+// Tarjeta de curso en línea para el listado de Congresos (mismo estilo que EventCard).
+interface Props { course: PublicCourse; index?: number }
+const { course, index = 0 } = Astro.props
+---
+<a
+  href={`/app/checkout/curso/${course.id}`}
+  class={`group bg-surface rounded-3xl shadow-card border border-surface-variant/70 overflow-hidden hover:shadow-elevated hover:border-surface-variant transition-all duration-300 cursor-pointer block animate-fade-in-up delay-${Math.min(index + 1, 4)}`}
+>
+  <div class="relative h-44 overflow-hidden bg-navy">
+    {course.image_url ? (
+      <img src={course.image_url} alt={course.title} loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+    ) : (
+      <div class="w-full h-full flex items-center justify-center bg-navy-gradient">
+        <span class="material-symbols-outlined text-white/25 text-[64px]">play_circle</span>
+      </div>
+    )}
+    <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(to top, rgba(10,25,47,0.55) 0%, transparent 45%)"></div>
+
+    <div class="absolute top-3 right-3"><Badge label="Curso en línea" variant="glass" /></div>
+
+    <div class="absolute bottom-3 left-3 flex items-center gap-1.5 text-white text-xs font-medium">
+      <span class="material-symbols-outlined text-[15px]">wifi</span>
+      <span>En línea · a tu ritmo</span>
+    </div>
+  </div>
+
+  <div class="p-5 flex flex-col gap-3">
+    <h3 class="text-[17px] font-semibold text-primary leading-snug">{course.title}</h3>
+    {course.description && <p class="text-[13px] text-on-surface-variant leading-relaxed line-clamp-2">{course.description}</p>}
+
+    {course.instructor && (
+      <div class="flex items-center gap-2 text-xs text-on-surface-variant pt-1">
+        <span class="material-symbols-outlined text-secondary text-[15px]">person</span>
+        <span>{course.instructor}</span>
+      </div>
+    )}
+
+    <div class="flex items-center justify-between pt-3 mt-1 border-t border-surface-variant/70">
+      <div>
+        <p class="text-[11px] text-outline uppercase tracking-wider font-medium">Inversión</p>
+        <p class="text-[19px] font-bold text-primary leading-tight">{formatPrice(course.price)}</p>
+      </div>
+      <span class="bg-secondary hover:bg-secondary-deep text-on-secondary text-sm font-semibold px-6 py-3 rounded-2xl shadow-card hover:shadow-elevated transition-all active:scale-[0.97]">
+        Ver curso
+      </span>
+    </div>
+  </div>
+</a>
