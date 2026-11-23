@@ -2,11 +2,13 @@
 import AppLayout from '../../../layouts/AppLayout.astro'
 import EventCard from '../../../components/events/EventCard.astro'
 import FeaturedHero from '../../../components/events/FeaturedHero.astro'
-import { listEvents, featuredEvent } from '../../../lib/catalog'
+import CourseCard from '../../../components/courses/CourseCard.astro'
+import { listEvents, featuredEvent, listCourses } from '../../../lib/catalog'
 
 export const prerender = false
 
-const { events, failed } = await listEvents()
+const [{ events, failed }, { courses }] = await Promise.all([listEvents(), listCourses()])
+const total = events.length + courses.length
 const featured = featuredEvent(events)
 const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Diplomado', 'Seminario']
 ---
@@ -26,6 +28,7 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
           { href: '/app/galeria', icon: 'photo_library', label: 'Trayectoria Fénix' },
           { href: '/app/capacitacion', icon: 'business_center', label: 'Capacitación laboral' },
           { href: '/app/desarrollo', icon: 'school', label: 'Desarrollo profesional' },
+          { href: '/app/cursos/catalogo', icon: 'play_circle', label: 'Cursos en línea' },
         ].map((link) => (
           <a href={link.href} class="w-full flex items-center justify-between bg-surface rounded-2xl border border-surface-variant/70 shadow-card px-4 py-3 hover:shadow-elevated transition-all active:scale-[0.98] group">
             <span class="flex items-center gap-3">
@@ -77,17 +80,23 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
 
     <!-- Resultados -->
     <div class="flex items-center justify-between -mt-2">
-      <p class="text-xs text-outline font-medium" id="results-count">{events.length} {events.length === 1 ? 'evento' : 'eventos'}</p>
+      <p class="text-xs text-outline font-medium" id="results-count">{total} {total === 1 ? 'resultado' : 'resultados'}</p>
     </div>
 
     <!-- Grid de tarjetas -->
     <div class="grid grid-cols-1 gap-5" id="events-grid">
-      {events.map((event, i) => (
-        <div data-category={event.category} data-modality={event.modality} data-end={event.date_end} data-search={`${event.title} ${event.description} ${event.location}`.toLowerCase()}>
-          <EventCard event={event} index={i} />
+      {/* Cursos en línea primero: no tienen fecha, salen con el filtro "Curso" y cuentan como "Próximos" */}
+      {courses.map((course, i) => (
+        <div data-category="Curso" data-modality="En línea" data-end="" data-search={`${course.title} ${course.description} ${course.instructor} curso en linea`.toLowerCase()}>
+          <CourseCard course={course} index={i} />
         </div>
       ))}
-      {events.length === 0 && (
+      {events.map((event, i) => (
+        <div data-category={event.category} data-modality={event.modality} data-end={event.date_end} data-search={`${event.title} ${event.description} ${event.location}`.toLowerCase()}>
+          <EventCard event={event} index={courses.length + i} />
+        </div>
+      ))}
+      {total === 0 && (
         <p class="text-sm text-on-surface-variant text-center py-12">
           {failed ? 'No pudimos cargar los eventos. Intenta de nuevo en un momento.' : 'Pronto publicaremos nuevos eventos.'}
         </p>
@@ -113,7 +122,7 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
       const term = search.value.trim().toLowerCase()
       let visible = 0
       cards.forEach((card) => {
-        const past = isEventPast(card.dataset.end ?? '')
+        const past = card.dataset.end ? isEventPast(card.dataset.end) : false
         const show = (category === 'Todos' || card.dataset.category === category)
           && (!modality.value || card.dataset.modality === modality.value)
           && (!term || (card.dataset.search ?? '').includes(term))
@@ -121,7 +130,7 @@ const CATEGORIES = ['Todos', 'Congreso', 'Capacitación', 'Curso', 'Taller', 'Di
         card.style.display = show ? '' : 'none'
         if (show) visible++
       })
-      if (count) count.textContent = visible === 0 ? 'Sin resultados. Prueba con otro filtro.' : `${visible} evento${visible !== 1 ? 's' : ''}`
+      if (count) count.textContent = visible === 0 ? 'Sin resultados. Prueba con otro filtro.' : `${visible} resultado${visible !== 1 ? 's' : ''}`
     }
 
     chips.forEach((chip) => {
